@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useWalletClient, useAccount } from 'wagmi';
-import { custom, createHash } from 'viem';
+import { custom } from 'viem';
+import { createHash } from 'crypto';
 import { StoryClient, StoryConfig } from '@story-protocol/core-sdk';
 import { uploadToIPFS, detectAI } from '../services';
 
