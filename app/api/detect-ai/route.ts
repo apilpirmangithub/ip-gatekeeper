@@ -26,10 +26,10 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     console.log('Sightengine response:', data);
     
-    // Perbaikan: Hilangkan ?? false karena TypeScript error
-    const genaiData = data.genai;
-    const isAI = genaiData?.prediction === 'ai';
-    const confidence = genaiData?.score || 0;
+    // Perbaikan: Sesuai dokumentasi, response ada di data.type.ai_generated
+    const aiScore = data.type?.ai_generated || 0;
+    const isAI = aiScore > 0.5; // threshold 50% untuk menentukan AI-generated
+    const confidence = aiScore;
 
     return NextResponse.json({ isAI, confidence });
   } catch (error) {
