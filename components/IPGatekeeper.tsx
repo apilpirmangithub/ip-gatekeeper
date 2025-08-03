@@ -85,6 +85,7 @@ export default function IPGatekeeper() {
       const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
       const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
 
+      // Perbaikan utama: struktur licenseTermsData yang benar
       const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
         licenseTermsData: [{
@@ -96,7 +97,7 @@ export default function IPGatekeeper() {
             commercialUse: licenseSettings.commercialUse,
             commercialAttribution: true,
             commercializerChecker: "0x0000000000000000000000000000000000000000",
-            commercializerCheckerData: "0x0000000000000000000000000000000000000000",
+            commercializerCheckerData: "0x",
             commercialRevShare: licenseSettings.revShare,
             commercialRevCeiling: BigInt(0),
             derivativesAllowed: true,
@@ -106,6 +107,16 @@ export default function IPGatekeeper() {
             derivativeRevCeiling: BigInt(0),
             currency: "0x1514000000000000000000000000000000000000",
             uri: "",
+          },
+          licensingConfig: {
+            isSet: false,
+            mintingFee: BigInt(0),
+            licensingHook: "0x0000000000000000000000000000000000000000",
+            hookData: "0x",
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
           }
         }],
         ipMetadata: {
