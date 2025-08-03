@@ -11,16 +11,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const params = new URLSearchParams();
-    params.append('api_user', process.env.SIGHTENGINE_API_USER!);
-    params.append('api_secret', process.env.SIGHTENGINE_API_SECRET!);
-    params.append('media', `data:image/jpeg;base64,${image}`);
-    params.append('models', 'genai');
+    // Perbaikan: Gunakan FormData untuk multipart/form-data
+    const formData = new FormData();
+    
+    // Convert base64 ke Blob
+    const imageBuffer = Buffer.from(image, 'base64');
+    const blob = new Blob([imageBuffer], { type: 'image/jpeg' });
+    
+    formData.append('media', blob, 'image.jpg');
+    formData.append('models', 'genai');
+    formData.append('api_user', process.env.SIGHTENGINE_API_USER!);
+    formData.append('api_secret', process.env.SIGHTENGINE_API_SECRET!);
 
     const response = await fetch('https://api.sightengine.com/1.0/check.json', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
+      // Hapus Content-Type header, biarkan browser set otomatis untuk FormData
+      body: formData,
     });
 
     const data = await response.json();
