@@ -152,8 +152,8 @@ export default function IPGatekeeper() {
     const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
     const offChainTermsCid = await uploadToIPFS(JSON.stringify(offChainTerms), 'license-terms.json');
 
-    // Perbaikan: Gunakan struktur yang benar untuk Story SDK
-    const terms = {
+    // Perbaikan: Definisikan terms sebagai any atau gunakan struktur yang benar
+    const terms: any = {
       transferable: licenseSettings.transferable,
       royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
       defaultMintingFee: BigInt(0),
@@ -162,6 +162,8 @@ export default function IPGatekeeper() {
       commercialAttribution: licenseSettings.attribution,
       commercializerChecker: "0x0000000000000000000000000000000000000000",
       commercializerCheckerData: "0x",
+      commercialRevShare: licenseSettings.commercialUse ? licenseSettings.revShare : 0,
+      commercialRevCeiling: BigInt(0),
       derivativesAllowed: licenseSettings.derivativesAllowed,
       derivativesAttribution: licenseSettings.derivativesAttribution,
       derivativesApproval: false,
@@ -171,15 +173,7 @@ export default function IPGatekeeper() {
       uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
     };
 
-    if (licenseSettings.commercialUse) {
-      terms.commercialRevShare = licenseSettings.revShare;
-      terms.commercialRevCeiling = BigInt(0);
-    } else {
-      terms.commercialRevShare = 0;
-      terms.commercialRevCeiling = BigInt(0);
-    }
-
-    const licensingConfig = {
+    const licensingConfig: any = {
       isSet: false,
       mintingFee: BigInt(0),
       licensingHook: "0x0000000000000000000000000000000000000000",
@@ -190,7 +184,9 @@ export default function IPGatekeeper() {
       expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
     };
 
-    // Gunakan struktur yang benar tanpa pilType parameter
+    console.log('Final terms:', terms);
+    console.log('Final licensing config:', licensingConfig);
+
     const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
       spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
       licenseTermsData: [{
