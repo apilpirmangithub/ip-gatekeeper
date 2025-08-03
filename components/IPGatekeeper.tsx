@@ -152,7 +152,6 @@ export default function IPGatekeeper() {
     const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
     const offChainTermsCid = await uploadToIPFS(JSON.stringify(offChainTerms), 'license-terms.json');
 
-    // Perbaikan: Definisikan terms sebagai any atau gunakan struktur yang benar
     const terms: any = {
       transferable: licenseSettings.transferable,
       royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
@@ -205,7 +204,9 @@ export default function IPGatekeeper() {
 
   } catch (error) {
     console.error('Registration failed:', error);
-    alert(`Registration failed: ${error.message || error}`);
+    // Perbaikan: Handle error dengan type checking
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    alert(`Registration failed: ${errorMessage}`);
   } finally {
     setIsRegistering(false);
   }
