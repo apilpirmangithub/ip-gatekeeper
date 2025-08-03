@@ -204,42 +204,102 @@ export default function IPGatekeeper() {
     }
   });
       } else if (licenseSettings.pilType === 'commercial_use') {
-        // Register commercial use PIL terms
-        const pilTermsResponse = await storyClient.license.registerCommercialUsePIL({
-          defaultMintingFee: licenseSettings.licensePrice,
-          currency: "0x1514000000000000000000000000000000000000",
-          royaltyPolicyAddress: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E"
-        });
+  // Register commercial use PIL terms first
+  const pilTermsResponse = await storyClient.license.registerCommercialUsePIL({
+    defaultMintingFee: licenseSettings.licensePrice,
+    currency: "0x1514000000000000000000000000000000000000",
+    royaltyPolicyAddress: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E"
+  });
 
-        response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
-          licenseTermsData: [{ licenseTermsId: pilTermsResponse.licenseTermsId }],
-          ipMetadata: {
-            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-          }
-        });
-      } else if (licenseSettings.pilType === 'commercial_remix') {
-        // Register commercial remix PIL terms
-        const pilTermsResponse = await storyClient.license.registerCommercialRemixPIL({
-          defaultMintingFee: licenseSettings.licensePrice,
-          commercialRevShare: licenseSettings.revShare,
-          currency: "0x1514000000000000000000000000000000000000",
-          royaltyPolicyAddress: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E"
-        });
+  response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+    spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
+    licenseTermsData: [{
+      terms: {
+        transferable: true,
+        royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+        defaultMintingFee: BigInt(licenseSettings.licensePrice),
+        expiration: BigInt(0),
+        commercialUse: true,
+        commercialAttribution: true,
+        commercializerChecker: "0x0000000000000000000000000000000000000000",
+        commercializerCheckerData: "0x",
+        commercialRevShare: 0,
+        commercialRevCeiling: BigInt(0),
+        derivativesAllowed: false,
+        derivativesAttribution: false,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+        derivativeRevCeiling: BigInt(0),
+        currency: "0x1514000000000000000000000000000000000000",
+        uri: "",
+      },
+      licensingConfig: {
+        isSet: false,
+        mintingFee: BigInt(licenseSettings.licensePrice),
+        licensingHook: "0x0000000000000000000000000000000000000000",
+        hookData: "0x",
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
+      }
+    }],
+    ipMetadata: {
+      ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+      ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
+      nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+      nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
+    }
+  });
+} else if (licenseSettings.pilType === 'commercial_remix') {
+  // Register commercial remix PIL terms first
+  const pilTermsResponse = await storyClient.license.registerCommercialRemixPIL({
+    defaultMintingFee: licenseSettings.licensePrice,
+    commercialRevShare: licenseSettings.revShare,
+    currency: "0x1514000000000000000000000000000000000000",
+    royaltyPolicyAddress: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E"
+  });
 
-        response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
-          licenseTermsData: [{ licenseTermsId: pilTermsResponse.licenseTermsId }],
-          ipMetadata: {
-            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-          }
-        });
+  response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+    spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
+    licenseTermsData: [{
+      terms: {
+        transferable: true,
+        royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+        defaultMintingFee: BigInt(licenseSettings.licensePrice),
+        expiration: BigInt(0),
+        commercialUse: true,
+        commercialAttribution: true,
+        commercializerChecker: "0x0000000000000000000000000000000000000000",
+        commercializerCheckerData: "0x",
+        commercialRevShare: licenseSettings.revShare,
+        commercialRevCeiling: BigInt(0),
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        derivativeRevCeiling: BigInt(0),
+        currency: "0x1514000000000000000000000000000000000000",
+        uri: "",
+      },
+      licensingConfig: {
+        isSet: false,
+        mintingFee: BigInt(licenseSettings.licensePrice),
+        licensingHook: "0x0000000000000000000000000000000000000000",
+        hookData: "0x",
+        commercialRevShare: licenseSettings.revShare,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
+      }
+    }],
+    ipMetadata: {
+      ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+      ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
+      nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+      nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
+    }
+  });
       }
 
       setResult(response);
