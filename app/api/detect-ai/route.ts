@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
     params.append('api_user', process.env.SIGHTENGINE_API_USER!);
     params.append('api_secret', process.env.SIGHTENGINE_API_SECRET!);
     params.append('media', `data:image/jpeg;base64,${image}`);
-    params.append('models', 'ai-generated');
+    // Perbaikan: Ganti model yang tidak ada dengan model yang tersedia
+    params.append('models', 'genai'); // atau 'properties' untuk deteksi umum
 
     const response = await fetch('https://api.sightengine.com/1.0/check.json', {
       method: 'POST',
@@ -24,9 +25,12 @@ export async function POST(request: NextRequest) {
     });
 
     const data = await response.json();
-    const aiData = data.ai_generated;
-    const isAI = aiData?.prediction === 'yes' || false;
-    const confidence = aiData?.probability ?? 0;
+    console.log('Sightengine response:', data); // untuk debugging
+    
+    // Perbaikan: Sesuaikan dengan struktur response model 'genai'
+    const genaiData = data.genai;
+    const isAI = genaiData?.prediction === 'ai' ?? false;
+    const confidence = genaiData?.score ?? 0;
 
     return NextResponse.json({ isAI, confidence });
   } catch (error) {
