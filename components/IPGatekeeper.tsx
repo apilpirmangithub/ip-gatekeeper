@@ -437,11 +437,9 @@ export default function IPGatekeeper() {
             <div className="text-xs text-gray-600 p-3 bg-gray-50 rounded">
               {licenseSettings.pilType === 'open_use' && (
                 <div>
-                  <p className="font-medium">Open Domain</p>
-                  <p>Public dedication tool - no conditions, worldwide public domain</p>
                   <ul className="mt-1 text-xs">
                     <li>• Attribution not required</li>
-                    <li>• Commercial use allowed</li>
+                    <li>• Non-commercial use only</li>
                     <li>• Remixing allowed</li>
                     <li>• No royalty sharing</li>
                     <li>• AI training allowed</li>
@@ -450,8 +448,6 @@ export default function IPGatekeeper() {
               )}
               {licenseSettings.pilType === 'non_commercial_remix' && (
                 <div>
-                  <p className="font-medium">Non-Commercial Remix</p>
-                  <p>Copy and distribute for non-commercial purposes only</p>
                   <ul className="mt-1 text-xs">
                     <li>• Attribution not required</li>
                     <li>• Non-commercial use only</li>
@@ -463,8 +459,6 @@ export default function IPGatekeeper() {
               )}
               {licenseSettings.pilType === 'commercial_use' && (
                 <div>
-                  <p className="font-medium">Commercial Use</p>
-                  <p>Copy and distribute for commercial purposes, no derivatives</p>
                   <ul className="mt-1 text-xs">
                     <li>• Attribution not required</li>
                     <li>• Commercial use allowed</li>
@@ -476,13 +470,11 @@ export default function IPGatekeeper() {
               )}
               {licenseSettings.pilType === 'commercial_remix' && (
                 <div>
-                  <p className="font-medium">Commercial Remix</p>
-                  <p>Remix, adapt, copy and distribute for commercial purposes</p>
                   <ul className="mt-1 text-xs">
                     <li>• Attribution not required</li>
                     <li>• Commercial use allowed</li>
                     <li>• Remixing allowed</li>
-                    <li>• Royalty sharing required</li>
+                    <li>• Royalty sharing</li>
                     <li>• AI training allowed</li>
                   </ul>
                 </div>
