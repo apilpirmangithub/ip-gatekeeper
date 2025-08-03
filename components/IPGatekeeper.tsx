@@ -555,12 +555,14 @@ export default function IPGatekeeper() {
       </div>
 
       <button
-        onClick={registerIP}
-        disabled={!selectedFile || !title || isRegistering || isDetecting}
-        className="w-full bg-blue-500 text-white p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600"
-      >
-        {isRegistering ? 'Registering IP Asset...' : 'Register IP Asset'}
-      </button>
+  onClick={registerIP}
+  disabled={!selectedFile || !title || isRegistering || isDetecting}
+  className="w-full bg-blue-500 text-white p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600"
+>
+  {isPreparingTx ? 'Preparing transaction...' : 
+   isRegistering ? 'Waiting for signature...' : 
+   'Register IP Asset'}
+</button>
 
       {result && (
         <div className="p-4 bg-green-100 rounded-lg">
