@@ -17,6 +17,7 @@ export default function IPGatekeeper() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [licenseSettings, setLicenseSettings] = useState({
+    pilType: 'non_commercial_remix',
     commercialUse: false,
     revShare: 0,
     derivativesAllowed: true,
@@ -24,9 +25,8 @@ export default function IPGatekeeper() {
     attribution: true,
     transferable: true,
     aiLearning: true,
-    expiration: 'never',
-    territory: 'global',
-    customTerritory: '',
+    expiration: '0',
+    territory: 'Global',
   });
   const [isRegistering, setIsRegistering] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -43,7 +43,7 @@ export default function IPGatekeeper() {
   }, [wallet, isConnected]);
 
   const getExpirationTimestamp = (expiration: string): number => {
-    const now = Date.now() / 1000; // Current timestamp in seconds
+    const now = Date.now() / 1000;
     switch (expiration) {
       case '1year': return now + (365 * 24 * 60 * 60);
       case '2years': return now + (2 * 365 * 24 * 60 * 60);
@@ -58,16 +58,14 @@ export default function IPGatekeeper() {
     if (!file) return;
 
     setSelectedFile(file);
-    setAiDetection(null); // Reset previous detection
+    setAiDetection(null);
     
-    // Create image preview
     const reader = new FileReader();
     reader.onload = (e) => {
       setImagePreview(e.target?.result as string);
     };
     reader.readAsDataURL(file);
 
-    // Start AI detection with loading
     setIsDetecting(true);
     try {
       const arrayBuffer = await file.arrayBuffer();
@@ -85,144 +83,33 @@ export default function IPGatekeeper() {
     }
   };
 
- const registerIP = async () => {
-  if (!storyClient || !selectedFile || !address) return;
-  setIsRegistering(true);
+  const registerIP = async () => {
+    if (!storyClient || !selectedFile || !address) return;
+    setIsRegistering(true);
 
-  try {
-    console.log('Starting IP registration...');
-    console.log('Commercial use setting:', licenseSettings.commercialUse);
+    try {
+      console.log('Starting IP registration...');
+      console.log('PIL Type:', licenseSettings.pilType);
 
-    const arrayBuffer = await selectedFile.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const imageCid = await uploadToIPFS(buffer, selectedFile.name);
-    
-    const imageUrl = `https://ipfs.io/ipfs/${imageCid}`;
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const imageCid = await uploadToIPFS(buffer, selectedFile.name);
+      
+      const imageUrl = `https://ipfs.io/ipfs/${imageCid}`;
 
-    const ipMetadata = {
-      title,
-      description,
-      image: imageUrl,
-      mediaUrl: imageUrl,
-      mediaType: selectedFile.type,
-      creators: [{ name: "User", address, contributionPercent: 100 }],
-      ...(aiDetection?.isAI && {
-        tags: ["AI-generated"],
-        aiGenerated: true,
-        aiConfidence: aiDetection.confidence,
-      }),
-    };
-
-    const nftMetadata = {
-      name: `${title} NFT`,
-      description: `NFT representing ${title}`,
-      image: imageUrl,
-      attributes: [
-        { trait_type: "Type", value: aiDetection?.isAI ? "AI-generated" : "Original" },
-        { trait_type: "AI Learning Allowed", value: licenseSettings.aiLearning ? "Yes" : "No" },
-        { trait_type: "Commercial Use", value: licenseSettings.commercialUse ? "Yes" : "No" },
-        ...(licenseSettings.commercialUse ? [{ trait_type: "Revenue Share", value: `${licenseSettings.revShare}%` }] : []),
-        { trait_type: "Territory", value: licenseSettings.territory === 'custom' ? licenseSettings.customTerritory : licenseSettings.territory },
-        { trait_type: "Expiration", value: licenseSettings.expiration },
-      ],
-    };
-
-    const offChainTerms = {
-      territory: licenseSettings.territory === 'custom' ? licenseSettings.customTerritory : licenseSettings.territory,
-      channelsOfDistribution: "All channels",
-      attribution: licenseSettings.attribution,
-      contentStandards: ["No-Hate", "Suitable-for-All-Ages"],
-      sublicensable: false,
-      aiLearningModels: licenseSettings.aiLearning,
-      restrictionOnCrossPlatformUse: false,
-      governingLaw: "California, USA",
-      alternativeDisputeResolution: "Alternative-Dispute-Resolution",
-      commercialUse: licenseSettings.commercialUse,
-      ...(licenseSettings.commercialUse && { commercialRevShare: licenseSettings.revShare }),
-      derivativesAllowed: licenseSettings.derivativesAllowed,
-      derivativesAttribution: licenseSettings.derivativesAttribution,
-      transferable: licenseSettings.transferable,
-      expiration: licenseSettings.expiration,
-      additionalParameters: aiDetection?.isAI ? 
-        "This AI-generated content is explicitly prohibited from being used for AI training or machine learning purposes." :
-        "This content may be restricted from AI training purposes based on creator preferences."
-    };
-
-    const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
-    const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
-    const offChainTermsCid = await uploadToIPFS(JSON.stringify(offChainTerms), 'license-terms.json');
-
-    // PERBAIKAN UTAMA: Conditional terms berdasarkan commercial use
-    const terms = {
-      transferable: licenseSettings.transferable,
-      royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-      defaultMintingFee: BigInt(0),
-      expiration: licenseSettings.expiration === 'never' ? BigInt(0) : BigInt(Math.floor(getExpirationTimestamp(licenseSettings.expiration))),
-      commercialUse: licenseSettings.commercialUse,
-      commercialAttribution: licenseSettings.attribution,
-      commercializerChecker: "0x0000000000000000000000000000000000000000",
-      commercializerCheckerData: "0x",
-      derivativesAllowed: licenseSettings.derivativesAllowed,
-      derivativesAttribution: licenseSettings.derivativesAttribution,
-      derivativesApproval: false,
-      derivativesReciprocal: true,
-      derivativeRevCeiling: BigInt(0),
-      currency: "0x1514000000000000000000000000000000000000",
-      uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
-    };
-
-    // Hanya tambahkan commercial fields jika commercial use diizinkan
-    if (licenseSettings.commercialUse) {
-      terms.commercialRevShare = licenseSettings.revShare;
-      terms.commercialRevCeiling = BigInt(0);
-    } else {
-      // Untuk non-commercial, set ke 0 atau hapus
-      terms.commercialRevShare = 0;
-      terms.commercialRevCeiling = BigInt(0);
-    }
-
-    const licensingConfig = {
-      isSet: false,
-      mintingFee: BigInt(0),
-      licensingHook: "0x0000000000000000000000000000000000000000",
-      hookData: "0x",
-      disabled: false,
-      expectMinimumGroupRewardShare: 0,
-      expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
-    };
-
-    // Hanya tambahkan commercialRevShare jika commercial use diizinkan
-    if (licenseSettings.commercialUse) {
-      licensingConfig.commercialRevShare = licenseSettings.revShare;
-    } else {
-      licensingConfig.commercialRevShare = 0;
-    }
-
-    console.log('Final terms:', terms);
-    console.log('Final licensing config:', licensingConfig);
-
-    const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-      spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
-      licenseTermsData: [{
-        terms: terms,
-        licensingConfig: licensingConfig
-      }],
-      ipMetadata: {
-        ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-        ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-        nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-        nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-      }
-    });
-
-    setResult(response);
-  } catch (error) {
-    console.error('Registration failed:', error);
-    alert(`Registration failed: ${error.message || error}`);
-  } finally {
-    setIsRegistering(false);
-  }
-};
+      const ipMetadata = {
+        title,
+        description,
+        image: imageUrl,
+        mediaUrl: imageUrl,
+        mediaType: selectedFile.type,
+        creators: [{ name: "User", address, contributionPercent: 100 }],
+        ...(aiDetection?.isAI && {
+          tags: ["AI-generated"],
+          aiGenerated: true,
+          aiConfidence: aiDetection.confidence,
+        }),
+      };
 
       const nftMetadata = {
         name: `${title} NFT`,
@@ -230,16 +117,17 @@ export default function IPGatekeeper() {
         image: imageUrl,
         attributes: [
           { trait_type: "Type", value: aiDetection?.isAI ? "AI-generated" : "Original" },
+          { trait_type: "License Type", value: licenseSettings.pilType },
           { trait_type: "AI Learning Allowed", value: licenseSettings.aiLearning ? "Yes" : "No" },
           { trait_type: "Commercial Use", value: licenseSettings.commercialUse ? "Yes" : "No" },
-          { trait_type: "Revenue Share", value: `${licenseSettings.revShare}%` },
-          { trait_type: "Territory", value: licenseSettings.territory === 'custom' ? licenseSettings.customTerritory : licenseSettings.territory },
-          { trait_type: "Expiration", value: licenseSettings.expiration },
+          ...(licenseSettings.commercialUse ? [{ trait_type: "Revenue Share", value: `${licenseSettings.revShare}%` }] : []),
+          { trait_type: "Territory", value: licenseSettings.territory },
+          { trait_type: "Duration", value: licenseSettings.expiration === '0' ? 'Perpetual' : licenseSettings.expiration },
         ],
       };
 
       const offChainTerms = {
-        territory: licenseSettings.territory === 'custom' ? licenseSettings.customTerritory : licenseSettings.territory,
+        territory: licenseSettings.territory,
         channelsOfDistribution: "All channels",
         attribution: licenseSettings.attribution,
         contentStandards: ["No-Hate", "Suitable-for-All-Ages"],
@@ -248,8 +136,9 @@ export default function IPGatekeeper() {
         restrictionOnCrossPlatformUse: false,
         governingLaw: "California, USA",
         alternativeDisputeResolution: "Alternative-Dispute-Resolution",
+        pilType: licenseSettings.pilType,
         commercialUse: licenseSettings.commercialUse,
-        commercialRevShare: licenseSettings.revShare,
+        ...(licenseSettings.commercialUse && { commercialRevShare: licenseSettings.revShare }),
         derivativesAllowed: licenseSettings.derivativesAllowed,
         derivativesAttribution: licenseSettings.derivativesAttribution,
         transferable: licenseSettings.transferable,
@@ -263,50 +152,78 @@ export default function IPGatekeeper() {
       const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
       const offChainTermsCid = await uploadToIPFS(JSON.stringify(offChainTerms), 'license-terms.json');
 
-      const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-        spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
-        licenseTermsData: [{
-          terms: {
-            transferable: licenseSettings.transferable,
-            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-            defaultMintingFee: BigInt(0),
-            expiration: licenseSettings.expiration === 'never' ? BigInt(0) : BigInt(getExpirationTimestamp(licenseSettings.expiration)),
-            commercialUse: licenseSettings.commercialUse,
-            commercialAttribution: licenseSettings.attribution,
-            commercializerChecker: "0x0000000000000000000000000000000000000000",
-            commercializerCheckerData: "0x",
-            commercialRevShare: licenseSettings.revShare,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: licenseSettings.derivativesAllowed,
-            derivativesAttribution: licenseSettings.derivativesAttribution,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: "0x1514000000000000000000000000000000000000",
-            uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
-          },
-          licensingConfig: {
-            isSet: false,
-            mintingFee: BigInt(0),
-            licensingHook: "0x0000000000000000000000000000000000000000",
-            hookData: "0x",
-            commercialRevShare: licenseSettings.revShare,
-            disabled: false,
-            expectMinimumGroupRewardShare: 0,
-            expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
+      // Gunakan PIL Type atau custom terms
+      if (licenseSettings.pilType !== 'custom') {
+        // Menggunakan PIL standard
+        const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
+          pilType: licenseSettings.pilType,
+          ipMetadata: {
+            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
+            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
           }
-        }],
-        ipMetadata: {
-          ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-          ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-          nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-          nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-        }
-      });
+        });
+        setResult(response);
+      } else {
+        // Menggunakan custom terms
+        const terms = {
+          transferable: licenseSettings.transferable,
+          royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+          defaultMintingFee: BigInt(0),
+          expiration: licenseSettings.expiration === '0' ? BigInt(0) : BigInt(Math.floor(getExpirationTimestamp(licenseSettings.expiration))),
+          commercialUse: licenseSettings.commercialUse,
+          commercialAttribution: licenseSettings.attribution,
+          commercializerChecker: "0x0000000000000000000000000000000000000000",
+          commercializerCheckerData: "0x",
+          derivativesAllowed: licenseSettings.derivativesAllowed,
+          derivativesAttribution: licenseSettings.derivativesAttribution,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+          derivativeRevCeiling: BigInt(0),
+          currency: "0x1514000000000000000000000000000000000000",
+          uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
+        };
 
-      setResult(response);
+        if (licenseSettings.commercialUse) {
+          terms.commercialRevShare = licenseSettings.revShare;
+          terms.commercialRevCeiling = BigInt(0);
+        } else {
+          terms.commercialRevShare = 0;
+          terms.commercialRevCeiling = BigInt(0);
+        }
+
+        const licensingConfig = {
+          isSet: false,
+          mintingFee: BigInt(0),
+          licensingHook: "0x0000000000000000000000000000000000000000",
+          hookData: "0x",
+          commercialRevShare: licenseSettings.commercialUse ? licenseSettings.revShare : 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
+        };
+
+        const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
+          licenseTermsData: [{
+            terms: terms,
+            licensingConfig: licensingConfig
+          }],
+          ipMetadata: {
+            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
+            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
+          }
+        });
+        setResult(response);
+      }
+
     } catch (error) {
       console.error('Registration failed:', error);
+      alert(`Registration failed: ${error.message || error}`);
     } finally {
       setIsRegistering(false);
     }
@@ -337,11 +254,9 @@ export default function IPGatekeeper() {
         )}
       </div>
 
-      {/* Image Preview - Selebar field judul */}
       {imagePreview && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            {/* Preview gambar dengan loading overlay */}
             <div className="relative">
               <img 
                 src={imagePreview} 
@@ -358,7 +273,7 @@ export default function IPGatekeeper() {
               )}
             </div>
           </div>
-          <div></div> {/* Empty div untuk spacing grid */}
+          <div></div>
         </div>
       )}
 
@@ -390,83 +305,110 @@ export default function IPGatekeeper() {
         <div className="space-y-4">
           <h3 className="font-semibold">License Settings</h3>
           
-          {/* Commercial Use */}
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={licenseSettings.commercialUse}
-              onChange={(e) => setLicenseSettings(prev => ({ ...prev, commercialUse: e.target.checked }))}
-            />
-            <span>Allow Commercial Use</span>
-          </label>
+          {/* PIL Type Selection */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              License Type
+            </label>
+            <select
+              value={licenseSettings.pilType}
+              onChange={(e) => setLicenseSettings(prev => ({ 
+                ...prev, 
+                pilType: e.target.value,
+                ...(e.target.value === 'non_commercial_remix' && {
+                  commercialUse: false,
+                  derivativesAllowed: true,
+                  attribution: true,
+                  revShare: 0
+                }),
+                ...(e.target.value === 'commercial_use' && {
+                  commercialUse: true,
+                  derivativesAllowed: false,
+                  attribution: true
+                }),
+                ...(e.target.value === 'commercial_remix' && {
+                  commercialUse: true,
+                  derivativesAllowed: true,
+                  attribution: true
+                })
+              }))}
+              className="w-full p-2 border rounded-lg text-sm"
+            >
+              <option value="non_commercial_remix">Non-Commercial Remix</option>
+              <option value="commercial_use">Commercial Use</option>
+              <option value="commercial_remix">Commercial Remix</option>
+              <option value="custom">Custom License</option>
+            </select>
+            <p className="text-xs text-gray-500">
+              {licenseSettings.pilType === 'non_commercial_remix' && 'Allows remixing but no commercial use'}
+              {licenseSettings.pilType === 'commercial_use' && 'Allows commercial use but no derivatives'}
+              {licenseSettings.pilType === 'commercial_remix' && 'Allows both commercial use and remixing'}
+              {licenseSettings.pilType === 'custom' && 'Configure custom license terms'}
+            </p>
+          </div>
 
-          {/* Revenue Share - hanya muncul jika commercial use dicentang */}
-          {licenseSettings.commercialUse && (
-            <div className="ml-6 space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Commercial Revenue Share (%)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={licenseSettings.revShare}
-                onChange={(e) => setLicenseSettings(prev => ({ 
-                  ...prev, 
-                  revShare: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
-                }))}
-                className="w-full p-2 border rounded-lg text-sm"
-                placeholder="0-100"
-              />
-              <p className="text-xs text-gray-500">
-                Percentage of revenue you'll receive from commercial use
-              </p>
-            </div>
-          )}
-
-          {/* Derivatives Allowed */}
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={licenseSettings.derivativesAllowed}
-              onChange={(e) => setLicenseSettings(prev => ({ ...prev, derivativesAllowed: e.target.checked }))}
-            />
-            <span>Allow Derivative Works</span>
-          </label>
-
-          {/* Derivatives Attribution - hanya muncul jika derivatives diizinkan */}
-          {licenseSettings.derivativesAllowed && (
-            <div className="ml-6">
+          {/* Custom License Settings */}
+          {licenseSettings.pilType === 'custom' && (
+            <div className="ml-4 space-y-4 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-medium text-gray-800">Custom License Configuration</h4>
+              
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={licenseSettings.derivativesAttribution}
-                  onChange={(e) => setLicenseSettings(prev => ({ ...prev, derivativesAttribution: e.target.checked }))}
+                  checked={licenseSettings.commercialUse}
+                  onChange={(e) => setLicenseSettings(prev => ({ ...prev, commercialUse: e.target.checked }))}
                 />
-                <span className="text-sm">Require Attribution for Derivatives</span>
+                <span>Allow Commercial Use</span>
+              </label>
+
+              {licenseSettings.commercialUse && (
+                <div className="ml-6 space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Commercial Revenue Share (%)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={licenseSettings.revShare}
+                    onChange={(e) => setLicenseSettings(prev => ({ 
+                      ...prev, 
+                      revShare: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
+                    }))}
+                    className="w-full p-2 border rounded-lg text-sm"
+                    placeholder="0-100"
+                  />
+                </div>
+              )}
+
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={licenseSettings.derivativesAllowed}
+                  onChange={(e) => setLicenseSettings(prev => ({ ...prev, derivativesAllowed: e.target.checked }))}
+                />
+                <span>Allow Derivative Works</span>
+              </label>
+
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={licenseSettings.attribution}
+                  onChange={(e) => setLicenseSettings(prev => ({ ...prev, attribution: e.target.checked }))}
+                />
+                <span>Require Attribution</span>
+              </label>
+
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={licenseSettings.transferable}
+                  onChange={(e) => setLicenseSettings(prev => ({ ...prev, transferable: e.target.checked }))}
+                />
+                <span>License Transferable</span>
               </label>
             </div>
           )}
-
-          {/* Attribution Required */}
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={licenseSettings.attribution}
-              onChange={(e) => setLicenseSettings(prev => ({ ...prev, attribution: e.target.checked }))}
-            />
-            <span>Require Attribution</span>
-          </label>
-
-          {/* Transferable */}
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={licenseSettings.transferable}
-              onChange={(e) => setLicenseSettings(prev => ({ ...prev, transferable: e.target.checked }))}
-            />
-            <span>License Transferable</span>
-          </label>
 
           {/* AI Learning */}
           <label className="flex items-center space-x-2">
@@ -476,26 +418,8 @@ export default function IPGatekeeper() {
               onChange={(e) => setLicenseSettings(prev => ({ ...prev, aiLearning: e.target.checked }))}
               disabled={aiDetection?.isAI}
             />
-            <span>Allow AI Learning {aiDetection?.isAI && '(Disabled - AI Detected)'}</span>
+            <span>Allow AI Training {aiDetection?.isAI && '(Disabled - AI Detected)'}</span>
           </label>
-
-          {/* Expiration */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              License Expiration
-            </label>
-            <select
-              value={licenseSettings.expiration}
-              onChange={(e) => setLicenseSettings(prev => ({ ...prev, expiration: e.target.value }))}
-              className="w-full p-2 border rounded-lg text-sm"
-            >
-              <option value="never">Never Expires</option>
-              <option value="1year">1 Year</option>
-              <option value="2years">2 Years</option>
-              <option value="5years">5 Years</option>
-              <option value="10years">10 Years</option>
-            </select>
-          </div>
 
           {/* Territory */}
           <div className="space-y-2">
@@ -507,26 +431,30 @@ export default function IPGatekeeper() {
               onChange={(e) => setLicenseSettings(prev => ({ ...prev, territory: e.target.value }))}
               className="w-full p-2 border rounded-lg text-sm"
             >
-              <option value="global">Global</option>
-              <option value="us">United States</option>
-              <option value="eu">European Union</option>
-              <option value="asia">Asia Pacific</option>
-              <option value="custom">Custom Territory</option>
+              <option value="Global">Global</option>
+              <option value="US">United States</option>
+              <option value="EU">European Union</option>
+              <option value="Asia">Asia Pacific</option>
             </select>
           </div>
 
-          {/* Custom Territory Input */}
-          {licenseSettings.territory === 'custom' && (
-            <div className="ml-4">
-              <input
-                type="text"
-                placeholder="Specify territories (e.g., US, UK, Canada)"
-                value={licenseSettings.customTerritory}
-                onChange={(e) => setLicenseSettings(prev => ({ ...prev, customTerritory: e.target.value }))}
-                className="w-full p-2 border rounded-lg text-sm"
-              />
-            </div>
-          )}
+          {/* Duration */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              License Duration
+            </label>
+            <select
+              value={licenseSettings.expiration}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, expiration: e.target.value }))}
+              className="w-full p-2 border rounded-lg text-sm"
+            >
+              <option value="0">Perpetual (No Expiration)</option>
+              <option value="1year">1 Year</option>
+              <option value="2years">2 Years</option>
+              <option value="5years">5 Years</option>
+              <option value="10years">10 Years</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -547,5 +475,7 @@ export default function IPGatekeeper() {
         </div>
       )}
     </div>
+  );
+}
   );
 }
