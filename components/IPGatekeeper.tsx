@@ -103,15 +103,35 @@ export default function IPGatekeeper() {
       const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
 
       const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-        spgNftContract: "0x...", // Replace with actual SPG contract
-        pilType: "non_commercial_remix",
-        ipMetadata: {
-          ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${ipMetadataCid}`,
-          ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-          nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${nftMetadataCid}`,
-          nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-        }
-      });
+  spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
+  licenseTermsData: [{
+    terms: {
+      transferable: true,
+      royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+      defaultMintingFee: BigInt(0),
+      expiration: BigInt(0),
+      commercialUse: licenseSettings.commercialUse,
+      commercialAttribution: true,
+      commercializerChecker: "0x0000000000000000000000000000000000000000",
+      commercializerCheckerData: "0x",
+      commercialRevShare: licenseSettings.revShare,
+      commercialRevCelling: BigInt(0),
+      derivativesAllowed: true,
+      derivativesAttribution: true,
+      derivativesApproval: false,
+      derivativesReciprocal: true,
+      derivativeRevCelling: BigInt(0),
+      currency: "0x1514000000000000000000000000000000000000",
+      uri: "",
+    }
+  }],
+  ipMetadata: {
+    ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${ipMetadataCid}`,
+    ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
+    nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${nftMetadataCid}`,
+    nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
+  }
+});
 
       setResult(response);
     } catch (error) {
