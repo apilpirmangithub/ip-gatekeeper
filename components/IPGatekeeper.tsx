@@ -153,189 +153,82 @@ export default function IPGatekeeper() {
 
   if (!isConnected) {
     return (
-      <div className="text-center p-12">
-        <div className="w-20 h-20 mx-auto mb-6 bg-blue-100 rounded-full flex items-center justify-center">
-          <span className="text-3xl">🔗</span>
-        </div>
-        <p className="text-xl text-gray-600 mb-4">Wallet Not Connected</p>
-        <p className="text-gray-500">Please connect your wallet using the button above to continue.</p>
+      <div className="text-center p-8">
+        <p className="text-lg text-gray-600">Please connect your wallet to continue.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      {/* File Upload Section - Terpisah dan lebih prominent */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border-2 border-dashed border-blue-200">
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 mx-auto mb-4 bg-blue-500 rounded-2xl flex items-center justify-center">
-            <span className="text-white text-2xl">📁</span>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Upload Your Creative Work</h2>
-          <p className="text-gray-600">Select an image file to register as IP Asset</p>
-        </div>
-        
-        <div className="relative">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileUpload}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
-          <div className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer">
-            <span className="text-4xl mb-4 block">⬆️</span>
-            <p className="text-lg font-medium text-gray-700 mb-2">Click to choose file</p>
-            <p className="text-sm text-gray-500">or drag and drop your image here</p>
-          </div>
-        </div>
-        
+    <div className="space-y-6">
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+        <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full" />
         {selectedFile && (
-          <div className="mt-6 p-4 bg-white rounded-xl shadow-sm border border-green-200">
-            <div className="flex items-center space-x-3">
-              <span className="text-green-500 text-xl">✅</span>
-              <div>
-                <p className="font-medium text-green-700">File Selected</p>
-                <p className="text-sm text-gray-600">{selectedFile.name}</p>
-              </div>
-            </div>
-          </div>
+          <p className="mt-2 text-sm text-gray-600">Selected: {selectedFile.name}</p>
         )}
       </div>
 
-      {/* AI Detection Result */}
       {aiDetection && (
-        <div className={`p-6 rounded-2xl shadow-lg ${aiDetection.isAI ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
-          <div className="flex items-center space-x-3 mb-4">
-            <span className={`text-2xl ${aiDetection.isAI ? '⚠️' : '✅'}`}></span>
-            <h3 className="text-xl font-semibold">AI Detection Result</h3>
-          </div>
-          <div className="space-y-3">
-            <p className="text-lg">
-              <span className="font-medium">Status:</span> {aiDetection.isAI ? 'AI-Generated' : 'Original Content'}
-            </p>
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-medium">Confidence Level:</span>
-                <span className="text-sm font-bold">{(aiDetection.confidence * 100).toFixed(1)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className={`h-3 rounded-full transition-all duration-1000 ${aiDetection.isAI ? 'bg-red-500' : 'bg-green-500'}`}
-                  style={{ width: `${aiDetection.confidence * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
+        <div className={`p-4 rounded-lg ${aiDetection.isAI ? 'bg-red-100' : 'bg-green-100'}`}>
+          <h3 className="font-semibold">AI Detection Result:</h3>
+          <p>Status: {aiDetection.isAI ? 'AI-Generated' : 'Original'}</p>
+          <p>Confidence: {(aiDetection.confidence * 100).toFixed(1)}%</p>
         </div>
       )}
 
-      {/* Form Fields */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
-            <input
-              type="text"
-              placeholder="Enter your work's title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea
-              placeholder="Describe your creative work"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-xl h-32 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-            />
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-3 border rounded-lg"
+          />
+          <textarea
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-3 border rounded-lg h-32"
+          />
         </div>
 
-        <div className="space-y-6">
-          <h3 className="text-xl font-semibold text-gray-800 flex items-center space-x-2">
-            <span>⚖️</span>
-            <span>License Settings</span>
-          </h3>
-          
-          <div className="space-y-4">
-            <label className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <input
-                type="checkbox"
-                checked={licenseSettings.commercialUse}
-                onChange={(e) => setLicenseSettings(prev => ({ ...prev, commercialUse: e.target.checked }))}
-                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-              />
-              <div>
-                <span className="font-medium text-gray-700">Allow Commercial Use</span>
-                <p className="text-sm text-gray-500">Others can use this work for commercial purposes</p>
-              </div>
-            </label>
-            
-            <label className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <input
-                type="checkbox"
-                checked={licenseSettings.aiLearning}
-                onChange={(e) => setLicenseSettings(prev => ({ ...prev, aiLearning: e.target.checked }))}
-                disabled={aiDetection?.isAI}
-                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 disabled:opacity-50"
-              />
-              <div className={aiDetection?.isAI ? 'opacity-50' : ''}>
-                <span className="font-medium text-gray-700">Allow AI Learning</span>
-                <p className="text-sm text-gray-500">
-                  {aiDetection?.isAI 
-                    ? 'Disabled - AI-generated content detected' 
-                    : 'Allow this work to be used for AI training'
-                  }
-                </p>
-              </div>
-            </label>
-          </div>
+        <div className="space-y-4">
+          <h3 className="font-semibold">License Settings</h3>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={licenseSettings.commercialUse}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, commercialUse: e.target.checked }))}
+            />
+            <span>Allow Commercial Use</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={licenseSettings.aiLearning}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, aiLearning: e.target.checked }))}
+              disabled={aiDetection?.isAI}
+            />
+            <span>Allow AI Learning {aiDetection?.isAI && '(Disabled - AI Detected)'}</span>
+          </label>
         </div>
       </div>
 
-      {/* Register Button */}
       <button
         onClick={registerIP}
         disabled={!selectedFile || !title || isRegistering}
-        className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 rounded-2xl font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-300"
+        className="w-full bg-blue-500 text-white p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600"
       >
-        <div className="flex items-center justify-center space-x-3">
-          {isRegistering ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>Registering IP Asset...</span>
-            </>
-          ) : (
-            <>
-              <span className="text-xl">🛡️</span>
-              <span>Register IP Asset</span>
-            </>
-          )}
-        </div>
+        {isRegistering ? 'Registering IP Asset...' : 'Register IP Asset'}
       </button>
 
-      {/* Success Result */}
       {result && (
-        <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200 shadow-lg">
-          <div className="flex items-center space-x-3 mb-4">
-            <span className="text-3xl">🎉</span>
-            <h3 className="text-2xl font-semibold text-green-800">Registration Successful!</h3>
-          </div>
-          <div className="space-y-3">
-            <p className="text-green-700 text-lg">Your IP Asset has been successfully registered on Story Protocol!</p>
-            <div className="bg-white p-4 rounded-xl space-y-2">
-              <div>
-                <span className="font-medium text-gray-700">Transaction Hash:</span>
-                <p className="text-sm text-gray-600 break-all font-mono">{result.txHash}</p>
-              </div>
-              <div>
-                <span className="font-medium text-gray-700">IP Asset ID:</span>
-                <p className="text-sm text-gray-600 break-all font-mono">{result.ipId}</p>
-              </div>
-            </div>
-          </div>
+        <div className="p-4 bg-green-100 rounded-lg">
+          <h3 className="font-semibold text-green-800">Success!</h3>
+          <p className="text-sm">IP Asset registered successfully!</p>
+          <p className="text-xs break-all">Transaction: {result.txHash}</p>
+          <p className="text-xs break-all">IP ID: {result.ipId}</p>
         </div>
       )}
     </div>
