@@ -560,13 +560,34 @@ export default function IPGatekeeper() {
 </button>
 
       {result && (
-        <div className="p-4 bg-green-100 rounded-lg">
-          <h3 className="font-semibold text-green-800">Success!</h3>
-          <p className="text-sm">IP Asset registered successfully!</p>
-          <p className="text-xs break-all">Transaction: {result.txHash}</p>
-          <p className="text-xs break-all">IP ID: {result.ipId}</p>
-        </div>
-      )}
+  <div className="p-4 bg-green-100 rounded-lg">
+    <h3 className="font-semibold text-green-800">Success!</h3>
+    <p className="text-sm">IP Asset registered successfully!</p>
+    
+    {/* Transaction Hash - Clickable */}
+    <div className="mt-2">
+      <span className="text-xs text-gray-600">Transaction: </span>
+      <a 
+        href={`https://aeneid.storyscan.io/tx/${result.txHash}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-xs text-blue-600 hover:text-blue-800 underline break-all"
+      >
+        {result.txHash}
+      </a>
     </div>
-  );
-}
+    
+    {/* IP ID - Clickable */}
+    <div className="mt-1">
+      <span className="text-xs text-gray-600">IP ID: </span>
+      <a 
+        href={`https://aeneid.explorer.story.foundation/ipa/${result.ipId}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-xs text-blue-600 hover:text-blue-800 underline break-all"
+      >
+        {result.ipId}
+      </a>
+    </div>
+  </div>
+)}
