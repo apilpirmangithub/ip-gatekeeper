@@ -10,7 +10,6 @@ export default function IPGatekeeper() {
   const { data: wallet } = useWalletClient();
   const { address, isConnected } = useAccount();
   const [storyClient, setStoryClient] = useState<StoryClient | null>(null);
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [aiDetection, setAiDetection] = useState<{ isAI: boolean; confidence: number } | null>(null);
   const [title, setTitle] = useState('');
@@ -39,24 +38,18 @@ export default function IPGatekeeper() {
     if (!file) return;
 
     setSelectedFile(file);
-
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-
     const detection = await detectAI(buffer);
     setAiDetection(detection);
 
     if (detection.isAI) {
-      setLicenseSettings(prev => ({
-        ...prev,
-        aiLearning: false,
-      }));
+      setLicenseSettings(prev => ({ ...prev, aiLearning: false }));
     }
   };
 
   const registerIP = async () => {
     if (!storyClient || !selectedFile || !address) return;
-
     setIsRegistering(true);
 
     try {
@@ -71,11 +64,7 @@ export default function IPGatekeeper() {
         image: imageUrl,
         mediaUrl: imageUrl,
         mediaType: selectedFile.type,
-        creators: [{
-          name: "User",
-          address,
-          contributionPercent: 100
-        }],
+        creators: [{ name: "User", address, contributionPercent: 100 }],
         ...(aiDetection?.isAI && {
           tags: ["AI-generated"],
           aiGenerated: true,
@@ -88,14 +77,8 @@ export default function IPGatekeeper() {
         description: `NFT representing ${title}`,
         image: imageUrl,
         attributes: [
-          {
-            trait_type: "Type",
-            value: aiDetection?.isAI ? "AI-generated" : "Original",
-          },
-          {
-            trait_type: "AI Learning Allowed",
-            value: licenseSettings.aiLearning ? "Yes" : "No",
-          },
+          { trait_type: "Type", value: aiDetection?.isAI ? "AI-generated" : "Original" },
+          { trait_type: "AI Learning Allowed", value: licenseSettings.aiLearning ? "Yes" : "No" },
         ],
       };
 
@@ -103,49 +86,35 @@ export default function IPGatekeeper() {
       const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
 
       const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-  spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
-  licenseTermsData: [{
-    terms: {
-      transferable: true,
-      royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-      defaultMintingFee: BigInt(0),
-      expiration: BigInt(0),
-      commercialUse: licenseSettings.commercialUse,
-      commercialAttribution: true,
-      commercializerChecker: "0x0000000000000000000000000000000000000000",
-      commercializerCheckerData: "0x",
-      commercialRevShare: licenseSettings.revShare,
-      commercialRevCeiling: BigInt(0),
-      derivativesAllowed: true,
-      derivativesAttribution: true,
-      derivativesApproval: false,
-      derivativesReciprocal: true,
-      derivativeRevCeiling: BigInt(0),
-      currency: "0x1514000000000000000000000000000000000000",
-      uri: "",
-    }
-  }], // ✅ PASTIKAN ada koma di sini
-  ipMetadata: { // ✅ PASTIKAN tidak ada koma sebelum ini
-    ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${ipMetadataCid}`,
-    ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-    nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${nftMetadataCid}`,
-    nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-  }
-}); // ✅ PASTIKAN tutup kurung dan semicolon benar
-  ipMetadata: {
-    ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${ipMetadataCid}`,
-    ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-    nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${nftMetadataCid}`,
-    nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-  }
-});
-  ipMetadata: {
-    ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${ipMetadataCid}`,
-    ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-    nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${nftMetadataCid}`,
-    nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-  }
-});
+        spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
+        licenseTermsData: [{
+          terms: {
+            transferable: true,
+            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+            defaultMintingFee: BigInt(0),
+            expiration: BigInt(0),
+            commercialUse: licenseSettings.commercialUse,
+            commercialAttribution: true,
+            commercializerChecker: "0x0000000000000000000000000000000000000000",
+            commercializerCheckerData: "0x0000000000000000000000000000000000000000",
+            commercialRevShare: licenseSettings.revShare,
+            commercialRevCeiling: BigInt(0),
+            derivativesAllowed: true,
+            derivativesAttribution: true,
+            derivativesApproval: false,
+            derivativesReciprocal: true,
+            derivativeRevCeiling: BigInt(0),
+            currency: "0x1514000000000000000000000000000000000000",
+            uri: "",
+          }
+        }],
+        ipMetadata: {
+          ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${ipMetadataCid}`,
+          ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
+          nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${nftMetadataCid}`,
+          nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
+        }
+      });
 
       setResult(response);
     } catch (error) {
@@ -166,17 +135,8 @@ export default function IPGatekeeper() {
   return (
     <div className="space-y-6">
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileUpload}
-          className="w-full"
-        />
-        {selectedFile && (
-          <p className="mt-2 text-sm text-gray-600">
-            Selected: {selectedFile.name}
-          </p>
-        )}
+        <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full" />
+        {selectedFile && <p className="mt-2 text-sm text-gray-600">Selected: {selectedFile.name}</p>}
       </div>
 
       {aiDetection && (
@@ -210,10 +170,7 @@ export default function IPGatekeeper() {
             <input
               type="checkbox"
               checked={licenseSettings.commercialUse}
-              onChange={(e) => setLicenseSettings(prev => ({
-                ...prev,
-                commercialUse: e.target.checked
-              }))}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, commercialUse: e.target.checked }))}
             />
             <span>Allow Commercial Use</span>
           </label>
@@ -221,10 +178,7 @@ export default function IPGatekeeper() {
             <input
               type="checkbox"
               checked={licenseSettings.aiLearning}
-              onChange={(e) => setLicenseSettings(prev => ({
-                ...prev,
-                aiLearning: e.target.checked
-              }))}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, aiLearning: e.target.checked }))}
               disabled={aiDetection?.isAI}
             />
             <span>Allow AI Learning {aiDetection?.isAI && '(Disabled - AI Detected)'}</span>
