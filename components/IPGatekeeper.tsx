@@ -157,11 +157,11 @@ export default function IPGatekeeper() {
 if (licenseSettings.pilType === 'non_commercial_remix') {
   terms = {
     transferable: true,
-    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    royaltyPolicy: "0x0000000000000000000000000000000000000000", // No royalty policy untuk non-commercial
     defaultMintingFee: BigInt(0),
     expiration: BigInt(0),
     commercialUse: false,
-    commercialAttribution: false, // Harus false untuk non-commercial
+    commercialAttribution: false,
     commercializerChecker: "0x0000000000000000000000000000000000000000",
     commercializerCheckerData: "0x",
     commercialRevShare: 0,
@@ -171,27 +171,27 @@ if (licenseSettings.pilType === 'non_commercial_remix') {
     derivativesApproval: false,
     derivativesReciprocal: true,
     derivativeRevCeiling: BigInt(0),
-    currency: "0x1514000000000000000000000000000000000000",
+    currency: "0x0000000000000000000000000000000000000000", // No currency untuk non-commercial
     uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
   };
 } else if (licenseSettings.pilType === 'commercial_use') {
   terms = {
     transferable: true,
-    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E", // LAP royalty policy untuk commercial
     defaultMintingFee: BigInt(0),
     expiration: BigInt(0),
     commercialUse: true,
-    commercialAttribution: true, // Boleh true untuk commercial
+    commercialAttribution: true,
     commercializerChecker: "0x0000000000000000000000000000000000000000",
     commercializerCheckerData: "0x",
     commercialRevShare: licenseSettings.revShare,
     commercialRevCeiling: BigInt(0),
-    derivativesAllowed: false, // Commercial use tapi no derivatives
+    derivativesAllowed: false,
     derivativesAttribution: false,
     derivativesApproval: false,
     derivativesReciprocal: false,
     derivativeRevCeiling: BigInt(0),
-    currency: "0x1514000000000000000000000000000000000000",
+    currency: "0x1514000000000000000000000000000000000000", // Story token untuk commercial
     uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
   };
 } else if (licenseSettings.pilType === 'commercial_remix') {
@@ -218,7 +218,7 @@ if (licenseSettings.pilType === 'non_commercial_remix') {
   // Custom terms
   terms = {
     transferable: licenseSettings.transferable,
-    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    royaltyPolicy: licenseSettings.commercialUse ? "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" : "0x0000000000000000000000000000000000000000",
     defaultMintingFee: BigInt(0),
     expiration: licenseSettings.expiration === '0' ? BigInt(0) : BigInt(Math.floor(getExpirationTimestamp(licenseSettings.expiration))),
     commercialUse: licenseSettings.commercialUse,
@@ -230,9 +230,9 @@ if (licenseSettings.pilType === 'non_commercial_remix') {
     derivativesAllowed: licenseSettings.derivativesAllowed,
     derivativesAttribution: licenseSettings.derivativesAttribution,
     derivativesApproval: false,
-    derivativesReciprocal: true,
+    derivativesReciprocal: licenseSettings.derivativesAllowed,
     derivativeRevCeiling: BigInt(0),
-    currency: "0x1514000000000000000000000000000000000000",
+    currency: licenseSettings.commercialUse ? "0x1514000000000000000000000000000000000000" : "0x0000000000000000000000000000000000000000",
     uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
   };
 }
