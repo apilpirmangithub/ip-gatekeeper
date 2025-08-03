@@ -15,8 +15,7 @@ export async function POST(request: NextRequest) {
     params.append('api_user', process.env.SIGHTENGINE_API_USER!);
     params.append('api_secret', process.env.SIGHTENGINE_API_SECRET!);
     params.append('media', `data:image/jpeg;base64,${image}`);
-    // Perbaikan: Ganti model yang tidak ada dengan model yang tersedia
-    params.append('models', 'genai'); // atau 'properties' untuk deteksi umum
+    params.append('models', 'genai');
 
     const response = await fetch('https://api.sightengine.com/1.0/check.json', {
       method: 'POST',
@@ -25,12 +24,12 @@ export async function POST(request: NextRequest) {
     });
 
     const data = await response.json();
-    console.log('Sightengine response:', data); // untuk debugging
+    console.log('Sightengine response:', data);
     
-    // Perbaikan: Sesuaikan dengan struktur response model 'genai'
+    // Perbaikan: Hilangkan ?? false karena TypeScript error
     const genaiData = data.genai;
-    const isAI = genaiData?.prediction === 'ai' ?? false;
-    const confidence = genaiData?.score ?? 0;
+    const isAI = genaiData?.prediction === 'ai';
+    const confidence = genaiData?.score || 0;
 
     return NextResponse.json({ isAI, confidence });
   } catch (error) {
