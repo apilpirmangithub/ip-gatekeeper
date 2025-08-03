@@ -4,15 +4,15 @@ import IPGatekeeper from '@/components/IPGatekeeper';
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+    <main className="min-h-screen p-4 bg-gray-50">
       <div className="w-full max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-6">IP Gatekeeper</h1>
-          <div className="flex justify-center mb-8">
-            <ConnectButton />
-          </div>
+        {/* Header dengan wallet terpisah */}
+        <div className="flex justify-between items-center mb-8 bg-white rounded-2xl shadow-lg p-6">
+          <h1 className="text-4xl font-bold text-gray-800">IP Gatekeeper</h1>
+          <ConnectButton />
         </div>
         
+        {/* Main content */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <IPGatekeeper />
         </div>
