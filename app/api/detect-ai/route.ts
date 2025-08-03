@@ -24,12 +24,32 @@ export async function POST(request: NextRequest) {
     });
 
     const data = await response.json();
-    console.log('Sightengine response:', data);
+    console.log('Sightengine full response:', data);
     
-    // Perbaikan: Sesuai dokumentasi, response ada di data.type.ai_generated
-    const aiScore = data.type?.ai_generated || 0;
-    const isAI = aiScore > 0.5; // threshold 50% untuk menentukan AI-generated
+    // Cek jika ada error dari API
+    if (data.status === 'failure') {
+      console.error('Sightengine API error:', data.error);
+      return NextResponse.json(
+        { message: `Sightengine error: ${data.error?.message}` },
+        { status: 400 }
+      );
+    }
+    
+    // Sesuai dokumentasi: response ada di data.type.ai_generated
+    const aiScore = data.type?.ai_generated;
+    
+    if (aiScore === undefined) {
+      console.error('AI score not found in response:', data);
+      return NextResponse.json(
+        { message: 'AI score not found in response' },
+        { status: 500 }
+      );
+    }
+    
+    const isAI = aiScore > 0.5; // threshold 50%
     const confidence = aiScore;
+
+    console.log('AI Detection Result:', { isAI, confidence, aiScore });
 
     return NextResponse.json({ isAI, confidence });
   } catch (error) {
