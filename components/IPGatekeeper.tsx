@@ -85,30 +85,144 @@ export default function IPGatekeeper() {
     }
   };
 
-  const registerIP = async () => {
-    if (!storyClient || !selectedFile || !address) return;
-    setIsRegistering(true);
+ const registerIP = async () => {
+  if (!storyClient || !selectedFile || !address) return;
+  setIsRegistering(true);
 
-    try {
-      const arrayBuffer = await selectedFile.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const imageCid = await uploadToIPFS(buffer, selectedFile.name);
-      
-      const imageUrl = `https://ipfs.io/ipfs/${imageCid}`;
+  try {
+    console.log('Starting IP registration...');
+    console.log('Commercial use setting:', licenseSettings.commercialUse);
 
-      const ipMetadata = {
-        title,
-        description,
-        image: imageUrl,
-        mediaUrl: imageUrl,
-        mediaType: selectedFile.type,
-        creators: [{ name: "User", address, contributionPercent: 100 }],
-        ...(aiDetection?.isAI && {
-          tags: ["AI-generated"],
-          aiGenerated: true,
-          aiConfidence: aiDetection.confidence,
-        }),
-      };
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const imageCid = await uploadToIPFS(buffer, selectedFile.name);
+    
+    const imageUrl = `https://ipfs.io/ipfs/${imageCid}`;
+
+    const ipMetadata = {
+      title,
+      description,
+      image: imageUrl,
+      mediaUrl: imageUrl,
+      mediaType: selectedFile.type,
+      creators: [{ name: "User", address, contributionPercent: 100 }],
+      ...(aiDetection?.isAI && {
+        tags: ["AI-generated"],
+        aiGenerated: true,
+        aiConfidence: aiDetection.confidence,
+      }),
+    };
+
+    const nftMetadata = {
+      name: `${title} NFT`,
+      description: `NFT representing ${title}`,
+      image: imageUrl,
+      attributes: [
+        { trait_type: "Type", value: aiDetection?.isAI ? "AI-generated" : "Original" },
+        { trait_type: "AI Learning Allowed", value: licenseSettings.aiLearning ? "Yes" : "No" },
+        { trait_type: "Commercial Use", value: licenseSettings.commercialUse ? "Yes" : "No" },
+        ...(licenseSettings.commercialUse ? [{ trait_type: "Revenue Share", value: `${licenseSettings.revShare}%` }] : []),
+        { trait_type: "Territory", value: licenseSettings.territory === 'custom' ? licenseSettings.customTerritory : licenseSettings.territory },
+        { trait_type: "Expiration", value: licenseSettings.expiration },
+      ],
+    };
+
+    const offChainTerms = {
+      territory: licenseSettings.territory === 'custom' ? licenseSettings.customTerritory : licenseSettings.territory,
+      channelsOfDistribution: "All channels",
+      attribution: licenseSettings.attribution,
+      contentStandards: ["No-Hate", "Suitable-for-All-Ages"],
+      sublicensable: false,
+      aiLearningModels: licenseSettings.aiLearning,
+      restrictionOnCrossPlatformUse: false,
+      governingLaw: "California, USA",
+      alternativeDisputeResolution: "Alternative-Dispute-Resolution",
+      commercialUse: licenseSettings.commercialUse,
+      ...(licenseSettings.commercialUse && { commercialRevShare: licenseSettings.revShare }),
+      derivativesAllowed: licenseSettings.derivativesAllowed,
+      derivativesAttribution: licenseSettings.derivativesAttribution,
+      transferable: licenseSettings.transferable,
+      expiration: licenseSettings.expiration,
+      additionalParameters: aiDetection?.isAI ? 
+        "This AI-generated content is explicitly prohibited from being used for AI training or machine learning purposes." :
+        "This content may be restricted from AI training purposes based on creator preferences."
+    };
+
+    const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
+    const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
+    const offChainTermsCid = await uploadToIPFS(JSON.stringify(offChainTerms), 'license-terms.json');
+
+    // PERBAIKAN UTAMA: Conditional terms berdasarkan commercial use
+    const terms = {
+      transferable: licenseSettings.transferable,
+      royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+      defaultMintingFee: BigInt(0),
+      expiration: licenseSettings.expiration === 'never' ? BigInt(0) : BigInt(Math.floor(getExpirationTimestamp(licenseSettings.expiration))),
+      commercialUse: licenseSettings.commercialUse,
+      commercialAttribution: licenseSettings.attribution,
+      commercializerChecker: "0x0000000000000000000000000000000000000000",
+      commercializerCheckerData: "0x",
+      derivativesAllowed: licenseSettings.derivativesAllowed,
+      derivativesAttribution: licenseSettings.derivativesAttribution,
+      derivativesApproval: false,
+      derivativesReciprocal: true,
+      derivativeRevCeiling: BigInt(0),
+      currency: "0x1514000000000000000000000000000000000000",
+      uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
+    };
+
+    // Hanya tambahkan commercial fields jika commercial use diizinkan
+    if (licenseSettings.commercialUse) {
+      terms.commercialRevShare = licenseSettings.revShare;
+      terms.commercialRevCeiling = BigInt(0);
+    } else {
+      // Untuk non-commercial, set ke 0 atau hapus
+      terms.commercialRevShare = 0;
+      terms.commercialRevCeiling = BigInt(0);
+    }
+
+    const licensingConfig = {
+      isSet: false,
+      mintingFee: BigInt(0),
+      licensingHook: "0x0000000000000000000000000000000000000000",
+      hookData: "0x",
+      disabled: false,
+      expectMinimumGroupRewardShare: 0,
+      expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
+    };
+
+    // Hanya tambahkan commercialRevShare jika commercial use diizinkan
+    if (licenseSettings.commercialUse) {
+      licensingConfig.commercialRevShare = licenseSettings.revShare;
+    } else {
+      licensingConfig.commercialRevShare = 0;
+    }
+
+    console.log('Final terms:', terms);
+    console.log('Final licensing config:', licensingConfig);
+
+    const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+      spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
+      licenseTermsData: [{
+        terms: terms,
+        licensingConfig: licensingConfig
+      }],
+      ipMetadata: {
+        ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+        ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
+        nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+        nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
+      }
+    });
+
+    setResult(response);
+  } catch (error) {
+    console.error('Registration failed:', error);
+    alert(`Registration failed: ${error.message || error}`);
+  } finally {
+    setIsRegistering(false);
+  }
+};
 
       const nftMetadata = {
         name: `${title} NFT`,
