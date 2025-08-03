@@ -48,110 +48,31 @@ export default function IPGatekeeper() {
     }
   };
 
+  // PERBAIKAN: Tambahkan async ke fungsi registerIP
   const registerIP = async () => {
-  if (!storyClient || !selectedFile || !address) return;
-  setIsRegistering(true);
+    if (!storyClient || !selectedFile || !address) return;
+    setIsRegistering(true);
 
-  try {
-    const arrayBuffer = await selectedFile.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const imageCid = await uploadToIPFS(buffer, selectedFile.name);
-    
-    const imageUrl = `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${imageCid}`;
+    try {
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const imageCid = await uploadToIPFS(buffer, selectedFile.name);
+      
+      const imageUrl = `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${imageCid}`;
 
-    const ipMetadata = {
-      title,
-      description,
-      image: imageUrl,
-      mediaUrl: imageUrl,
-      mediaType: selectedFile.type,
-      creators: [{ name: "User", address, contributionPercent: 100 }],
-      ...(aiDetection?.isAI && {
-        tags: ["AI-generated"],
-        aiGenerated: true,
-        aiConfidence: aiDetection.confidence,
-      }),
-    };
-
-    const nftMetadata = {
-      name: `${title} NFT`,
-      description: `NFT representing ${title}`,
-      image: imageUrl,
-      attributes: [
-        { trait_type: "Type", value: aiDetection?.isAI ? "AI-generated" : "Original" },
-        { trait_type: "AI Learning Allowed", value: licenseSettings.aiLearning ? "Yes" : "No" },
-      ],
-    };
-
-    // PERBAIKAN: Buat off-chain license terms yang eksplisit melarang AI learning
-    const offChainTerms = {
-      territory: "Global",
-      channelsOfDistribution: "All channels",
-      attribution: true,
-      contentStandards: ["No-Hate", "Suitable-for-All-Ages"],
-      sublicensable: false,
-      aiLearningModels: licenseSettings.aiLearning, // Eksplisit set false jika AI detected
-      restrictionOnCrossPlatformUse: false,
-      governingLaw: "California, USA",
-      alternativeDisputeResolution: "Alternative-Dispute-Resolution",
-      additionalParameters: aiDetection?.isAI ? 
-        "This AI-generated content is explicitly prohibited from being used for AI training or machine learning purposes." :
-        "This content may be restricted from AI training purposes based on creator preferences."
-    };
-
-    const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
-    const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
-    const offChainTermsCid = await uploadToIPFS(JSON.stringify(offChainTerms), 'license-terms.json');
-
-    const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-      spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
-      licenseTermsData: [{
-        terms: {
-          transferable: true,
-          royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-          defaultMintingFee: BigInt(0),
-          expiration: BigInt(0),
-          commercialUse: licenseSettings.commercialUse,
-          commercialAttribution: true,
-          commercializerChecker: "0x0000000000000000000000000000000000000000",
-          commercializerCheckerData: "0x",
-          commercialRevShare: licenseSettings.revShare,
-          commercialRevCeiling: BigInt(0),
-          derivativesAllowed: true,
-          derivativesAttribution: true,
-          derivativesApproval: false,
-          derivativesReciprocal: true,
-          derivativeRevCeiling: BigInt(0),
-          currency: "0x1514000000000000000000000000000000000000",
-          // PERBAIKAN: Set URI ke off-chain terms yang melarang AI learning
-          uri: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${offChainTermsCid}`,
-        },
-        licensingConfig: {
-          isSet: false,
-          mintingFee: BigInt(0),
-          licensingHook: "0x0000000000000000000000000000000000000000",
-          hookData: "0x",
-          commercialRevShare: 0,
-          disabled: false,
-          expectMinimumGroupRewardShare: 0,
-          expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
-        }
-      }],
-      ipMetadata: {
-        ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${ipMetadataCid}`,
-        ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-        nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${nftMetadataCid}`,
-        nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-      }
-    });
-
-    setResult(response);
-  } catch (error) {
-    console.error('Registration failed:', error);
-  } finally {
-    setIsRegistering(false);
-  }
-};
+      const ipMetadata = {
+        title,
+        description,
+        image: imageUrl,
+        mediaUrl: imageUrl,
+        mediaType: selectedFile.type,
+        creators: [{ name: "User", address, contributionPercent: 100 }],
+        ...(aiDetection?.isAI && {
+          tags: ["AI-generated"],
+          aiGenerated: true,
+          aiConfidence: aiDetection.confidence,
+        }),
+      };
 
       const nftMetadata = {
         name: `${title} NFT`,
@@ -163,10 +84,26 @@ export default function IPGatekeeper() {
         ],
       };
 
+      // Buat off-chain license terms
+      const offChainTerms = {
+        territory: "Global",
+        channelsOfDistribution: "All channels",
+        attribution: true,
+        contentStandards: ["No-Hate", "Suitable-for-All-Ages"],
+        sublicensable: false,
+        aiLearningModels: licenseSettings.aiLearning,
+        restrictionOnCrossPlatformUse: false,
+        governingLaw: "California, USA",
+        alternativeDisputeResolution: "Alternative-Dispute-Resolution",
+        additionalParameters: aiDetection?.isAI ? 
+          "This AI-generated content is explicitly prohibited from being used for AI training or machine learning purposes." :
+          "This content may be restricted from AI training purposes based on creator preferences."
+      };
+
       const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
       const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
+      const offChainTermsCid = await uploadToIPFS(JSON.stringify(offChainTerms), 'license-terms.json');
 
-      // Menggunakan environment variable untuk metadata URI
       const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
         licenseTermsData: [{
@@ -187,7 +124,7 @@ export default function IPGatekeeper() {
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
             currency: "0x1514000000000000000000000000000000000000",
-            uri: "",
+            uri: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${offChainTermsCid}`,
           },
           licensingConfig: {
             isSet: false,
