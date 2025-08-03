@@ -394,7 +394,7 @@ export default function IPGatekeeper() {
                 ...prev, 
                 pilType: e.target.value,
                 ...(e.target.value === 'open_use' && {
-                  commercialUse: true,
+                  commercialUse: false,
                   derivativesAllowed: true,
                   attribution: false,
                   revShare: 0,
@@ -431,44 +431,44 @@ export default function IPGatekeeper() {
               {licenseSettings.pilType === 'open_use' && (
                 <div>
                   <ul className="mt-1 text-xs">
-                    <li>• Attribution not required</li>
-                    <li>• Non-commercial use only</li> 
-                    <li>• Remixing allowed</li>
-                    <li>• No royalty sharing</li>
-                    <li>• AI training allowed</li>
+                    <li>Attribution not required</li>
+                    <li>Non-commercial use only</li> 
+                    <li>Remixing allowed</li>
+                    <li>No royalty sharing</li>
+                    <li>AI training allowed</li>
                  </ul>
                </div>
              )}
               {licenseSettings.pilType === 'non_commercial_remix' && (
                 <div>
                   <ul className="mt-1 text-xs">
-                    <li>• Attribution not required</li>
-                    <li>• Non-commercial use only</li>
-                    <li>• Remixing allowed</li>
-                    <li>• No royalty sharing</li>
-                    <li>• AI training allowed</li>
+                    <li>Attribution not required</li>
+                    <li>Non-commercial use only</li>
+                    <li>Remixing allowed</li>
+                    <li>No royalty sharing</li>
+                    <li>AI training allowed</li>
                   </ul>
                 </div>
               )}
               {licenseSettings.pilType === 'commercial_use' && (
                 <div>
                   <ul className="mt-1 text-xs">
-                    <li>• Attribution not required</li>
-                    <li>• Commercial use allowed</li>
-                    <li>• Remixing not allowed</li>
-                    <li>• No royalty sharing</li>
-                    <li>• AI training allowed</li>
+                    <li>Attribution not required</li>
+                    <li>Commercial use allowed</li>
+                    <li>Remixing not allowed</li>
+                    <li>No royalty sharing</li>
+                    <li>AI training allowed</li>
                   </ul>
                 </div>
               )}
               {licenseSettings.pilType === 'commercial_remix' && (
                 <div>
                   <ul className="mt-1 text-xs">
-                    <li>• Attribution not required</li>
-                    <li>• Commercial use allowed</li>
-                    <li>• Remixing allowed</li>
-                    <li>• Royalty sharing</li>
-                    <li>• AI training allowed</li>
+                    <li>Attribution not required</li>
+                    <li>Commercial use allowed</li>
+                    <li>Remixing allowed</li>
+                    <li>Royalty sharing</li>
+                    <li>AI training allowed</li>
                   </ul>
                 </div>
               )}
