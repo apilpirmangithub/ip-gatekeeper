@@ -11,8 +11,6 @@ export default function IPGatekeeper() {
   const { address, isConnected } = useAccount();
   const [storyClient, setStoryClient] = useState<StoryClient | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isDetecting, setIsDetecting] = useState(false);
   const [aiDetection, setAiDetection] = useState<{ isAI: boolean; confidence: number } | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -40,41 +38,14 @@ export default function IPGatekeeper() {
     if (!file) return;
 
     setSelectedFile(file);
-    setAiDetection(null); // Reset previous detection
-    
-    // Create image preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImagePreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const detection = await detectAI(buffer);
+    setAiDetection(detection);
 
-    // Start AI detection with loading
-    setIsDetecting(true);
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const detection = await detectAI(buffer);
-      setAiDetection(detection);
-
-      if (detection.isAI) {
-        setLicenseSettings(prev => ({ ...prev, aiLearning: false }));
-      }
-    } catch (error) {
-      console.error('AI detection failed:', error);
-    } finally {
-      setIsDetecting(false);
+    if (detection.isAI) {
+      setLicenseSettings(prev => ({ ...prev, aiLearning: false }));
     }
-  };
-
-  const handleCancelUpload = () => {
-    setSelectedFile(null);
-    setImagePreview(null);
-    setAiDetection(null);
-    setIsDetecting(false);
-    // Reset file input
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
   };
 
   const registerIP = async () => {
@@ -190,85 +161,18 @@ export default function IPGatekeeper() {
 
   return (
     <div className="space-y-6">
-      {/* Upload Section - Segi empat dengan preview langsung */}
-      <div className="relative">
-        <div className="w-full h-80 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-          {!imagePreview ? (
-            // Upload area ketika belum ada gambar
-            <div className="h-full flex flex-col items-center justify-center cursor-pointer">
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleFileUpload} 
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
-              />
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-2xl">📁</span>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">Choose Image File</h3>
-                <p className="text-gray-500">Click here or drag and drop your image</p>
-                <p className="text-sm text-gray-400 mt-1">Supports JPG, PNG, GIF</p>
-              </div>
-            </div>
-          ) : (
-            // Preview area ketika sudah ada gambar
-            <div className="relative h-full">
-              <img 
-                src={imagePreview} 
-                alt="Preview" 
-                className="w-full h-full object-cover rounded-lg"
-              />
-              
-              {/* Loading overlay saat AI detection */}
-              {isDetecting && (
-                <div className="absolute inset-0 bg-black bg-opacity-60 rounded-lg flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                    <p className="text-sm font-medium">Analyzing image...</p>
-                    <p className="text-xs opacity-80">Detecting AI content</p>
-                  </div>
-                </div>
-              )}
-              
-              {/* Cancel button */}
-              <button
-                onClick={handleCancelUpload}
-                className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors duration-200"
-                title="Remove image"
-              >
-                <span className="text-sm font-bold">×</span>
-              </button>
-              
-              {/* File info */}
-              <div className="absolute bottom-3 left-3 bg-black bg-opacity-60 text-white px-3 py-1 rounded-lg text-sm">
-                {selectedFile?.name}
-              </div>
-            </div>
-          )}
-        </div>
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+        <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full" />
+        {selectedFile && (
+          <p className="mt-2 text-sm text-gray-600">Selected: {selectedFile.name}</p>
+        )}
       </div>
 
-      {/* AI Detection Result */}
       {aiDetection && (
         <div className={`p-4 rounded-lg ${aiDetection.isAI ? 'bg-red-100' : 'bg-green-100'}`}>
-          <div className="flex items-center space-x-2 mb-2">
-            <span className={`text-lg ${aiDetection.isAI ? '⚠️' : '✅'}`}></span>
-            <h3 className="font-semibold">AI Detection Result</h3>
-          </div>
-          <p className="mb-2">Status: {aiDetection.isAI ? 'AI-Generated' : 'Original'}</p>
-          <div className="flex items-center space-x-3">
-            <span className="text-sm">Confidence:</span>
-            <div className="flex-1 bg-gray-200 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all duration-1000 ${
-                  aiDetection.isAI ? 'bg-red-500' : 'bg-green-500'
-                }`}
-                style={{ width: `${aiDetection.confidence * 100}%` }}
-              />
-            </div>
-            <span className="text-sm font-medium">{(aiDetection.confidence * 100).toFixed(1)}%</span>
-          </div>
+          <h3 className="font-semibold">AI Detection Result:</h3>
+          <p>Status: {aiDetection.isAI ? 'AI-Generated' : 'Original'}</p>
+          <p>Confidence: {(aiDetection.confidence * 100).toFixed(1)}%</p>
         </div>
       )}
 
@@ -313,7 +217,7 @@ export default function IPGatekeeper() {
 
       <button
         onClick={registerIP}
-        disabled={!selectedFile || !title || isRegistering || isDetecting}
+        disabled={!selectedFile || !title || isRegistering}
         className="w-full bg-blue-500 text-white p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600"
       >
         {isRegistering ? 'Registering IP Asset...' : 'Register IP Asset'}
