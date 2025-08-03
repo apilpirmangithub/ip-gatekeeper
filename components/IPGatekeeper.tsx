@@ -152,26 +152,90 @@ export default function IPGatekeeper() {
     const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
     const offChainTermsCid = await uploadToIPFS(JSON.stringify(offChainTerms), 'license-terms.json');
 
-    const terms: any = {
-      transferable: licenseSettings.transferable,
-      royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-      defaultMintingFee: BigInt(0),
-      expiration: licenseSettings.expiration === '0' ? BigInt(0) : BigInt(Math.floor(getExpirationTimestamp(licenseSettings.expiration))),
-      commercialUse: licenseSettings.commercialUse,
-      commercialAttribution: licenseSettings.attribution,
-      commercializerChecker: "0x0000000000000000000000000000000000000000",
-      commercializerCheckerData: "0x",
-      commercialRevShare: licenseSettings.commercialUse ? licenseSettings.revShare : 0,
-      commercialRevCeiling: BigInt(0),
-      derivativesAllowed: licenseSettings.derivativesAllowed,
-      derivativesAttribution: licenseSettings.derivativesAttribution,
-      derivativesApproval: false,
-      derivativesReciprocal: true,
-      derivativeRevCeiling: BigInt(0),
-      currency: "0x1514000000000000000000000000000000000000",
-      uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
-    };
+    let terms: any;
 
+if (licenseSettings.pilType === 'non_commercial_remix') {
+  terms = {
+    transferable: true,
+    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    defaultMintingFee: BigInt(0),
+    expiration: BigInt(0),
+    commercialUse: false,
+    commercialAttribution: false, // Harus false untuk non-commercial
+    commercializerChecker: "0x0000000000000000000000000000000000000000",
+    commercializerCheckerData: "0x",
+    commercialRevShare: 0,
+    commercialRevCeiling: BigInt(0),
+    derivativesAllowed: true,
+    derivativesAttribution: true,
+    derivativesApproval: false,
+    derivativesReciprocal: true,
+    derivativeRevCeiling: BigInt(0),
+    currency: "0x1514000000000000000000000000000000000000",
+    uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
+  };
+} else if (licenseSettings.pilType === 'commercial_use') {
+  terms = {
+    transferable: true,
+    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    defaultMintingFee: BigInt(0),
+    expiration: BigInt(0),
+    commercialUse: true,
+    commercialAttribution: true, // Boleh true untuk commercial
+    commercializerChecker: "0x0000000000000000000000000000000000000000",
+    commercializerCheckerData: "0x",
+    commercialRevShare: licenseSettings.revShare,
+    commercialRevCeiling: BigInt(0),
+    derivativesAllowed: false, // Commercial use tapi no derivatives
+    derivativesAttribution: false,
+    derivativesApproval: false,
+    derivativesReciprocal: false,
+    derivativeRevCeiling: BigInt(0),
+    currency: "0x1514000000000000000000000000000000000000",
+    uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
+  };
+} else if (licenseSettings.pilType === 'commercial_remix') {
+  terms = {
+    transferable: true,
+    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    defaultMintingFee: BigInt(0),
+    expiration: BigInt(0),
+    commercialUse: true,
+    commercialAttribution: true,
+    commercializerChecker: "0x0000000000000000000000000000000000000000",
+    commercializerCheckerData: "0x",
+    commercialRevShare: licenseSettings.revShare,
+    commercialRevCeiling: BigInt(0),
+    derivativesAllowed: true,
+    derivativesAttribution: true,
+    derivativesApproval: false,
+    derivativesReciprocal: true,
+    derivativeRevCeiling: BigInt(0),
+    currency: "0x1514000000000000000000000000000000000000",
+    uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
+  };
+} else {
+  // Custom terms
+  terms = {
+    transferable: licenseSettings.transferable,
+    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    defaultMintingFee: BigInt(0),
+    expiration: licenseSettings.expiration === '0' ? BigInt(0) : BigInt(Math.floor(getExpirationTimestamp(licenseSettings.expiration))),
+    commercialUse: licenseSettings.commercialUse,
+    commercialAttribution: licenseSettings.commercialUse ? licenseSettings.attribution : false,
+    commercializerChecker: "0x0000000000000000000000000000000000000000",
+    commercializerCheckerData: "0x",
+    commercialRevShare: licenseSettings.commercialUse ? licenseSettings.revShare : 0,
+    commercialRevCeiling: BigInt(0),
+    derivativesAllowed: licenseSettings.derivativesAllowed,
+    derivativesAttribution: licenseSettings.derivativesAttribution,
+    derivativesApproval: false,
+    derivativesReciprocal: true,
+    derivativeRevCeiling: BigInt(0),
+    currency: "0x1514000000000000000000000000000000000000",
+    uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
+  };
+}
     const licensingConfig: any = {
       isSet: false,
       mintingFee: BigInt(0),
