@@ -83,7 +83,7 @@ export default function IPGatekeeper() {
     }
   };
 
-  const registerIP = async () => {
+const registerIP = async () => {
   if (!storyClient || !selectedFile || !address) return;
   setIsRegistering(true);
 
