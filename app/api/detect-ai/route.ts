@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
     const aiData = data.ai_generated;
-    const isAI = aiData?.prediction === 'yes' ?? false;
+    const isAI = aiData?.prediction === 'yes' || false;
     const confidence = aiData?.probability ?? 0;
 
     return NextResponse.json({ isAI, confidence });
