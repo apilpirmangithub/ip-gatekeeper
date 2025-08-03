@@ -477,5 +477,3 @@ export default function IPGatekeeper() {
     </div>
   );
 }
-  );
-}
