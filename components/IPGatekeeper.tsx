@@ -432,13 +432,13 @@ export default function IPGatekeeper() {
                 <div>
                   <ul className="mt-1 text-xs">
                     <li>• Attribution not required</li>
-                    <li>• Commercial use allowed</li>
+                    <li>• Non-commercial use only</li> 
                     <li>• Remixing allowed</li>
                     <li>• No royalty sharing</li>
                     <li>• AI training allowed</li>
-                  </ul>
-                </div>
-              )}
+                 </ul>
+               </div>
+             )}
               {licenseSettings.pilType === 'non_commercial_remix' && (
                 <div>
                   <ul className="mt-1 text-xs">
