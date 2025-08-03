@@ -6,6 +6,9 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --story-blue: 59, 130, 246;
+  --story-indigo: 99, 102, 241;
+  --story-purple: 139, 92, 246;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,9 +29,49 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-/* Custom utilities */
+/* Story Protocol inspired utilities */
 @layer utilities {
   .bg-gradient-radial {
     background: radial-gradient(circle, var(--tw-gradient-stops));
   }
+  
+  .bg-story-gradient {
+    background: linear-gradient(135deg, rgb(var(--story-blue)), rgb(var(--story-indigo)));
+  }
+  
+  .text-story-gradient {
+    background: linear-gradient(135deg, rgb(var(--story-blue)), rgb(var(--story-indigo)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .shadow-story {
+    box-shadow: 
+      0 10px 25px -3px rgba(59, 130, 246, 0.1),
+      0 4px 6px -2px rgba(59, 130, 246, 0.05);
+  }
+  
+  .border-story {
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+}
+
+/* Story-inspired animations */
+@keyframes float-story {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(3deg); }
+}
+
+@keyframes pulse-story {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.animate-float-story {
+  animation: float-story 6s ease-in-out infinite;
+}
+
+.animate-pulse-story {
+  animation: pulse-story 4s ease-in-out infinite;
 }
