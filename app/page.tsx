@@ -1,7 +1,7 @@
 "use client";
 import { motion } from 'framer-motion';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Shield, Sparkles, Lock, Zap } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import IPGatekeeper from '@/components/IPGatekeeper';
 
 const containerVariants = {
@@ -48,7 +48,6 @@ export default function Home() {
           variants={floatingVariants}
           animate="animate"
           className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-3xl backdrop-blur-sm"
-          style={{ animationDelay: '0s' }}
         />
         <motion.div
           variants={floatingVariants}
@@ -62,18 +61,6 @@ export default function Home() {
           className="absolute bottom-40 left-1/4 w-40 h-40 bg-gradient-to-r from-indigo-400/20 to-blue-400/20 rounded-2xl backdrop-blur-sm"
           style={{ animationDelay: '4s' }}
         />
-        
-        {/* Animated grid */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
-          transition={{ duration: 2 }}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
-          }}
-        />
       </div>
 
       {/* Main content */}
@@ -83,8 +70,8 @@ export default function Home() {
         animate="visible"
         className="relative z-10 min-h-screen flex items-center justify-center p-4"
       >
-        <div className="w-full max-w-6xl mx-auto">
-          {/* Header */}
+        <div className="w-full max-w-5xl mx-auto">
+          {/* Header - hanya judul */}
           <motion.div variants={itemVariants} className="text-center mb-12">
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
@@ -96,45 +83,10 @@ export default function Home() {
             
             <motion.h1
               variants={itemVariants}
-              className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 bg-clip-text text-transparent"
+              className="text-6xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 bg-clip-text text-transparent"
             >
               IP Gatekeeper
             </motion.h1>
-            
-            <motion.p
-              variants={itemVariants}
-              className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed"
-            >
-              AI-powered IP asset registration with{' '}
-              <motion.span
-                whileHover={{ scale: 1.05 }}
-                className="font-semibold text-blue-600 cursor-pointer"
-              >
-                Story Protocol
-              </motion.span>
-            </motion.p>
-            
-            {/* Feature badges */}
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-wrap justify-center gap-4 mb-8"
-            >
-              {[
-                { icon: Sparkles, text: "AI Detection", color: "from-yellow-400 to-orange-500" },
-                { icon: Lock, text: "Secure Storage", color: "from-green-400 to-blue-500" },
-                { icon: Zap, text: "Instant Registration", color: "from-purple-400 to-pink-500" }
-              ].map((feature, index) => (
-                <motion.div
-                  key={feature.text}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`flex items-center space-x-2 px-4 py-2 bg-gradient-to-r ${feature.color} text-white rounded-full text-sm font-medium shadow-lg cursor-pointer`}
-                >
-                  <feature.icon className="w-4 h-4" />
-                  <span>{feature.text}</span>
-                </motion.div>
-              ))}
-            </motion.div>
             
             {/* Connect button */}
             <motion.div
@@ -154,7 +106,7 @@ export default function Home() {
             whileHover={{ scale: 1.01 }}
             className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/50 overflow-hidden"
           >
-            {/* Header bar with animation */}
+            {/* Header bar */}
             <motion.div
               initial={{ x: -100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -187,7 +139,7 @@ export default function Home() {
                     transition={{ duration: 2, repeat: Infinity }}
                     className="w-2 h-2 bg-green-400 rounded-full"
                   />
-                  <span>Story Protocol Network</span>
+                  <span>Story Protocol</span>
                 </motion.div>
               </div>
             </motion.div>
@@ -201,36 +153,6 @@ export default function Home() {
             >
               <IPGatekeeper />
             </motion.div>
-          </motion.div>
-
-          {/* Footer */}
-          <motion.div
-            variants={itemVariants}
-            className="text-center mt-12 space-y-4"
-          >
-            <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
-              {[
-                "Story Protocol Network",
-                "Decentralized IP Management", 
-                "Proof of Creativity"
-              ].map((item, index) => (
-                <motion.span
-                  key={item}
-                  whileHover={{ scale: 1.05, color: "#3B82F6" }}
-                  className="cursor-pointer transition-colors"
-                >
-                  {item}
-                </motion.span>
-              ))}
-            </div>
-            
-            <motion.p
-              whileHover={{ scale: 1.02 }}
-              className="text-xs text-gray-400 max-w-2xl mx-auto cursor-pointer"
-            >
-              Built on Story's purpose-built blockchain for intellectual property. 
-              Your creative work is protected by real legal contracts and automated on-chain enforcement.
-            </motion.p>
           </motion.div>
         </div>
       </motion.div>
