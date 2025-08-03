@@ -48,7 +48,6 @@ export default function IPGatekeeper() {
     }
   };
 
-  // PERBAIKAN: Tambahkan async ke fungsi registerIP
   const registerIP = async () => {
     if (!storyClient || !selectedFile || !address) return;
     setIsRegistering(true);
@@ -58,7 +57,8 @@ export default function IPGatekeeper() {
       const buffer = Buffer.from(arrayBuffer);
       const imageCid = await uploadToIPFS(buffer, selectedFile.name);
       
-      const imageUrl = `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${imageCid}`;
+      // Gunakan gateway publik untuk kompatibilitas dengan Story Explorer
+      const imageUrl = `https://ipfs.io/ipfs/${imageCid}`;
 
       const ipMetadata = {
         title,
@@ -124,7 +124,7 @@ export default function IPGatekeeper() {
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
             currency: "0x1514000000000000000000000000000000000000",
-            uri: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${offChainTermsCid}`,
+            uri: `https://ipfs.io/ipfs/${offChainTermsCid}`,
           },
           licensingConfig: {
             isSet: false,
@@ -138,9 +138,10 @@ export default function IPGatekeeper() {
           }
         }],
         ipMetadata: {
-          ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${ipMetadataCid}`,
+          // Gunakan gateway publik untuk kompatibilitas Story Explorer
+          ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
           ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-          nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${nftMetadataCid}`,
+          nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
           nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
         }
       });
