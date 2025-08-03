@@ -56,7 +56,9 @@ export default function IPGatekeeper() {
       const arrayBuffer = await selectedFile.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       const imageCid = await uploadToIPFS(buffer, selectedFile.name);
-      const imageUrl = `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${imageCid}`;
+      
+      // Menggunakan environment variable untuk gateway
+      const imageUrl = `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${imageCid}`;
 
       const ipMetadata = {
         title,
@@ -85,7 +87,7 @@ export default function IPGatekeeper() {
       const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
       const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
 
-      // Perbaikan utama: struktur licenseTermsData yang benar
+      // Menggunakan environment variable untuk metadata URI
       const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
         licenseTermsData: [{
@@ -120,9 +122,9 @@ export default function IPGatekeeper() {
           }
         }],
         ipMetadata: {
-          ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${ipMetadataCid}`,
+          ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${ipMetadataCid}`,
           ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-          nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${nftMetadataCid}`,
+          nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${nftMetadataCid}`,
           nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
         }
       });
