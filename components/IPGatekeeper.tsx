@@ -119,48 +119,48 @@ export default function IPGatekeeper() {
 
       let response;
 
-      if (licenseSettings.pilType === 'open_use') {
-        // Open Use - Public Domain equivalent
-        response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
-          licenseTermsData: [{
-            terms: {
-              transferable: true,
-              royaltyPolicy: "0x0000000000000000000000000000000000000000",
-              defaultMintingFee: BigInt(0),
-              expiration: BigInt(0),
-              commercialUse: true,
-              commercialAttribution: false,
-              commercializerChecker: "0x0000000000000000000000000000000000000000",
-              commercializerCheckerData: "0x",
-              commercialRevShare: 0,
-              commercialRevCeiling: BigInt(0),
-              derivativesAllowed: true,
-              derivativesAttribution: false,
-              derivativesApproval: false,
-              derivativesReciprocal: false,
-              derivativeRevCeiling: BigInt(0),
-              currency: "0x0000000000000000000000000000000000000000",
-              uri: "",
-            },
-            licensingConfig: {
-              isSet: false,
-              mintingFee: BigInt(0),
-              licensingHook: "0x0000000000000000000000000000000000000000",
-              hookData: "0x",
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
-            }
-          }],
-          ipMetadata: {
-            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-          }
-        });
+     if (licenseSettings.pilType === 'open_use') {
+  // Open Use - Public Domain equivalent (no commercial restrictions)
+  response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+    spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
+    licenseTermsData: [{
+      terms: {
+        transferable: true,
+        royaltyPolicy: "0x0000000000000000000000000000000000000000", // No royalty policy needed
+        defaultMintingFee: BigInt(0),
+        expiration: BigInt(0),
+        commercialUse: false, // False karena tidak ada pembatasan komersial
+        commercialAttribution: false,
+        commercializerChecker: "0x0000000000000000000000000000000000000000",
+        commercializerCheckerData: "0x",
+        commercialRevShare: 0,
+        commercialRevCeiling: BigInt(0),
+        derivativesAllowed: true,
+        derivativesAttribution: false,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+        derivativeRevCeiling: BigInt(0),
+        currency: "0x0000000000000000000000000000000000000000", // No currency needed
+        uri: "",
+      },
+      licensingConfig: {
+        isSet: false,
+        mintingFee: BigInt(0),
+        licensingHook: "0x0000000000000000000000000000000000000000",
+        hookData: "0x",
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
+      }
+    }],
+    ipMetadata: {
+      ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+      ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
+      nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+      nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
+    }
+  });
       } else if (licenseSettings.pilType === 'non_commercial_remix') {
   // Use existing licenseTermsId = 1 for non-commercial remix
   response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
