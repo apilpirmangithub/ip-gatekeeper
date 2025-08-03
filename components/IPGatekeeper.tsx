@@ -339,27 +339,28 @@ export default function IPGatekeeper() {
       </div>
 
       {imagePreview && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="relative">
-              <img 
-                src={imagePreview} 
-                alt="Preview" 
-                className="w-full h-48 object-cover rounded-lg border border-gray-200"
-              />
-              {isDetecting && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                    <p className="text-sm">Detecting AI...</p>
-                  </div>
-                </div>
-              )}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="space-y-4">
+      <div className="relative">
+        <img 
+          src={imagePreview} 
+          alt="Preview" 
+          className="w-[230px] h-[230px] object-cover rounded-lg border border-gray-200"
+          style={{ width: '230px', height: '230px' }}
+        />
+        {isDetecting && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center w-[230px] h-[230px]">
+            <div className="text-center text-white">
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+              <p className="text-sm">Detecting AI...</p>
             </div>
           </div>
-          <div></div>
-        </div>
-      )}
+        )}
+      </div>
+    </div>
+    <div></div>
+  </div>
+)}
 
       {aiDetection && (
         <div className={`p-4 rounded-lg ${aiDetection.isAI ? 'bg-red-100' : 'bg-green-100'}`}>
