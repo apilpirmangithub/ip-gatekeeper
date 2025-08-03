@@ -352,7 +352,6 @@ export default function IPGatekeeper() {
           <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center w-[230px] h-[230px]">
             <div className="text-center text-white">
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-              <p className="text-sm">Detecting AI...</p>
             </div>
           </div>
         )}
@@ -364,7 +363,7 @@ export default function IPGatekeeper() {
 
       {aiDetection && (
         <div className={`p-4 rounded-lg ${aiDetection.isAI ? 'bg-red-100' : 'bg-green-100'}`}>
-          <h3 className="font-semibold">AI Detection Result:</h3>
+          <h3 className="font-semibold">Detection Result:</h3>
           <p>Status: {aiDetection.isAI ? 'AI-Generated' : 'Original'}</p>
           <p>Confidence: {(aiDetection.confidence * 100).toFixed(1)}%</p>
         </div>
