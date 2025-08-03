@@ -19,7 +19,14 @@ export default function IPGatekeeper() {
   const [licenseSettings, setLicenseSettings] = useState({
     commercialUse: false,
     revShare: 0,
+    derivativesAllowed: true,
+    derivativesAttribution: true,
+    attribution: true,
+    transferable: true,
     aiLearning: true,
+    expiration: 'never',
+    territory: 'global',
+    customTerritory: '',
   });
   const [isRegistering, setIsRegistering] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -34,6 +41,17 @@ export default function IPGatekeeper() {
       setStoryClient(StoryClient.newClient(config));
     }
   }, [wallet, isConnected]);
+
+  const getExpirationTimestamp = (expiration: string): number => {
+    const now = Date.now() / 1000; // Current timestamp in seconds
+    switch (expiration) {
+      case '1year': return now + (365 * 24 * 60 * 60);
+      case '2years': return now + (2 * 365 * 24 * 60 * 60);
+      case '5years': return now + (5 * 365 * 24 * 60 * 60);
+      case '10years': return now + (10 * 365 * 24 * 60 * 60);
+      default: return 0;
+    }
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -99,19 +117,29 @@ export default function IPGatekeeper() {
         attributes: [
           { trait_type: "Type", value: aiDetection?.isAI ? "AI-generated" : "Original" },
           { trait_type: "AI Learning Allowed", value: licenseSettings.aiLearning ? "Yes" : "No" },
+          { trait_type: "Commercial Use", value: licenseSettings.commercialUse ? "Yes" : "No" },
+          { trait_type: "Revenue Share", value: `${licenseSettings.revShare}%` },
+          { trait_type: "Territory", value: licenseSettings.territory === 'custom' ? licenseSettings.customTerritory : licenseSettings.territory },
+          { trait_type: "Expiration", value: licenseSettings.expiration },
         ],
       };
 
       const offChainTerms = {
-        territory: "Global",
+        territory: licenseSettings.territory === 'custom' ? licenseSettings.customTerritory : licenseSettings.territory,
         channelsOfDistribution: "All channels",
-        attribution: true,
+        attribution: licenseSettings.attribution,
         contentStandards: ["No-Hate", "Suitable-for-All-Ages"],
         sublicensable: false,
         aiLearningModels: licenseSettings.aiLearning,
         restrictionOnCrossPlatformUse: false,
         governingLaw: "California, USA",
         alternativeDisputeResolution: "Alternative-Dispute-Resolution",
+        commercialUse: licenseSettings.commercialUse,
+        commercialRevShare: licenseSettings.revShare,
+        derivativesAllowed: licenseSettings.derivativesAllowed,
+        derivativesAttribution: licenseSettings.derivativesAttribution,
+        transferable: licenseSettings.transferable,
+        expiration: licenseSettings.expiration,
         additionalParameters: aiDetection?.isAI ? 
           "This AI-generated content is explicitly prohibited from being used for AI training or machine learning purposes." :
           "This content may be restricted from AI training purposes based on creator preferences."
@@ -125,18 +153,18 @@ export default function IPGatekeeper() {
         spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
         licenseTermsData: [{
           terms: {
-            transferable: true,
+            transferable: licenseSettings.transferable,
             royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
             defaultMintingFee: BigInt(0),
-            expiration: BigInt(0),
+            expiration: licenseSettings.expiration === 'never' ? BigInt(0) : BigInt(getExpirationTimestamp(licenseSettings.expiration)),
             commercialUse: licenseSettings.commercialUse,
-            commercialAttribution: true,
+            commercialAttribution: licenseSettings.attribution,
             commercializerChecker: "0x0000000000000000000000000000000000000000",
             commercializerCheckerData: "0x",
             commercialRevShare: licenseSettings.revShare,
             commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
+            derivativesAllowed: licenseSettings.derivativesAllowed,
+            derivativesAttribution: licenseSettings.derivativesAttribution,
             derivativesApproval: false,
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
@@ -148,7 +176,7 @@ export default function IPGatekeeper() {
             mintingFee: BigInt(0),
             licensingHook: "0x0000000000000000000000000000000000000000",
             hookData: "0x",
-            commercialRevShare: 0,
+            commercialRevShare: licenseSettings.revShare,
             disabled: false,
             expectMinimumGroupRewardShare: 0,
             expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
@@ -247,6 +275,8 @@ export default function IPGatekeeper() {
 
         <div className="space-y-4">
           <h3 className="font-semibold">License Settings</h3>
+          
+          {/* Commercial Use */}
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -255,6 +285,76 @@ export default function IPGatekeeper() {
             />
             <span>Allow Commercial Use</span>
           </label>
+
+          {/* Revenue Share - hanya muncul jika commercial use dicentang */}
+          {licenseSettings.commercialUse && (
+            <div className="ml-6 space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Commercial Revenue Share (%)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={licenseSettings.revShare}
+                onChange={(e) => setLicenseSettings(prev => ({ 
+                  ...prev, 
+                  revShare: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
+                }))}
+                className="w-full p-2 border rounded-lg text-sm"
+                placeholder="0-100"
+              />
+              <p className="text-xs text-gray-500">
+                Percentage of revenue you'll receive from commercial use
+              </p>
+            </div>
+          )}
+
+          {/* Derivatives Allowed */}
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={licenseSettings.derivativesAllowed}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, derivativesAllowed: e.target.checked }))}
+            />
+            <span>Allow Derivative Works</span>
+          </label>
+
+          {/* Derivatives Attribution - hanya muncul jika derivatives diizinkan */}
+          {licenseSettings.derivativesAllowed && (
+            <div className="ml-6">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={licenseSettings.derivativesAttribution}
+                  onChange={(e) => setLicenseSettings(prev => ({ ...prev, derivativesAttribution: e.target.checked }))}
+                />
+                <span className="text-sm">Require Attribution for Derivatives</span>
+              </label>
+            </div>
+          )}
+
+          {/* Attribution Required */}
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={licenseSettings.attribution}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, attribution: e.target.checked }))}
+            />
+            <span>Require Attribution</span>
+          </label>
+
+          {/* Transferable */}
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={licenseSettings.transferable}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, transferable: e.target.checked }))}
+            />
+            <span>License Transferable</span>
+          </label>
+
+          {/* AI Learning */}
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -264,6 +364,55 @@ export default function IPGatekeeper() {
             />
             <span>Allow AI Learning {aiDetection?.isAI && '(Disabled - AI Detected)'}</span>
           </label>
+
+          {/* Expiration */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              License Expiration
+            </label>
+            <select
+              value={licenseSettings.expiration}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, expiration: e.target.value }))}
+              className="w-full p-2 border rounded-lg text-sm"
+            >
+              <option value="never">Never Expires</option>
+              <option value="1year">1 Year</option>
+              <option value="2years">2 Years</option>
+              <option value="5years">5 Years</option>
+              <option value="10years">10 Years</option>
+            </select>
+          </div>
+
+          {/* Territory */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Territory
+            </label>
+            <select
+              value={licenseSettings.territory}
+              onChange={(e) => setLicenseSettings(prev => ({ ...prev, territory: e.target.value }))}
+              className="w-full p-2 border rounded-lg text-sm"
+            >
+              <option value="global">Global</option>
+              <option value="us">United States</option>
+              <option value="eu">European Union</option>
+              <option value="asia">Asia Pacific</option>
+              <option value="custom">Custom Territory</option>
+            </select>
+          </div>
+
+          {/* Custom Territory Input */}
+          {licenseSettings.territory === 'custom' && (
+            <div className="ml-4">
+              <input
+                type="text"
+                placeholder="Specify territories (e.g., US, UK, Canada)"
+                value={licenseSettings.customTerritory}
+                onChange={(e) => setLicenseSettings(prev => ({ ...prev, customTerritory: e.target.value }))}
+                className="w-full p-2 border rounded-lg text-sm"
+              />
+            </div>
+          )}
         </div>
       </div>
 
