@@ -11,6 +11,8 @@ export default function IPGatekeeper() {
   const { address, isConnected } = useAccount();
   const [storyClient, setStoryClient] = useState<StoryClient | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isDetecting, setIsDetecting] = useState(false);
   const [aiDetection, setAiDetection] = useState<{ isAI: boolean; confidence: number } | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -38,13 +40,30 @@ export default function IPGatekeeper() {
     if (!file) return;
 
     setSelectedFile(file);
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const detection = await detectAI(buffer);
-    setAiDetection(detection);
+    setAiDetection(null); // Reset previous detection
+    
+    // Create image preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
 
-    if (detection.isAI) {
-      setLicenseSettings(prev => ({ ...prev, aiLearning: false }));
+    // Start AI detection with loading
+    setIsDetecting(true);
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const detection = await detectAI(buffer);
+      setAiDetection(detection);
+
+      if (detection.isAI) {
+        setLicenseSettings(prev => ({ ...prev, aiLearning: false }));
+      }
+    } catch (error) {
+      console.error('AI detection failed:', error);
+    } finally {
+      setIsDetecting(false);
     }
   };
 
@@ -164,9 +183,42 @@ export default function IPGatekeeper() {
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
         <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full" />
         {selectedFile && (
-          <p className="mt-2 text-sm text-gray-600">Selected: {selectedFile.name}</p>
+          <div className="mt-2">
+            <p className="text-sm text-gray-600">Selected: {selectedFile.name}</p>
+            {isDetecting && (
+              <div className="flex items-center space-x-2 mt-1">
+                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-sm text-blue-600 font-medium">Detecting...</p>
+              </div>
+            )}
+          </div>
         )}
       </div>
+
+      {/* Image Preview - Selebar field judul */}
+      {imagePreview && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            {/* Preview gambar dengan loading overlay */}
+            <div className="relative">
+              <img 
+                src={imagePreview} 
+                alt="Preview" 
+                className="w-full h-48 object-cover rounded-lg border border-gray-200"
+              />
+              {isDetecting && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                    <p className="text-sm">Detecting AI...</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <div></div> {/* Empty div untuk spacing grid */}
+        </div>
+      )}
 
       {aiDetection && (
         <div className={`p-4 rounded-lg ${aiDetection.isAI ? 'bg-red-100' : 'bg-green-100'}`}>
@@ -217,7 +269,7 @@ export default function IPGatekeeper() {
 
       <button
         onClick={registerIP}
-        disabled={!selectedFile || !title || isRegistering}
+        disabled={!selectedFile || !title || isRegistering || isDetecting}
         className="w-full bg-blue-500 text-white p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600"
       >
         {isRegistering ? 'Registering IP Asset...' : 'Register IP Asset'}
