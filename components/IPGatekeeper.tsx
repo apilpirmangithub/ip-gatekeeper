@@ -115,16 +115,23 @@ export default function IPGatekeeper() {
       commercializerChecker: "0x0000000000000000000000000000000000000000",
       commercializerCheckerData: "0x",
       commercialRevShare: licenseSettings.revShare,
-      commercialRevCeiling: BigInt(0),  // ✅ BENAR: "Ceiling" bukan "Celling"
+      commercialRevCeiling: BigInt(0),
       derivativesAllowed: true,
       derivativesAttribution: true,
       derivativesApproval: false,
       derivativesReciprocal: true,
-      derivativeRevCeiling: BigInt(0),   // ✅ BENAR: "Ceiling" bukan "Celling"
+      derivativeRevCeiling: BigInt(0),
       currency: "0x1514000000000000000000000000000000000000",
       uri: "",
     }
-  }],
+  }], // ✅ PASTIKAN ada koma di sini
+  ipMetadata: { // ✅ PASTIKAN tidak ada koma sebelum ini
+    ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${ipMetadataCid}`,
+    ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
+    nftMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${nftMetadataCid}`,
+    nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
+  }
+}); // ✅ PASTIKAN tutup kurung dan semicolon benar
   ipMetadata: {
     ipMetadataURI: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/files/${ipMetadataCid}`,
     ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
