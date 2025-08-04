@@ -423,88 +423,66 @@ export default function IPGatekeeperCartoon() {
     }
   };
 
-  // Ganti fungsi getLicenseTerms dengan yang benar
-const getLicenseTerms = () => {
-  const baseTerms = {
-    transferable: true,
-    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`, // Cast ke hex string
-    expiration: BigInt(0),
-    commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-    commercializerCheckerData: "0x" as `0x${string}`,
-    commercialRevCeiling: BigInt(0),
-    derivativeRevCeiling: BigInt(0),
-    currency: "0x1514000000000000000000000000000000000000" as `0x${string}`, // Cast ke hex string
-    uri: "",
+  // Get license terms for custom licenses only
+  const getLicenseTerms = () => {
+    const baseTerms = {
+      transferable: true,
+      royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
+      expiration: BigInt(0),
+      commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+      commercializerCheckerData: "0x" as `0x${string}`,
+      commercialRevCeiling: BigInt(0),
+      derivativeRevCeiling: BigInt(0),
+      currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
+      uri: "",
+    };
+
+    switch (selectedLicense) {
+      case 'commercial_use':
+        return {
+          ...baseTerms,
+          defaultMintingFee: parseEther(mintingFee || '0'),
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: 0,
+          derivativesAllowed: false,
+          derivativesAttribution: false,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+        };
+      
+      case 'commercial_remix':
+        return {
+          ...baseTerms,
+          defaultMintingFee: parseEther(mintingFee || '0'),
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: parseInt(revenueShare) * 1000000,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+        };
+      
+      case 'cc_attribution':
+        return {
+          ...baseTerms,
+          defaultMintingFee: BigInt(0),
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: 0,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+        };
+      
+      default:
+        return baseTerms;
+    }
   };
 
-  switch (selectedLicense) {
-    case 'non_commercial':
-      return {
-        ...baseTerms,
-        defaultMintingFee: BigInt(0),
-        commercialUse: false,
-        commercialAttribution: false,
-        commercialRevShare: 0,
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: true,
-      };
-    
-    case 'commercial_use':
-      return {
-        ...baseTerms,
-        defaultMintingFee: parseEther(mintingFee || '0'),
-        commercialUse: true,
-        commercialAttribution: true,
-        commercialRevShare: 0,
-        derivativesAllowed: false,
-        derivativesAttribution: false,
-        derivativesApproval: false,
-        derivativesReciprocal: false,
-      };
-    
-    case 'commercial_remix':
-      return {
-        ...baseTerms,
-        defaultMintingFee: parseEther(mintingFee || '0'),
-        commercialUse: true,
-        commercialAttribution: true,
-        commercialRevShare: parseInt(revenueShare) * 1000000,
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: true,
-      };
-    
-    case 'cc_attribution':
-      return {
-        ...baseTerms,
-        defaultMintingFee: BigInt(0),
-        commercialUse: true,
-        commercialAttribution: true,
-        commercialRevShare: 0,
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: false,
-      };
-    
-    default:
-      return {
-        ...baseTerms,
-        defaultMintingFee: BigInt(0),
-        commercialUse: false,
-        commercialAttribution: false,
-        commercialRevShare: 0,
-        derivativesAllowed: false,
-        derivativesAttribution: false,
-        derivativesApproval: false,
-        derivativesReciprocal: false,
-      };
-  }
-};
-  // Register IP Asset
+  // Register IP Asset - PERBAIKAN UTAMA
   const registerIP = async () => {
     if (!storyClient || !selectedFile || !address) return;
     setIsRegistering(true);
@@ -543,37 +521,66 @@ const getLicenseTerms = () => {
       const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
       const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
 
-      const licenseTerms = getLicenseTerms();
+      let response;
 
-      const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-        spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
-        licenseTermsData: [{
-          terms: licenseTerms,
-          licensingConfig: {
-            isSet: false,
-            mintingFee: BigInt(0),
-            licensingHook: "0x0000000000000000000000000000000000000000",
-            hookData: "0x",
-            commercialRevShare: 0,
-            disabled: false,
-            expectMinimumGroupRewardShare: 0,
-            expectGroupRewardPool: "0x0000000000000000000000000000000000000000",
+      if (selectedLicense === 'non_commercial') {
+        // Gunakan license terms yang sudah ada (ID = 1) untuk Non-Commercial Social Remixing
+        response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
+          licenseTermsData: [{
+            licenseTermsId: BigInt(1), // Non-Commercial Social Remixing yang sudah ada
+            licensingConfig: {
+              isSet: false,
+              mintingFee: BigInt(0),
+              licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+              hookData: "0x" as `0x${string}`,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+            }
+          }],
+          ipMetadata: {
+            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
+            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
           }
-        }],
-        ipMetadata: {
-          ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-          ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}`,
-          nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-          nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}`,
-        }
-      });
+        });
+      } else {
+        // Untuk license types lainnya, buat terms baru
+        const licenseTerms = getLicenseTerms();
+        
+        response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
+          licenseTermsData: [{
+            terms: licenseTerms,
+            licensingConfig: {
+              isSet: false,
+              mintingFee: BigInt(0),
+              licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+              hookData: "0x" as `0x${string}`,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+            }
+          }],
+          ipMetadata: {
+            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
+            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
+          }
+        });
+      }
 
       setResult(response);
-      setCurrentStep(5); // Success state
+      setCurrentStep(5);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration failed:', error);
-      alert('Registration failed. Please try again.');
+      alert(`Registration failed: ${error.message || 'Unknown error'}`);
     } finally {
       setIsRegistering(false);
     }
