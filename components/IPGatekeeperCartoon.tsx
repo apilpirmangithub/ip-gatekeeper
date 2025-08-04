@@ -609,7 +609,7 @@ export default function IPGatekeeperCartoon() {
               <div style={{ textAlign: 'center', padding: '3rem' }}>
                 <div style={styles.spinner}></div>
                 <h3 style={{ fontSize: '24px', marginTop: '1rem', color: '#1E293B' }}>
-                  AI Analysis in Progress
+                  Analysis in Progress
                 </h3>
                 <p style={{ color: '#6B7280', marginTop: '0.5rem' }}>
                   Our smart robots are examining your image... 🔍
@@ -621,7 +621,7 @@ export default function IPGatekeeperCartoon() {
                   {aiDetection.isAI && (
                     <div style={styles.aiBadge} className="animate-bounce">AI Detected!</div>
                   )}
-                  <h3 style={{ fontSize: '24px', marginBottom: '1rem' }}>Analysis Complete</h3>
+                  <h3 style={{ fontSize: '24px', marginBottom: '1rem', color: 'black' }}>Analysis Complete</h3>
                   <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
                     <div>
                       <div style={{ 
@@ -766,7 +766,7 @@ export default function IPGatekeeperCartoon() {
             <span style={styles.successIcon} className="animate-bounce">✅</span>
             <h2 style={{ fontSize: '32px', color: '#1E293B', marginBottom: '1rem' }}>Woohoo! 🎉</h2>
             <p style={{ fontSize: '18px', color: '#6B7280', marginBottom: '2rem' }}>
-              Your asset is now protected on the blockchain!
+              Your asset is now protected on Story!
             </p>
             
             <div style={styles.resultInfo}>
