@@ -150,11 +150,6 @@ const styles = {
     outline: 'none',
     fontFamily: 'inherit',
   },
-  formInputFocus: {
-    borderColor: '#7C3AED',
-    background: 'white',
-    boxShadow: '0 0 0 4px rgba(124, 58, 237, 0.1)',
-  },
   licenseGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
@@ -252,10 +247,6 @@ const styles = {
     color: 'white',
     boxShadow: '0 5px 20px rgba(124, 58, 237, 0.3)',
   },
-  buttonPrimaryHover: {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 8px 30px rgba(124, 58, 237, 0.4)',
-  },
   buttonSecondary: {
     background: '#F3F4F6',
     color: '#1E293B',
@@ -321,23 +312,34 @@ export default function IPGatekeeperCartoon() {
   const { address, isConnected } = useAccount();
   const [storyClient, setStoryClient] = useState<StoryClient | null>(null);
   
-  // State management
+  // Multi-step state
   const [currentStep, setCurrentStep] = useState(1);
+  const [hasAutoSlided, setHasAutoSlided] = useState(false);
+  
+  // Form data states
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
   const [aiDetection, setAiDetection] = useState<{ isAI: boolean; confidence: number } | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedLicense, setSelectedLicense] = useState('non_commercial');
-  const [aiLearning, setAiLearning] = useState(true);
+  const [licenseSettings, setLicenseSettings] = useState({
+    pilType: 'non_commercial_remix',
+    commercialUse: false,
+    revShare: 0,
+    derivativesAllowed: true,
+    derivativesAttribution: true,
+    attribution: false,
+    transferable: true,
+    aiLearning: true,
+    expiration: '0',
+    territory: 'Global',
+    licensePrice: 0,
+  });
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isPreparingTx, setIsPreparingTx] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [isHovering, setIsHovering] = useState(false);
-  
-  // Custom license settings
-  const [mintingFee, setMintingFee] = useState('0');
-  const [revenueShare, setRevenueShare] = useState('10');
 
   // Initialize Story Client
   useEffect(() => {
@@ -380,6 +382,17 @@ export default function IPGatekeeperCartoon() {
     };
   }, []);
 
+  // Auto-slide after file selection
+  useEffect(() => {
+    if (currentStep === 1 && selectedFile && !hasAutoSlided) {
+      const timer = setTimeout(() => {
+        setCurrentStep(2);
+        setHasAutoSlided(true);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, selectedFile, hasAutoSlided]);
+
   // Handle file upload
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -387,6 +400,7 @@ export default function IPGatekeeperCartoon() {
 
     setSelectedFile(file);
     setAiDetection(null);
+    setHasAutoSlided(false);
     
     // Show preview
     const reader = new FileReader();
@@ -395,15 +409,7 @@ export default function IPGatekeeperCartoon() {
     };
     reader.readAsDataURL(file);
 
-    // Auto advance to step 2 after 1.5s
-    setTimeout(() => {
-      setCurrentStep(2);
-      runAIAnalysis(file);
-    }, 1500);
-  };
-
-  // Run AI analysis
-  const runAIAnalysis = async (file: File) => {
+    // Start AI analysis immediately
     setIsDetecting(true);
     try {
       const arrayBuffer = await file.arrayBuffer();
@@ -412,7 +418,7 @@ export default function IPGatekeeperCartoon() {
       setAiDetection(detection);
 
       if (detection.isAI) {
-        setAiLearning(false);
+        setLicenseSettings(prev => ({ ...prev, aiLearning: false }));
       }
     } catch (error) {
       console.error('AI detection failed:', error);
@@ -423,9 +429,8 @@ export default function IPGatekeeperCartoon() {
     }
   };
 
-  // Pastikan fungsi getLicenseTerms() ini ada dan lengkap
-const getLicenseTerms = () => {
-    // Base terms dengan SEMUA field yang diperlukan
+  // Get license terms function
+  const getLicenseTerms = () => {
     const baseTerms = {
       transferable: true,
       defaultMintingFee: BigInt(0),
@@ -433,7 +438,6 @@ const getLicenseTerms = () => {
       commercialRevCeiling: BigInt(0),
       derivativeRevCeiling: BigInt(0),
       uri: "",
-      // Field wajib yang hilang
       commercialUse: false,
       commercialAttribution: false,
       commercialRevShare: 0,
@@ -451,14 +455,8 @@ const getLicenseTerms = () => {
           commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
           commercializerCheckerData: "0x" as `0x${string}`,
           currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-          defaultMintingFee: BigInt(0),
           commercialUse: false,
-          commercialAttribution: false,
-          commercialRevShare: 0,
           derivativesAllowed: true,
-          derivativesAttribution: false,
-          derivativesApproval: false,
-          derivativesReciprocal: false,
         };
       
       case 'non_commercial_remix':
@@ -468,13 +466,9 @@ const getLicenseTerms = () => {
           commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
           commercializerCheckerData: "0x" as `0x${string}`,
           currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-          defaultMintingFee: BigInt(0),
           commercialUse: false,
-          commercialAttribution: false,
-          commercialRevShare: 0,
           derivativesAllowed: true,
           derivativesAttribution: true,
-          derivativesApproval: false,
           derivativesReciprocal: true,
         };
       
@@ -488,11 +482,6 @@ const getLicenseTerms = () => {
           defaultMintingFee: BigInt(licenseSettings.licensePrice),
           commercialUse: true,
           commercialAttribution: true,
-          commercialRevShare: 0,
-          derivativesAllowed: false,
-          derivativesAttribution: false,
-          derivativesApproval: false,
-          derivativesReciprocal: false,
         };
       
       case 'commercial_remix':
@@ -508,7 +497,6 @@ const getLicenseTerms = () => {
           commercialRevShare: licenseSettings.revShare,
           derivativesAllowed: true,
           derivativesAttribution: true,
-          derivativesApproval: false,
           derivativesReciprocal: true,
         };
       
@@ -519,112 +507,108 @@ const getLicenseTerms = () => {
           commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
           commercializerCheckerData: "0x" as `0x${string}`,
           currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-          defaultMintingFee: BigInt(0),
-          commercialUse: false,
-          commercialAttribution: false,
-          commercialRevShare: 0,
-          derivativesAllowed: false,
-          derivativesAttribution: false,
-          derivativesApproval: false,
-          derivativesReciprocal: false,
         };
     }
   };
 
-  // Simplifikasi fungsi registerIP
-const registerIP = async () => {
-  if (!storyClient || !selectedFile || !address) return;
-  setIsRegistering(true);
+  // Register IP Asset
+  const registerIP = async () => {
+    if (!storyClient || !selectedFile || !address) return;
+    setIsRegistering(true);
+    setIsPreparingTx(true);
 
-  try {
-    const arrayBuffer = await selectedFile.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const imageCid = await uploadToIPFS(buffer, selectedFile.name);
-    const imageUrl = `https://ipfs.io/ipfs/${imageCid}`;
+    try {
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const imageCid = await uploadToIPFS(buffer, selectedFile.name);
+      const imageUrl = `https://ipfs.io/ipfs/${imageCid}`;
 
-    const ipMetadata = {
-      title,
-      description,
-      image: imageUrl,
-      mediaUrl: imageUrl,
-      mediaType: selectedFile.type,
-      creators: [{ name: "User", address, contributionPercent: 100 }],
-      ...(aiDetection?.isAI && {
-        tags: ["AI-generated"],
-        aiGenerated: true,
-        aiConfidence: aiDetection.confidence,
-      }),
-    };
+      const ipMetadata = {
+        title,
+        description,
+        image: imageUrl,
+        mediaUrl: imageUrl,
+        mediaType: selectedFile.type,
+        creators: [{ name: "User", address, contributionPercent: 100 }],
+        ...(aiDetection?.isAI && {
+          tags: ["AI-generated"],
+          aiGenerated: true,
+          aiConfidence: aiDetection.confidence,
+        }),
+      };
 
-    const nftMetadata = {
-      name: `${title} NFT`,
-      description: `NFT representing ${title}`,
-      image: imageUrl,
-      attributes: [
-        { trait_type: "Type", value: aiDetection?.isAI ? "AI-generated" : "Original" },
-        { trait_type: "License Type", value: selectedLicense },
-        { trait_type: "AI Learning Allowed", value: aiLearning ? "Yes" : "No" },
-      ],
-    };
+      const nftMetadata = {
+        name: `${title} NFT`,
+        description: `NFT representing ${title}`,
+        image: imageUrl,
+        attributes: [
+          { trait_type: "Type", value: aiDetection?.isAI ? "AI-generated" : "Original" },
+          { trait_type: "License Type", value: licenseSettings.pilType },
+          { trait_type: "AI Learning Allowed", value: licenseSettings.aiLearning ? "Yes" : "No" },
+          { trait_type: "Commercial Use", value: licenseSettings.commercialUse ? "Yes" : "No" },
+          ...(licenseSettings.commercialUse ? [{ trait_type: "Revenue Share", value: `${licenseSettings.revShare}%` }] : []),
+          { trait_type: "Territory", value: licenseSettings.territory },
+        ],
+      };
 
-    const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
-    const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
+      const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
+      const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
 
-const licenseTerms = getLicenseTerms();
+      setIsPreparingTx(false);
 
-const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-  spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
-  licenseTermsData: [{
-    terms: licenseTerms, // Pastikan menggunakan hasil dari getLicenseTerms()
-    licensingConfig: {
-      isSet: false,
-      mintingFee: BigInt(licenseSettings.licensePrice),
-      licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-      hookData: "0x" as `0x${string}`,
-      commercialRevShare: licenseSettings.revShare,
-      disabled: false,
-      expectMinimumGroupRewardShare: 0,
-      expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-    }
-  }],
-  ipMetadata: {
-    ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-    ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
-    nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-    nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
-  }
-});
-    setResult(response);
-    setCurrentStep(5);
+      const licenseTerms = getLicenseTerms();
 
-  } catch (error: any) {
-    console.error('Registration failed:', error);
-    alert(`Registration failed: ${error.message || 'Unknown error'}`);
-  } finally {
-    setIsRegistering(false);
-  }
-};
+      const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
+        licenseTermsData: [{
+          terms: licenseTerms,
+          licensingConfig: {
+            isSet: false,
+            mintingFee: BigInt(licenseSettings.licensePrice),
+            licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+            hookData: "0x" as `0x${string}`,
+            commercialRevShare: licenseSettings.revShare,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          }
+        }],
+        ipMetadata: {
+          ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+          ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
+          nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+          nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
+        }
+      });
 
-  // Navigation
-  const goToStep = (step: number) => {
-    if (step < 1 || step > 4) return;
-    setCurrentStep(step);
-  };
+      setResult(response);
+      setCurrentStep(5); // Move to success step
 
-  const canProceedFromStep = () => {
-    switch(currentStep) {
-      case 1:
-        return selectedFile !== null;
-      case 2:
-        return aiDetection !== null;
-      case 3:
-        return title.trim() !== '' && description.trim() !== '';
-      case 4:
-        return true;
-      default:
-        return false;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      alert(`Registration failed: ${errorMessage}`);
+    } finally {
+      setIsRegistering(false);
+      setIsPreparingTx(false);
     }
   };
+
+  // Navigation functions
+  const nextStep = () => {
+    if (currentStep < 4) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const canProceedFromStep2 = () => aiDetection !== null;
+  const canProceedFromStep3 = () => title.trim() !== '' && description.trim() !== '';
 
   // Reset form
   const resetForm = () => {
@@ -635,8 +619,20 @@ const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
     setTitle('');
     setDescription('');
     setResult(null);
-    setMintingFee('0');
-    setRevenueShare('10');
+    setHasAutoSlided(false);
+    setLicenseSettings({
+      pilType: 'non_commercial_remix',
+      commercialUse: false,
+      revShare: 0,
+      derivativesAllowed: true,
+      derivativesAttribution: true,
+      attribution: false,
+      transferable: true,
+      aiLearning: true,
+      expiration: '0',
+      territory: 'Global',
+      licensePrice: 0,
+    });
   };
 
   if (!isConnected) {
@@ -720,6 +716,15 @@ const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
                 <p style={{ marginTop: '1rem', color: '#6B7280', fontWeight: 500 }}>
                   {selectedFile?.name}
                 </p>
+              </div>
+            )}
+
+            {selectedFile && !hasAutoSlided && (
+              <div style={{ textAlign: 'center', marginTop: '2rem', padding: '1rem', background: '#E0F2FE', borderRadius: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <Loader2 size={20} className="animate-spin" style={{ color: '#0284C7' }} />
+                  <span style={{ color: '#0284C7', fontWeight: 600 }}>Preparing AI analysis...</span>
+                </div>
               </div>
             )}
           </div>
@@ -815,36 +820,64 @@ const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
             <div style={styles.licenseGrid}>
               {[
                 { 
-                  id: 'non_commercial', 
+                  id: 'open_use', 
                   icon: '🎁', 
-                  title: 'Non-Commercial Social Remixing', 
-                  desc: 'Free remixing with attribution. No commercialization.',
+                  title: 'Open Use', 
+                  desc: 'Free for non-commercial use',
+                },
+                { 
+                  id: 'non_commercial_remix', 
+                  icon: '🔄', 
+                  title: 'Non-Commercial Remix', 
+                  desc: 'Allow remixing, no commercial use',
                 },
                 { 
                   id: 'commercial_use', 
                   icon: '💼', 
                   title: 'Commercial Use', 
-                  desc: 'Pay to use with attribution, no revenue sharing.',
+                  desc: 'Allow commercial use, no derivatives',
                 },
                 { 
                   id: 'commercial_remix', 
                   icon: '🎨', 
                   title: 'Commercial Remix', 
-                  desc: 'Pay to use with attribution and revenue sharing.',
-                },
-                { 
-                  id: 'cc_attribution', 
-                  icon: '⚡', 
-                  title: 'Creative Commons Attribution', 
-                  desc: 'Free remixing and commercial use with attribution.',
+                  desc: 'Full commercial rights with revenue sharing',
                 }
               ].map((license) => (
                 <div
                   key={license.id}
-                  onClick={() => setSelectedLicense(license.id)}
+                  onClick={() => setLicenseSettings(prev => ({ 
+                    ...prev, 
+                    pilType: license.id,
+                    ...(license.id === 'open_use' && {
+                      commercialUse: false,
+                      derivativesAllowed: true,
+                      attribution: false,
+                      revShare: 0,
+                      licensePrice: 0
+                    }),
+                    ...(license.id === 'non_commercial_remix' && {
+                      commercialUse: false,
+                      derivativesAllowed: true,
+                      attribution: false,
+                      revShare: 0,
+                      licensePrice: 0
+                    }),
+                    ...(license.id === 'commercial_use' && {
+                      commercialUse: true,
+                      derivativesAllowed: false,
+                      attribution: false,
+                      revShare: 0
+                    }),
+                    ...(license.id === 'commercial_remix' && {
+                      commercialUse: true,
+                      derivativesAllowed: true,
+                      attribution: false
+                    })
+                  }))}
                   style={{
                     ...styles.licenseCard,
-                    ...(selectedLicense === license.id ? styles.licenseCardSelected : {})
+                    ...(licenseSettings.pilType === license.id ? styles.licenseCardSelected : {})
                   }}
                 >
                   <div style={{ fontSize: '36px', marginBottom: '0.5rem' }}>{license.icon}</div>
@@ -855,34 +888,40 @@ const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
             </div>
 
             {/* Custom Settings for Commercial Licenses */}
-            {(selectedLicense === 'commercial_use' || selectedLicense === 'commercial_remix') && (
+            {(licenseSettings.pilType === 'commercial_use' || licenseSettings.pilType === 'commercial_remix') && (
               <div style={styles.customSettings}>
                 <h4 style={{ marginBottom: '1rem', color: '#1F2937' }}>License Settings</h4>
                 
                 <div style={styles.settingRow}>
-                  <span style={{ fontWeight: 600, color: '#374151' }}>Minting Fee ($IP)</span>
+                  <span style={{ fontWeight: 600, color: '#374151' }}>License Price ($IP)</span>
                   <input
                     type="number"
-                    value={mintingFee}
-                    onChange={(e) => setMintingFee(e.target.value)}
-                    style={styles.settingInput}
-                    placeholder="0"
                     min="0"
-                    step="0.1"
+                    step="0.01"
+                    value={licenseSettings.licensePrice}
+                    onChange={(e) => setLicenseSettings(prev => ({ 
+                      ...prev, 
+                      licensePrice: parseFloat(e.target.value) || 0
+                    }))}
+                    style={styles.settingInput}
+                    placeholder="0.00"
                   />
                 </div>
 
-                {selectedLicense === 'commercial_remix' && (
+                {licenseSettings.pilType === 'commercial_remix' && (
                   <div style={styles.settingRow}>
                     <span style={{ fontWeight: 600, color: '#374151' }}>Revenue Share (%)</span>
                     <input
                       type="number"
-                      value={revenueShare}
-                      onChange={(e) => setRevenueShare(e.target.value)}
-                      style={styles.settingInput}
-                      placeholder="10"
                       min="0"
                       max="100"
+                      value={licenseSettings.revShare}
+                      onChange={(e) => setLicenseSettings(prev => ({ 
+                        ...prev, 
+                        revShare: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
+                      }))}
+                      style={styles.settingInput}
+                      placeholder="0"
                     />
                   </div>
                 )}
@@ -897,15 +936,15 @@ const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
                   <span style={{ fontWeight: 600, color: '#1F2937' }}>Allow AI Training</span>
                 </div>
                 <div 
-                  onClick={() => setAiLearning(!aiLearning)}
+                  onClick={() => setLicenseSettings(prev => ({ ...prev, aiLearning: !prev.aiLearning }))}
                   style={{
                     ...styles.toggleSwitch,
-                    ...(aiLearning ? styles.toggleSwitchActive : {})
+                    ...(licenseSettings.aiLearning ? styles.toggleSwitchActive : {})
                   }}
                 >
                   <div style={{
                     ...styles.toggleKnob,
-                    left: aiLearning ? '33px' : '3px'
+                    left: licenseSettings.aiLearning ? '33px' : '3px'
                   }}></div>
                 </div>
               </div>
@@ -923,10 +962,15 @@ const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
                 padding: '1.5rem'
               }}
             >
-              {isRegistering ? (
+              {isPreparingTx ? (
                 <>
                   <Loader2 size={24} className="animate-spin" />
-                  <span>Registering...</span>
+                  <span>Preparing Transaction...</span>
+                </>
+              ) : isRegistering ? (
+                <>
+                  <Loader2 size={24} className="animate-spin" />
+                  <span>Awaiting Signature...</span>
                 </>
               ) : (
                 <>
@@ -1002,7 +1046,7 @@ const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         {currentStep < 5 && currentStep > 1 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem', paddingTop: '2rem', borderTop: '2px solid #E5E7EB' }}>
             <button 
-              onClick={() => goToStep(currentStep - 1)}
+              onClick={prevStep}
               style={{
                 ...styles.button,
                 ...styles.buttonSecondary
@@ -1014,12 +1058,16 @@ const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
             
             {currentStep < 4 && (
               <button 
-                onClick={() => goToStep(currentStep + 1)}
-                disabled={!canProceedFromStep()}
+                onClick={nextStep}
+                disabled={
+                  (currentStep === 2 && !canProceedFromStep2()) ||
+                  (currentStep === 3 && !canProceedFromStep3())
+                }
                 style={{
                   ...styles.button,
                   ...styles.buttonPrimary,
-                  ...(canProceedFromStep() ? {} : styles.buttonDisabled)
+                  ...((currentStep === 2 && !canProceedFromStep2()) ||
+                     (currentStep === 3 && !canProceedFromStep3()) ? styles.buttonDisabled : {})
                 }}
               >
                 <span>Next</span>
