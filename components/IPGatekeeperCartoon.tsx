@@ -761,42 +761,64 @@ export default function IPGatekeeperCartoon() {
         )}
 
         {/* Success State */}
-        {currentStep === 5 && result && (
-          <div style={styles.successContainer}>
-            <span style={styles.successIcon} className="animate-bounce">✅</span>
-            <h2 style={{ fontSize: '32px', color: '#1E293B', marginBottom: '1rem' }}>Woohoo! 🎉</h2>
-            <p style={{ fontSize: '18px', color: '#6B7280', marginBottom: '2rem' }}>
-              Your asset is now protected on Story!
-            </p>
-            
-            <div style={styles.resultInfo}>
-              <div style={styles.resultItem}>
-                <span style={{ fontWeight: 600 }}>Transaction ID</span>
-                <span style={{ color: '#7C3AED', fontFamily: 'monospace', fontSize: '14px' }}>
-                  {result.txHash?.slice(0, 10)}...{result.txHash?.slice(-8)}
-                </span>
-              </div>
-              <div style={{ ...styles.resultItem, borderBottom: 'none' }}>
-                <span style={{ fontWeight: 600 }}>IP Asset ID</span>
-                <span style={{ color: '#7C3AED', fontFamily: 'monospace', fontSize: '14px' }}>
-                  {result.ipId?.slice(0, 10)}...{result.ipId?.slice(-8)}
-                </span>
-              </div>
-            </div>
-            
-            <button 
-              onClick={resetForm}
-              style={{
-                ...styles.button,
-                ...styles.buttonPrimary,
-                marginTop: '2rem'
-              }}
-            >
-              <span style={{ fontSize: '20px' }}>🎨</span>
-              <span>Register Another Asset</span>
-            </button>
-          </div>
-        )}
+{currentStep === 5 && result && (
+  <div style={styles.successContainer}>
+    <span style={styles.successIcon} className="animate-bounce">✅</span>
+    <h2 style={{ fontSize: '32px', color: '#1E293B', marginBottom: '1rem' }}>Woohoo! 🎉</h2>
+    <p style={{ fontSize: '18px', color: '#6B7280', marginBottom: '2rem' }}>
+      Your asset is now protected on Story!
+    </p>
+    
+    <div style={styles.resultInfo}>
+      <div style={styles.resultItem}>
+        <span style={{ fontWeight: 600 }}>Transaction ID</span>
+        <a 
+          href={`https://aeneid.storyscan.io/tx/${result.txHash}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ 
+            color: '#7C3AED', 
+            fontFamily: 'monospace', 
+            fontSize: '14px',
+            textDecoration: 'underline',
+            cursor: 'pointer'
+          }}
+        >
+          {result.txHash?.slice(0, 10)}...{result.txHash?.slice(-8)}
+        </a>
+      </div>
+      <div style={{ ...styles.resultItem, borderBottom: 'none' }}>
+        <span style={{ fontWeight: 600 }}>IP Asset ID</span>
+        <a 
+          href={`https://aeneid.explorer.story.foundation/ipa/${result.ipId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ 
+            color: '#7C3AED', 
+            fontFamily: 'monospace', 
+            fontSize: '14px',
+            textDecoration: 'underline',
+            cursor: 'pointer'
+          }}
+        >
+          {result.ipId?.slice(0, 10)}...{result.ipId?.slice(-8)}
+        </a>
+      </div>
+    </div>
+    
+    <button 
+      onClick={resetForm}
+      style={{
+        ...styles.button,
+        ...styles.buttonPrimary,
+        marginTop: '2rem'
+      }}
+    >
+      <span style={{ fontSize: '20px' }}>🎨</span>
+      <span>Register Another Asset</span>
+    </button>
+  </div>
+)}
 
         {/* Navigation Buttons */}
         {currentStep < 5 && currentStep > 1 && (
