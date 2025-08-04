@@ -482,7 +482,7 @@ export default function IPGatekeeperCartoon() {
     }
   };
 
-  // Ganti fungsi registerIP dengan implementasi yang benar
+  // Simplifikasi fungsi registerIP
 const registerIP = async () => {
   if (!storyClient || !selectedFile || !address) return;
   setIsRegistering(true);
@@ -521,79 +521,30 @@ const registerIP = async () => {
     const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
     const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
 
-    let response;
-
-    if (selectedLicense === 'non_commercial') {
-      // Untuk Non-Commercial Social Remixing, mint NFT dulu lalu attach license terms yang sudah ada
-      const mintResponse = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-        spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
-        licenseTermsData: [{
-          terms: {
-            transferable: true,
-            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
-            defaultMintingFee: BigInt(0),
-            expiration: BigInt(0),
-            commercialUse: false,
-            commercialAttribution: false,
-            commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-            commercializerCheckerData: "0x" as `0x${string}`,
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
-            uri: "",
-          },
-          licensingConfig: {
-            isSet: false,
-            mintingFee: BigInt(0),
-            licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-            hookData: "0x" as `0x${string}`,
-            commercialRevShare: 0,
-            disabled: false,
-            expectMinimumGroupRewardShare: 0,
-            expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-          }
-        }],
-        ipMetadata: {
-          ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-          ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
-          nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-          nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
+    const licenseTerms = getLicenseTerms();
+    
+    const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+      spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
+      licenseTermsData: [{
+        terms: licenseTerms,
+        licensingConfig: {
+          isSet: false,
+          mintingFee: BigInt(0),
+          licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          hookData: "0x" as `0x${string}`,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
         }
-      });
-      
-      response = mintResponse;
-    } else {
-      // Untuk license types lainnya, buat terms baru
-      const licenseTerms = getLicenseTerms();
-      
-      response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-        spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
-        licenseTermsData: [{
-          terms: licenseTerms,
-          licensingConfig: {
-            isSet: false,
-            mintingFee: BigInt(0),
-            licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-            hookData: "0x" as `0x${string}`,
-            commercialRevShare: 0,
-            disabled: false,
-            expectMinimumGroupRewardShare: 0,
-            expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-          }
-        }],
-        ipMetadata: {
-          ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-          ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
-          nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-          nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
-        }
-      });
-    }
+      }],
+      ipMetadata: {
+        ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+        ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
+        nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+        nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
+      }
+    });
 
     setResult(response);
     setCurrentStep(5);
