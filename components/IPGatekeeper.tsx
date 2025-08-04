@@ -310,276 +310,409 @@ export default function IPGatekeeper() {
 
   if (!isConnected) {
     return (
-      <div className="text-center p-8">
-        <p className="text-lg text-gray-600">Please connect your wallet to continue.</p>
+      <div className="text-center p-12 bg-gradient-to-br from-purple-200 via-pink-200 to-blue-200 rounded-3xl border-4 border-purple-400 shadow-xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="20" cy="20" r="3"/%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+        <div className="relative z-10">
+          <div className="text-8xl mb-6">🔗</div>
+          <p className="text-2xl text-purple-800 font-bold tracking-wide">Please connect your wallet to continue.</p>
+          <div className="mt-4 w-32 h-2 bg-purple-400 rounded-full mx-auto animate-pulse"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-        <input type="file" accept="image/*" onChange={handleFileUpload} className="w-full" />
-        {selectedFile && (
-          <div className="mt-2">
-            <p className="text-sm text-gray-600">Selected: {selectedFile.name}</p>
-            {isDetecting && (
-              <div className="flex items-center space-x-2 mt-1">
-                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-sm text-blue-600 font-medium">Detecting...</p>
-              </div>
-            )}
+    <div className="space-y-8 relative">
+      {/* Floating decorative elements */}
+      <div className="absolute -top-4 -left-4 w-16 h-16 bg-yellow-300 rounded-full opacity-60 animate-bounce"></div>
+      <div className="absolute -top-2 -right-6 w-12 h-12 bg-pink-300 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0.5s'}}></div>
+      <div className="absolute top-20 left-10 w-8 h-8 bg-blue-300 rounded-full opacity-60 animate-bounce" style={{animationDelay: '1s'}}></div>
+      
+      {/* File Upload Area */}
+      <div className="relative">
+        <div className="border-4 border-dashed border-orange-400 rounded-3xl p-8 bg-gradient-to-br from-orange-100 via-yellow-100 to-pink-100 hover:from-orange-200 hover:via-yellow-200 hover:to-pink-200 transition-all duration-300 transform hover:scale-105 shadow-lg">
+          <div className="text-center mb-4">
+            <div className="text-6xl mb-2">📁</div>
+            <div className="text-lg font-bold text-orange-800 mb-2">Drop your awesome image here!</div>
           </div>
-        )}
-      </div>
-
-      {imagePreview && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="relative">
-              <img 
-                src={imagePreview} 
-                alt="Preview" 
-                className="w-[230px] h-[230px] object-cover rounded-lg border border-gray-200"
-                style={{ width: '230px', height: '230px' }}
-              />
+          <input 
+            type="file" 
+            accept="image/*" 
+            onChange={handleFileUpload} 
+            className="w-full p-4 bg-white rounded-2xl border-3 border-orange-300 text-orange-800 font-semibold file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-orange-400 file:text-white hover:file:bg-orange-500 file:shadow-md cursor-pointer"
+          />
+          {selectedFile && (
+            <div className="mt-4 p-4 bg-white rounded-2xl border-2 border-orange-300 shadow-inner">
+              <p className="text-sm text-orange-700 font-semibold flex items-center">
+                🎯 Selected: {selectedFile.name}
+              </p>
               {isDetecting && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center w-[230px] h-[230px]">
-                  <div className="text-center text-white">
-                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                  </div>
+                <div className="flex items-center space-x-3 mt-2">
+                  <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm text-blue-600 font-bold animate-pulse">🔍 Detecting...</p>
                 </div>
               )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Image Preview */}
+      {imagePreview && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-6">
+            <div className="relative group">
+              <div className="absolute -inset-2 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 rounded-3xl opacity-75 group-hover:opacity-100 transition duration-300 animate-pulse"></div>
+              <div className="relative bg-white p-4 rounded-2xl shadow-2xl">
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  className="w-[230px] h-[230px] object-cover rounded-xl border-4 border-gray-200 shadow-lg"
+                  style={{ width: '230px', height: '230px' }}
+                />
+                {isDetecting && (
+                  <div className="absolute inset-4 bg-black bg-opacity-60 rounded-xl flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                      <div className="text-lg font-bold">🤖 AI Scanning...</div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div></div>
         </div>
       )}
 
+      {/* AI Detection Result */}
       {aiDetection && (
-        <div className={`p-4 rounded-lg ${aiDetection.isAI ? 'bg-red-100' : 'bg-green-100'}`}>
-          <h3 className="font-semibold">Detection Result:</h3>
-          <p>Status: {aiDetection.isAI ? 'AI-Generated' : 'Original'}</p>
-          <p>Confidence: {(aiDetection.confidence * 100).toFixed(1)}%</p>
+        <div className={`p-6 rounded-3xl border-4 shadow-xl relative overflow-hidden transform hover:scale-105 transition-all duration-300 ${
+          aiDetection.isAI 
+            ? 'bg-gradient-to-br from-red-200 via-pink-200 to-orange-200 border-red-400' 
+            : 'bg-gradient-to-br from-green-200 via-emerald-200 to-blue-200 border-green-400'
+        }`}>
+          <div className="absolute top-4 right-4 text-4xl">
+            {aiDetection.isAI ? '🤖' : '🎨'}
+          </div>
+          <h3 className="font-bold text-2xl mb-3 flex items-center">
+            {aiDetection.isAI ? '🔴' : '🟢'} Detection Result:
+          </h3>
+          <p className="text-lg font-semibold mb-2">
+            🏷️ Status: <span className="font-bold">{aiDetection.isAI ? 'AI-Generated' : 'Original'}</span>
+          </p>
+          <p className="text-lg font-semibold">
+            📊 Confidence: <span className="font-bold">{(aiDetection.confidence * 100).toFixed(1)}%</span>
+          </p>
+          <div className="mt-3 w-full bg-gray-300 rounded-full h-3 overflow-hidden">
+            <div 
+              className={`h-full rounded-full transition-all duration-1000 ${
+                aiDetection.isAI ? 'bg-gradient-to-r from-red-400 to-orange-400' : 'bg-gradient-to-r from-green-400 to-blue-400'
+              }`}
+              style={{ width: `${aiDetection.confidence * 100}%` }}
+            ></div>
+          </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  <div className="space-y-4">
-    <input
-      type="text"
-      placeholder="Asset Name" // <- Ubah di sini
-      value={title}
-      onChange={(e) => setTitle(e.target.value)}
-      className="w-full p-3 border rounded-lg"
-    />
-    <textarea
-      placeholder="Description"
-      value={description}
-      onChange={(e) => setDescription(e.target.value)}
-      className="w-full p-3 border rounded-lg h-32"
-    />
-  </div>
-
-        <div className="space-y-4">
-          <h3 className="font-semibold">License Settings</h3>
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              License Type
-            </label>
-            <select
-              value={licenseSettings.pilType}
-              onChange={(e) => setLicenseSettings(prev => ({ 
-                ...prev, 
-                pilType: e.target.value,
-                ...(e.target.value === 'open_use' && {
-                  commercialUse: false,
-                  derivativesAllowed: true,
-                  attribution: false,
-                  revShare: 0,
-                  licensePrice: 0
-                }),
-                ...(e.target.value === 'non_commercial_remix' && {
-                  commercialUse: false,
-                  derivativesAllowed: true,
-                  attribution: false,
-                  revShare: 0,
-                  licensePrice: 0
-                }),
-                ...(e.target.value === 'commercial_use' && {
-                  commercialUse: true,
-                  derivativesAllowed: false,
-                  attribution: false,
-                  revShare: 0
-                }),
-                ...(e.target.value === 'commercial_remix' && {
-                  commercialUse: true,
-                  derivativesAllowed: true,
-                  attribution: false
-                })
-              }))}
-              className="w-full p-2 border rounded-lg text-sm"
-            >
-              <option value="open_use">1. Open Use</option>
-              <option value="non_commercial_remix">2. Non-Commercial Remix</option>
-              <option value="commercial_use">3. Commercial Use</option>
-              <option value="commercial_remix">4. Commercial Remix</option>
-            </select>
-            
-            <div className="text-xs text-gray-600 p-3 bg-gray-50 rounded">
-              {licenseSettings.pilType === 'open_use' && (
-                <div>
-                  <ul className="mt-1 text-xs">
-                    <li>Attribution not required</li>
-                    <li>Non-commercial use only</li> 
-                    <li>Remixing allowed</li>
-                    <li>No royalty sharing</li>
-                    <li>AI training allowed</li>
-                 </ul>
-               </div>
-             )}
-              {licenseSettings.pilType === 'non_commercial_remix' && (
-                <div>
-                  <ul className="mt-1 text-xs">
-                    <li>Attribution not required</li>
-                    <li>Non-commercial use only</li>
-                    <li>Remixing allowed</li>
-                    <li>No royalty sharing</li>
-                    <li>AI training allowed</li>
-                  </ul>
-                </div>
-              )}
-              {licenseSettings.pilType === 'commercial_use' && (
-                <div>
-                  <ul className="mt-1 text-xs">
-                    <li>Attribution not required</li>
-                    <li>Commercial use allowed</li>
-                    <li>Remixing not allowed</li>
-                    <li>No royalty sharing</li>
-                    <li>AI training allowed</li>
-                  </ul>
-                </div>
-              )}
-              {licenseSettings.pilType === 'commercial_remix' && (
-                <div>
-                  <ul className="mt-1 text-xs">
-                    <li>Attribution not required</li>
-                    <li>Commercial use allowed</li>
-                    <li>Remixing allowed</li>
-                    <li>Royalty sharing</li>
-                    <li>AI training allowed</li>
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {(licenseSettings.pilType === 'commercial_use' || licenseSettings.pilType === 'commercial_remix') && (
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                License Price (in $IP)
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={licenseSettings.licensePrice}
-                onChange={(e) => setLicenseSettings(prev => ({ 
-                  ...prev, 
-                  licensePrice: parseFloat(e.target.value) || 0
-                }))}
-                className="w-full p-2 border rounded-lg text-sm"
-                placeholder="Enter license price in $IP"
-              />
-            </div>
-          )}
-
-          {licenseSettings.pilType === 'commercial_remix' && (
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Revenue Share (%)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={licenseSettings.revShare}
-                onChange={(e) => setLicenseSettings(prev => ({ 
-                  ...prev, 
-                  revShare: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
-                }))}
-                className="w-full p-2 border rounded-lg text-sm"
-                placeholder="Enter revenue share percentage"
-              />
-            </div>
-          )}
-
-          <label className="flex items-center space-x-2">
+      {/* Form Inputs */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Left Column - Basic Info */}
+        <div className="space-y-6">
+          <div className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-6 rounded-3xl border-4 border-blue-300 shadow-xl">
+            <div className="text-3xl mb-4 text-center">📝</div>
             <input
-              type="checkbox"
-              checked={licenseSettings.aiLearning}
-              onChange={(e) => setLicenseSettings(prev => ({ ...prev, aiLearning: e.target.checked }))}
-              disabled={aiDetection?.isAI}
+              type="text"
+              placeholder="✨ Enter your amazing title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full p-4 border-3 border-blue-300 rounded-2xl text-lg font-semibold text-blue-800 bg-white shadow-lg focus:ring-4 focus:ring-blue-200 focus:border-blue-400 transition-all duration-300 placeholder-blue-400"
             />
-            <span>Allow AI Training {aiDetection?.isAI && '(Disabled - AI Detected)'}</span>
-          </label>
+          </div>
+          
+          <div className="bg-gradient-to-br from-green-100 via-teal-100 to-blue-100 p-6 rounded-3xl border-4 border-green-300 shadow-xl">
+            <div className="text-3xl mb-4 text-center">📖</div>
+            <textarea
+              placeholder="🎯 Describe your masterpiece..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-4 border-3 border-green-300 rounded-2xl h-32 text-lg font-semibold text-green-800 bg-white shadow-lg focus:ring-4 focus:ring-green-200 focus:border-green-400 transition-all duration-300 placeholder-green-400 resize-none"
+            />
+          </div>
+        </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Territory
-            </label>
-            <select
-              value={licenseSettings.territory}
-              onChange={(e) => setLicenseSettings(prev => ({ ...prev, territory: e.target.value }))}
-              className="w-full p-2 border rounded-lg text-sm"
-            >
-              <option value="Global">Global</option>
-              <option value="US">United States</option>
-              <option value="EU">European Union</option>
-              <option value="Asia">Asia Pacific</option>
-            </select>
+        {/* Right Column - License Settings */}
+        <div className="space-y-6">
+          <div className="bg-gradient-to-br from-yellow-100 via-orange-100 to-red-100 p-6 rounded-3xl border-4 border-yellow-400 shadow-xl">
+            <h3 className="font-bold text-2xl mb-4 text-center flex items-center justify-center">
+              ⚖️ License Settings
+            </h3>
+            
+            <div className="space-y-4">
+              <label className="block text-lg font-bold text-yellow-800 flex items-center">
+                🏷️ License Type
+              </label>
+              <select
+                value={licenseSettings.pilType}
+                onChange={(e) => setLicenseSettings(prev => ({ 
+                  ...prev, 
+                  pilType: e.target.value,
+                  ...(e.target.value === 'open_use' && {
+                    commercialUse: false,
+                    derivativesAllowed: true,
+                    attribution: false,
+                    revShare: 0,
+                    licensePrice: 0
+                  }),
+                  ...(e.target.value === 'non_commercial_remix' && {
+                    commercialUse: false,
+                    derivativesAllowed: true,
+                    attribution: false,
+                    revShare: 0,
+                    licensePrice: 0
+                  }),
+                  ...(e.target.value === 'commercial_use' && {
+                    commercialUse: true,
+                    derivativesAllowed: false,
+                    attribution: false,
+                    revShare: 0
+                  }),
+                  ...(e.target.value === 'commercial_remix' && {
+                    commercialUse: true,
+                    derivativesAllowed: true,
+                    attribution: false
+                  })
+                }))}
+                className="w-full p-4 border-3 border-yellow-400 rounded-2xl text-lg font-bold text-yellow-800 bg-white shadow-lg focus:ring-4 focus:ring-yellow-200 focus:border-yellow-500 transition-all duration-300"
+              >
+                <option value="open_use">🔓 1. Open Use</option>
+                <option value="non_commercial_remix">🎨 2. Non-Commercial Remix</option>
+                <option value="commercial_use">💼 3. Commercial Use</option>
+                <option value="commercial_remix">🔄 4. Commercial Remix</option>
+              </select>
+              
+              <div className="text-sm p-4 bg-white rounded-2xl border-2 border-yellow-300 shadow-inner">
+                {licenseSettings.pilType === 'open_use' && (
+                  <div className="text-yellow-700">
+                    <div className="text-lg font-bold mb-2 flex items-center">🔓 Open Freedom!</div>
+                    <ul className="space-y-1 text-sm font-semibold">
+                      <li>🚫 Attribution not required</li>
+                      <li>🎨 Non-commercial use only</li> 
+                      <li>🔄 Remixing allowed</li>
+                      <li>💰 No royalty sharing</li>
+                      <li>🤖 AI training allowed</li>
+                   </ul>
+                 </div>
+               )}
+                {licenseSettings.pilType === 'non_commercial_remix' && (
+                  <div className="text-yellow-700">
+                    <div className="text-lg font-bold mb-2 flex items-center">🎨 Creative Commons Style!</div>
+                    <ul className="space-y-1 text-sm font-semibold">
+                      <li>🚫 Attribution not required</li>
+                      <li>🎨 Non-commercial use only</li>
+                      <li>🔄 Remixing allowed</li>
+                      <li>💰 No royalty sharing</li>
+                      <li>🤖 AI training allowed</li>
+                    </ul>
+                  </div>
+                )}
+                {licenseSettings.pilType === 'commercial_use' && (
+                  <div className="text-yellow-700">
+                    <div className="text-lg font-bold mb-2 flex items-center">💼 Business Ready!</div>
+                    <ul className="space-y-1 text-sm font-semibold">
+                      <li>🚫 Attribution not required</li>
+                      <li>💼 Commercial use allowed</li>
+                      <li>🚫 Remixing not allowed</li>
+                      <li>💰 No royalty sharing</li>
+                      <li>🤖 AI training allowed</li>
+                    </ul>
+                  </div>
+                )}
+                {licenseSettings.pilType === 'commercial_remix' && (
+                  <div className="text-yellow-700">
+                    <div className="text-lg font-bold mb-2 flex items-center">🔄 Ultimate Flexibility!</div>
+                    <ul className="space-y-1 text-sm font-semibold">
+                      <li>🚫 Attribution not required</li>
+                      <li>💼 Commercial use allowed</li>
+                      <li>🔄 Remixing allowed</li>
+                      <li>💰 Royalty sharing</li>
+                      <li>🤖 AI training allowed</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {(licenseSettings.pilType === 'commercial_use' || licenseSettings.pilType === 'commercial_remix') && (
+              <div className="space-y-4 mt-6">
+                <label className="block text-lg font-bold text-orange-800 flex items-center">
+                  💎 License Price (in $IP)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={licenseSettings.licensePrice}
+                  onChange={(e) => setLicenseSettings(prev => ({ 
+                    ...prev, 
+                    licensePrice: parseFloat(e.target.value) || 0
+                  }))}
+                  className="w-full p-4 border-3 border-orange-400 rounded-2xl text-lg font-bold text-orange-800 bg-white shadow-lg focus:ring-4 focus:ring-orange-200 focus:border-orange-500 transition-all duration-300"
+                  placeholder="💰 Enter license price in $IP"
+                />
+              </div>
+            )}
+
+            {licenseSettings.pilType === 'commercial_remix' && (
+              <div className="space-y-4 mt-6">
+                <label className="block text-lg font-bold text-red-800 flex items-center">
+                  📊 Revenue Share (%)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={licenseSettings.revShare}
+                  onChange={(e) => setLicenseSettings(prev => ({ 
+                    ...prev, 
+                    revShare: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
+                  }))}
+                  className="w-full p-4 border-3 border-red-400 rounded-2xl text-lg font-bold text-red-800 bg-white shadow-lg focus:ring-4 focus:ring-red-200 focus:border-red-500 transition-all duration-300"
+                  placeholder="📈 Enter revenue share percentage"
+                />
+              </div>
+            )}
+
+            <div className="mt-6 p-4 bg-white rounded-2xl border-3 border-purple-300 shadow-lg">
+              <label className="flex items-center space-x-3 cursor-pointer group">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={licenseSettings.aiLearning}
+                    onChange={(e) => setLicenseSettings(prev => ({ ...prev, aiLearning: e.target.checked }))}
+                    disabled={aiDetection?.isAI}
+                    className="sr-only"
+                  />
+                  <div className={`w-8 h-8 rounded-lg border-3 flex items-center justify-center transition-all duration-300 ${
+                    licenseSettings.aiLearning && !aiDetection?.isAI
+                      ? 'bg-green-400 border-green-500' 
+                      : 'bg-gray-200 border-gray-400'
+                  } ${aiDetection?.isAI ? 'opacity-50 cursor-not-allowed' : 'group-hover:scale-110'}`}>
+                    {licenseSettings.aiLearning && !aiDetection?.isAI && (
+                      <span className="text-white font-bold text-lg">✓</span>
+                    )}
+                  </div>
+                </div>
+                <span className={`text-lg font-bold ${aiDetection?.isAI ? 'text-gray-500' : 'text-purple-800'}`}>
+                  🤖 Allow AI Training {aiDetection?.isAI && '(Disabled - AI Detected)'}
+                </span>
+              </label>
+            </div>
+
+            <div className="space-y-4 mt-6">
+              <label className="block text-lg font-bold text-indigo-800 flex items-center">
+                🌍 Territory
+              </label>
+              <select
+                value={licenseSettings.territory}
+                onChange={(e) => setLicenseSettings(prev => ({ ...prev, territory: e.target.value }))}
+                className="w-full p-4 border-3 border-indigo-400 rounded-2xl text-lg font-bold text-indigo-800 bg-white shadow-lg focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition-all duration-300"
+              >
+                <option value="Global">🌎 Global</option>
+                <option value="US">🇺🇸 United States</option>
+                <option value="EU">🇪🇺 European Union</option>
+                <option value="Asia">🌏 Asia Pacific</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
-      <button
-        onClick={registerIP}
-        disabled={!selectedFile || !title || isRegistering || isDetecting}
-        className="w-full bg-blue-500 text-white p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600"
-      >
-        {isPreparingTx ? 'Preparing transaction...' : 
-         isRegistering ? 'Waiting for signature...' : 
-         'Register IP Asset'}
-      </button>
-
-      {result && (
-        <div className="p-4 bg-green-100 rounded-lg">
-          <h3 className="font-semibold text-green-800">Success!</h3>
-          <p className="text-sm">IP Asset registered successfully!</p>
-          
-          <div className="mt-2">
-            <span className="text-xs text-gray-600">Transaction: </span>
-            <a 
-              href={`https://aeneid.storyscan.io/tx/${result.txHash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:text-blue-800 underline break-all"
-            >
-              {result.txHash}
-            </a>
+      {/* Register Button */}
+      <div className="relative">
+        <button
+          onClick={registerIP}
+          disabled={!selectedFile || !title || isRegistering || isDetecting}
+          className={`w-full p-6 rounded-3xl text-2xl font-bold shadow-2xl border-4 transition-all duration-300 transform ${
+            !selectedFile || !title || isRegistering || isDetecting
+              ? 'bg-gray-300 border-gray-400 text-gray-600 cursor-not-allowed scale-95'
+              : 'bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 border-purple-400 text-white hover:from-purple-600 hover:via-pink-600 hover:to-blue-600 hover:scale-105 hover:shadow-3xl active:scale-95'
+          }`}
+        >
+          <div className="flex items-center justify-center space-x-3">
+            {isPreparingTx ? (
+              <>
+                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>⚙️ Preparing transaction...</span>
+              </>
+            ) : isRegistering ? (
+              <>
+                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>✋ Waiting for signature...</span>
+              </>
+            ) : (
+              <>
+                <span className="text-3xl">🚀</span>
+                <span>Register IP Asset</span>
+              </>
+            )}
           </div>
-          
-          <div className="mt-1">
-            <span className="text-xs text-gray-600">IP ID: </span>
-            <a 
-              href={`https://aeneid.explorer.story.foundation/ipa/${result.ipId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:text-blue-800 underline break-all"
-            >
-              {result.ipId}
-            </a>
+        </button>
+        
+        {/* Button glow effect */}
+        {!(!selectedFile || !title || isRegistering || isDetecting) && (
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 opacity-20 animate-pulse -z-10 blur-lg"></div>
+        )}
+      </div>
+
+      {/* Success Result */}
+      {result && (
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 opacity-20 animate-pulse rounded-3xl blur-lg"></div>
+          <div className="relative p-8 bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 rounded-3xl border-4 border-green-400 shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="text-8xl mb-4 animate-bounce">🎉</div>
+              <h3 className="font-bold text-3xl text-green-800 mb-2">Success!</h3>
+              <p className="text-xl font-semibold text-green-700">IP Asset registered successfully!</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="p-4 bg-white rounded-2xl border-2 border-green-300 shadow-inner">
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className="text-2xl">📋</span>
+                  <span className="text-sm font-bold text-gray-600">Transaction:</span>
+                </div>
+                <a 
+                  href={`https://aeneid.storyscan.io/tx/${result.txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:text-blue-800 underline break-all font-mono bg-blue-50 p-2 rounded-lg block hover:bg-blue-100 transition-colors duration-200"
+                >
+                  {result.txHash}
+                </a>
+              </div>
+              
+              <div className="p-4 bg-white rounded-2xl border-2 border-green-300 shadow-inner">
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className="text-2xl">🏷️</span>
+                  <span className="text-sm font-bold text-gray-600">IP ID:</span>
+                </div>
+                <a 
+                  href={`https://aeneid.explorer.story.foundation/ipa/${result.ipId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:text-blue-800 underline break-all font-mono bg-blue-50 p-2 rounded-lg block hover:bg-blue-100 transition-colors duration-200"
+                >
+                  {result.ipId}
+                </a>
+              </div>
+            </div>
+
+            {/* Confetti effect */}
+            <div className="absolute top-4 left-4 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
+            <div className="absolute top-8 right-8 w-3 h-3 bg-pink-400 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+            <div className="absolute bottom-8 left-8 w-5 h-5 bg-blue-400 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+            <div className="absolute bottom-4 right-4 w-3 h-3 bg-green-400 rounded-full animate-ping" style={{animationDelay: '1.5s'}}></div>
           </div>
         </div>
       )}
