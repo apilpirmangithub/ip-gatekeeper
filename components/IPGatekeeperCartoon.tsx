@@ -12,19 +12,20 @@ const styles = {
     width: '100%',
     maxWidth: '900px',
     margin: '0 auto',
-    padding: 'clamp(1rem, 4vw, 2rem)',
-    minHeight: '100vh',
+    padding: 'clamp(2rem, 6vw, 4rem)', // Tambah padding vertikal
+    minHeight: '120vh', // Tingkatkan dari 100vh ke 120vh
     boxSizing: 'border-box' as const,
   },
   card: {
     background: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 'clamp(15px, 3vw, 30px)',
-    padding: 'clamp(1.5rem, 4vw, 3rem)',
+    padding: 'clamp(3rem, 6vw, 5rem)', // Tingkatkan padding vertikal
     boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
     position: 'relative' as const,
     overflow: 'hidden',
     width: '100%',
     boxSizing: 'border-box' as const,
+    minHeight: '80vh', // Tambah minimum height untuk card
   },
   walletCard: {
     background: 'white',
@@ -41,10 +42,11 @@ const styles = {
   progressContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: 'clamp(2rem, 4vw, 3rem)',
+    marginBottom: 'clamp(3rem, 6vw, 5rem)', // Tingkatkan margin bottom
     position: 'relative' as const,
     flexWrap: 'wrap' as const,
     gap: '0.5rem',
+    paddingBottom: '2rem', // Tambah padding bottom
   },
   progressLine: {
     position: 'absolute' as const,
@@ -106,15 +108,15 @@ const styles = {
   stepLabelActive: {
     color: '#7C3AED',
     fontWeight: '600',
-  },
   uploadArea: {
     border: '3px dashed #7C3AED',
     borderRadius: 'clamp(15px, 3vw, 25px)',
-    padding: 'clamp(2rem, 6vw, 4rem) clamp(1rem, 3vw, 2rem)',
+    padding: 'clamp(4rem, 8vw, 6rem) clamp(1rem, 3vw, 2rem)', // Tingkatkan padding vertikal
     textAlign: 'center' as const,
     background: 'linear-gradient(135deg, rgba(124,58,237,0.05), rgba(236,72,153,0.05))',
     transition: 'all 0.3s ease',
     cursor: 'pointer',
+    minHeight: '300px', // Tambah minimum height
   },
   uploadAreaHover: {
     borderColor: '#EC4899',
@@ -142,7 +144,7 @@ const styles = {
     display: 'block',
   },
   formGroup: {
-    marginBottom: '1.5rem',
+    marginBottom: '2.5rem', // Tingkatkan dari 1.5rem ke 2.5rem
   },
   formLabel: {
     display: 'block',
@@ -166,17 +168,18 @@ const styles = {
   licenseGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))',
-    gap: 'clamp(0.5rem, 2vw, 1rem)',
-    marginBottom: '2rem',
+    gap: 'clamp(1rem, 3vw, 2rem)', // Tingkatkan gap
+    marginBottom: '3rem', // Tingkatkan margin
   },
   licenseCard: {
     background: '#F9FAFB',
     border: '3px solid transparent',
     borderRadius: '20px',
-    padding: 'clamp(1rem, 3vw, 1.5rem)',
+    padding: 'clamp(2rem, 4vw, 3rem)', // Tingkatkan padding
     cursor: 'pointer',
     transition: 'all 0.3s ease',
     textAlign: 'center' as const,
+    minHeight: '180px', // Tambah minimum height
   },
   licenseCardSelected: {
     borderColor: '#7C3AED',
@@ -195,8 +198,9 @@ const styles = {
   customSettings: {
     background: '#F3F4F6',
     borderRadius: '15px',
-    padding: 'clamp(1rem, 3vw, 1.5rem)',
-    marginTop: '1rem',
+    padding: 'clamp(2rem, 4vw, 3rem)', // Tingkatkan padding
+    marginTop: '2rem',
+    marginBottom: '2rem', // Tambah margin bottom
   },
   settingRow: {
     display: 'flex',
@@ -218,9 +222,9 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     background: '#F3F4F6',
-    padding: 'clamp(1rem, 3vw, 1.5rem)',
+    padding: 'clamp(2rem, 4vw, 3rem)', // Tingkatkan padding
     borderRadius: '15px',
-    marginBottom: '1.5rem',
+    marginBottom: '3rem', // Tingkatkan margin
     flexWrap: 'wrap' as const,
     gap: '1rem',
   },
@@ -278,7 +282,8 @@ const styles = {
   },
   successContainer: {
     textAlign: 'center' as const,
-    padding: 'clamp(2rem, 5vw, 3rem)',
+    padding: 'clamp(4rem, 8vw, 6rem)', // Tingkatkan padding
+    minHeight: '60vh', // Tambah minimum height
   },
   successIcon: {
     fontSize: 'clamp(50px, 10vw, 80px)',
@@ -313,9 +318,10 @@ const styles = {
   aiDetectionCard: {
     background: 'linear-gradient(135deg, #F3F4F6, #E5E7EB)',
     borderRadius: '20px',
-    padding: 'clamp(1.5rem, 4vw, 2rem)',
-    marginTop: '2rem',
+    padding: 'clamp(3rem, 6vw, 4rem)', // Tingkatkan padding
+    marginTop: '3rem',
     textAlign: 'center' as const,
+    minHeight: '300px', // Tambah minimum height
   },
   aiBadge: {
     display: 'inline-block',
@@ -330,8 +336,8 @@ const styles = {
   navigationButtons: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 'clamp(2rem, 4vw, 3rem)',
-    paddingTop: '2rem',
+    marginTop: 'clamp(4rem, 6vw, 6rem)', // Tingkatkan margin top
+    paddingTop: '3rem', // Tingkatkan padding top
     borderTop: '2px solid #E5E7EB',
     gap: '1rem',
     flexWrap: 'wrap' as const,
