@@ -8,6 +8,7 @@ import { uploadToIPFS, detectAI } from '../services';
 import { Loader2 } from 'lucide-react';
 
 const styles = {
+  // ... semua styles sama seperti sebelumnya
   container: {
     width: '100%',
     maxWidth: '900px',
@@ -426,6 +427,103 @@ export default function IPGatekeeperCartoon() {
     }
   };
 
+  // TAMBAHKAN FUNGSI getLicenseTerms yang lengkap
+  const getLicenseTerms = () => {
+    const baseTerms = {
+      transferable: true,
+      defaultMintingFee: BigInt(0),
+      expiration: BigInt(0),
+      commercialRevCeiling: BigInt(0),
+      derivativeRevCeiling: BigInt(0),
+      uri: "",
+      // Semua field wajib
+      commercialUse: false,
+      commercialAttribution: false,
+      commercialRevShare: 0,
+      derivativesAllowed: false,
+      derivativesAttribution: false,
+      derivativesApproval: false,
+      derivativesReciprocal: false,
+    };
+
+    switch (licenseSettings.pilType) {
+      case 'open_use':
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercialUse: false,
+          commercialAttribution: false,
+          commercialRevShare: 0,
+          derivativesAllowed: true,
+          derivativesAttribution: false,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+        };
+      
+      case 'non_commercial_remix':
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercialUse: false,
+          commercialAttribution: false,
+          commercialRevShare: 0,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+        };
+      
+      case 'commercial_use':
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
+          defaultMintingFee: BigInt(licenseSettings.licensePrice),
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: 0,
+          derivativesAllowed: false,
+          derivativesAttribution: false,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+        };
+      
+      case 'commercial_remix':
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
+          defaultMintingFee: BigInt(licenseSettings.licensePrice),
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: licenseSettings.revShare,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+        };
+      
+      default:
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+        };
+    }
+  };
+
   const registerIP = async () => {
     if (!storyClient || !selectedFile || !address) return;
     setIsRegistering(true);
@@ -470,173 +568,31 @@ export default function IPGatekeeperCartoon() {
 
       setIsPreparingTx(false);
 
-      let response;
+      // Gunakan fungsi getLicenseTerms yang sudah diperbaiki
+      const licenseTerms = getLicenseTerms();
 
-      if (licenseSettings.pilType === 'open_use') {
-        response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
-          licenseTermsData: [{
-            terms: {
-              transferable: true,
-              royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              defaultMintingFee: BigInt(0),
-              expiration: BigInt(0),
-              commercialUse: false,
-              commercialAttribution: false,
-              commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              commercializerCheckerData: "0x" as `0x${string}`,
-              commercialRevShare: 0,
-              commercialRevCeiling: BigInt(0),
-              derivativesAllowed: true,
-              derivativesAttribution: false,
-              derivativesApproval: false,
-              derivativesReciprocal: false,
-              derivativeRevCeiling: BigInt(0),
-              currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              uri: "",
-            },
-            licensingConfig: {
-              isSet: false,
-              mintingFee: BigInt(0),
-              licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              hookData: "0x" as `0x${string}`,
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-            }
-          }],
-          ipMetadata: {
-            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
-            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
+      const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
+        licenseTermsData: [{
+          terms: licenseTerms,
+          licensingConfig: {
+            isSet: false,
+            mintingFee: BigInt(licenseSettings.licensePrice),
+            licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+            hookData: "0x" as `0x${string}`,
+            commercialRevShare: licenseSettings.revShare,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
           }
-        });
-      } else if (licenseSettings.pilType === 'non_commercial_remix') {
-        response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
-          licenseTermsData: [{
-            terms: {
-              transferable: true,
-              royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              defaultMintingFee: BigInt(0),
-              expiration: BigInt(0),
-              commercialUse: false,
-              commercialAttribution: false,
-              commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              commercializerCheckerData: "0x" as `0x${string}`,
-              commercialRevShare: 0,
-              commercialRevCeiling: BigInt(0),
-              derivativesAllowed: true,
-              derivativesAttribution: true,
-              derivativesApproval: false,
-              derivativesReciprocal: true,
-              derivativeRevCeiling: BigInt(0),
-              currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              uri: "",
-            },
-            licensingConfig: {
-              isSet: false,
-              mintingFee: BigInt(0),
-              licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              hookData: "0x" as `0x${string}`,
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-            }
-          }],
-          ipMetadata: {
-            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
-            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
-          }
-        });
-      } else if (licenseSettings.pilType === 'commercial_use') {
-        response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
-          licenseTermsData: [{
-            terms: {
-              transferable: true,
-              royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
-              defaultMintingFee: BigInt(licenseSettings.licensePrice),
-              expiration: BigInt(0),
-              commercialUse: true,
-              commercialAttribution: true,
-              commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              commercializerCheckerData: "0x" as `0x${string}`,
-              commercialRevShare: 0,
-              commercialRevCeiling: BigInt(0),
-              derivativesAllowed: false,
-              derivativesAttribution: false,
-              derivativesApproval: false,
-              derivativesReciprocal: false,
-              derivativeRevCeiling: BigInt(0),
-              currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
-              uri: "",
-            },
-            licensingConfig: {
-              isSet: false,
-              mintingFee: BigInt(licenseSettings.licensePrice),
-              licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              hookData: "0x" as `0x${string}`,
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-            }
-          }],
-          ipMetadata: {
-            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
-            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
-          }
-        });
-      } else if (licenseSettings.pilType === 'commercial_remix') {
-        response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc" as `0x${string}`,
-          licenseTermsData: [{
-            terms: {
-              transferable: true,
-              royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
-              defaultMintingFee: BigInt(licenseSettings.licensePrice),
-              expiration: BigInt(0),
-              commercialUse: true,
-              commercialAttribution: true,
-              commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              commercializerCheckerData: "0x" as `0x${string}`,
-              commercialRevShare: licenseSettings.revShare,
-              commercialRevCeiling: BigInt(0),
-              derivativesAllowed: true,
-              derivativesAttribution: true,
-              derivativesApproval: false,
-              derivativesReciprocal: true,
-              derivativeRevCeiling: BigInt(0),
-              currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
-              uri: "",
-            },
-            licensingConfig: {
-              isSet: false,
-              mintingFee: BigInt(licenseSettings.licensePrice),
-              licensingHook: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-              hookData: "0x" as `0x${string}`,
-              commercialRevShare: licenseSettings.revShare,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-            }
-          }],
-          ipMetadata: {
-            ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
-            ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
-            nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
-            nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
-          }
-        });
-      }
+        }],
+        ipMetadata: {
+          ipMetadataURI: `https://ipfs.io/ipfs/${ipMetadataCid}`,
+          ipMetadataHash: `0x${createHash('sha256').update(JSON.stringify(ipMetadata)).digest('hex')}` as `0x${string}`,
+          nftMetadataURI: `https://ipfs.io/ipfs/${nftMetadataCid}`,
+          nftMetadataHash: `0x${createHash('sha256').update(JSON.stringify(nftMetadata)).digest('hex')}` as `0x${string}`,
+        }
+      });
 
       setResult(response);
       setCurrentStep(5); // Move to success step
