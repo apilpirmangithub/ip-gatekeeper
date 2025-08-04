@@ -428,12 +428,12 @@ const getLicenseTerms = () => {
   const baseTerms = {
     transferable: true,
     royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-    expiration: 0n,
+    expiration: BigInt(0), // Ganti 0n dengan BigInt(0)
     commercializerChecker: "0x0000000000000000000000000000000000000000",
     commercializerCheckerData: "0x",
-    commercialRevCeiling: 0n,
-    derivativeRevCeiling: 0n,
-    currency: "0x1514000000000000000000000000000000000000", // $WIP token
+    commercialRevCeiling: BigInt(0), // Ganti 0n dengan BigInt(0)
+    derivativeRevCeiling: BigInt(0), // Ganti 0n dengan BigInt(0)
+    currency: "0x1514000000000000000000000000000000000000",
     uri: "",
   };
 
@@ -441,7 +441,7 @@ const getLicenseTerms = () => {
     case 'non_commercial':
       return {
         ...baseTerms,
-        defaultMintingFee: 0n,
+        defaultMintingFee: BigInt(0), // Ganti 0n dengan BigInt(0)
         commercialUse: false,
         commercialAttribution: false,
         commercialRevShare: 0,
@@ -470,7 +470,7 @@ const getLicenseTerms = () => {
         defaultMintingFee: parseEther(mintingFee || '0'),
         commercialUse: true,
         commercialAttribution: true,
-        commercialRevShare: parseInt(revenueShare) * 1000000, // Convert to proper format
+        commercialRevShare: parseInt(revenueShare) * 1000000,
         derivativesAllowed: true,
         derivativesAttribution: true,
         derivativesApproval: false,
@@ -480,7 +480,7 @@ const getLicenseTerms = () => {
     case 'cc_attribution':
       return {
         ...baseTerms,
-        defaultMintingFee: 0n,
+        defaultMintingFee: BigInt(0), // Ganti 0n dengan BigInt(0)
         commercialUse: true,
         commercialAttribution: true,
         commercialRevShare: 0,
@@ -491,7 +491,17 @@ const getLicenseTerms = () => {
       };
     
     default:
-      return baseTerms;
+      return {
+        ...baseTerms,
+        defaultMintingFee: BigInt(0),
+        commercialUse: false,
+        commercialAttribution: false,
+        commercialRevShare: 0,
+        derivativesAllowed: false,
+        derivativesAttribution: false,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+      };
   }
 };
 
