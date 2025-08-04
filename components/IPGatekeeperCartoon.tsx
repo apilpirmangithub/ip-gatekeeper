@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useWalletClient, useAccount } from 'wagmi';
-import { custom } from 'viem';
+import { custom, parseEther } from 'viem';
 import { createHash } from 'crypto';
 import { StoryClient, StoryConfig } from '@story-protocol/core-sdk';
 import { uploadToIPFS, detectAI } from '../services';
@@ -157,7 +157,7 @@ const styles = {
   },
   licenseGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
     gap: '1rem',
     marginBottom: '2rem',
   },
@@ -173,6 +173,35 @@ const styles = {
   licenseCardSelected: {
     borderColor: '#7C3AED',
     background: 'linear-gradient(135deg, rgba(124,58,237,0.1), rgba(236,72,153,0.1))',
+  },
+  licenseCardTitle: {
+    fontWeight: 600,
+    marginBottom: '0.5rem',
+    color: '#1F2937',
+    fontSize: '16px',
+  },
+  licenseCardDesc: {
+    fontSize: '14px',
+    color: '#4B5563',
+  },
+  customSettings: {
+    background: '#F3F4F6',
+    borderRadius: '15px',
+    padding: '1.5rem',
+    marginTop: '1rem',
+  },
+  settingRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '1rem',
+  },
+  settingInput: {
+    width: '120px',
+    padding: '0.5rem',
+    border: '2px solid #E5E7EB',
+    borderRadius: '8px',
+    fontSize: '14px',
   },
   toggleContainer: {
     display: 'flex',
@@ -300,11 +329,15 @@ export default function IPGatekeeperCartoon() {
   const [aiDetection, setAiDetection] = useState<{ isAI: boolean; confidence: number } | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedLicense, setSelectedLicense] = useState('open_use');
+  const [selectedLicense, setSelectedLicense] = useState('non_commercial');
   const [aiLearning, setAiLearning] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [isHovering, setIsHovering] = useState(false);
+  
+  // Custom license settings
+  const [mintingFee, setMintingFee] = useState('0');
+  const [revenueShare, setRevenueShare] = useState('10');
 
   // Initialize Story Client
   useEffect(() => {
@@ -390,6 +423,78 @@ export default function IPGatekeeperCartoon() {
     }
   };
 
+  // Get license terms based on selection
+  const getLicenseTerms = () => {
+    const baseTerms = {
+      transferable: true,
+      royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+      expiration: BigInt(0),
+      commercializerChecker: "0x0000000000000000000000000000000000000000",
+      commercializerCheckerData: "0x",
+      commercialRevCeiling: BigInt(0),
+      derivativeRevCeiling: BigInt(0),
+      currency: "0x1514000000000000000000000000000000000000", // $WIP token
+      uri: "",
+    };
+
+    switch (selectedLicense) {
+      case 'non_commercial':
+        return {
+          ...baseTerms,
+          defaultMintingFee: BigInt(0),
+          commercialUse: false,
+          commercialAttribution: false,
+          commercialRevShare: 0,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+        };
+      
+      case 'commercial_use':
+        return {
+          ...baseTerms,
+          defaultMintingFee: parseEther(mintingFee || '0'),
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: 0,
+          derivativesAllowed: false,
+          derivativesAttribution: false,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+        };
+      
+      case 'commercial_remix':
+        return {
+          ...baseTerms,
+          defaultMintingFee: parseEther(mintingFee || '0'),
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: parseInt(revenueShare) * 1000000, // Convert to proper format
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+        };
+      
+      case 'cc_attribution':
+        return {
+          ...baseTerms,
+          defaultMintingFee: BigInt(0),
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: 0,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+        };
+      
+      default:
+        return baseTerms;
+    }
+  };
+
   // Register IP Asset
   const registerIP = async () => {
     if (!storyClient || !selectedFile || !address) return;
@@ -429,31 +534,12 @@ export default function IPGatekeeperCartoon() {
       const ipMetadataCid = await uploadToIPFS(JSON.stringify(ipMetadata), 'metadata.json');
       const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
 
-      let response;
-      
-      // Register berdasarkan license type
-      response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+      const licenseTerms = getLicenseTerms();
+
+      const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: "0xc32A8a0FF3beDDDa58393d022aF433e78739FAbc",
         licenseTermsData: [{
-          terms: {
-            transferable: true,
-            royaltyPolicy: "0x0000000000000000000000000000000000000000",
-            defaultMintingFee: BigInt(0),
-            expiration: BigInt(0),
-            commercialUse: selectedLicense === 'commercial' || selectedLicense === 'custom',
-            commercialAttribution: false,
-            commercializerChecker: "0x0000000000000000000000000000000000000000",
-            commercializerCheckerData: "0x",
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: selectedLicense !== 'commercial',
-            derivativesAttribution: selectedLicense === 'non_commercial',
-            derivativesApproval: false,
-            derivativesReciprocal: false,
-            derivativeRevCeiling: BigInt(0),
-            currency: "0x0000000000000000000000000000000000000000",
-            uri: "",
-          },
+          terms: licenseTerms,
           licensingConfig: {
             isSet: false,
             mintingFee: BigInt(0),
@@ -514,6 +600,8 @@ export default function IPGatekeeperCartoon() {
     setTitle('');
     setDescription('');
     setResult(null);
+    setMintingFee('0');
+    setRevenueShare('10');
   };
 
   if (!isConnected) {
@@ -658,8 +746,6 @@ export default function IPGatekeeperCartoon() {
                 placeholder="Give your asset a memorable name"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                onFocus={(e) => e.target.style.cssText = Object.entries({...styles.formInput, ...styles.formInputFocus}).map(([k, v]) => `${k.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${v}`).join('; ')}
-                onBlur={(e) => e.target.style.cssText = Object.entries(styles.formInput).map(([k, v]) => `${k.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${v}`).join('; ')}
               />
             </div>
             
@@ -686,237 +772,196 @@ export default function IPGatekeeperCartoon() {
           </div>
         )}
 
-       // Ganti bagian Step 4: License & Register dengan konfigurasi yang benar
-{currentStep === 4 && (
-  <div>
-    <h3 style={{ fontSize: '24px', marginBottom: '1.5rem' }}>Choose Your License</h3>
-    
-    <div style={styles.licenseGrid}>
-      {[
-        { 
-          id: 'non_commercial', 
-          icon: '🎁', 
-          title: 'Non-Commercial Social Remixing', 
-          desc: 'Free remixing with attribution. No commercialization.',
-          terms: {
-            transferable: true,
-            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-            defaultMintingFee: BigInt(0),
-            expiration: BigInt(0),
-            commercialUse: false,
-            commercialAttribution: false,
-            commercializerChecker: "0x0000000000000000000000000000000000000000",
-            commercializerCheckerData: "0x",
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: "0x1514000000000000000000000000000000000000",
-            uri: "",
-          }
-        },
-        { 
-          id: 'commercial_use', 
-          icon: '💼', 
-          title: 'Commercial Use', 
-          desc: 'Pay to use with attribution, no revenue sharing.',
-          terms: {
-            transferable: true,
-            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-            defaultMintingFee: BigInt(100), // Set minting fee
-            expiration: BigInt(0),
-            commercialUse: true,
-            commercialAttribution: true,
-            commercializerChecker: "0x0000000000000000000000000000000000000000",
-            commercializerCheckerData: "0x",
-            commercialRevShare: 0, // No revenue sharing
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: false, // No derivatives allowed
-            derivativesAttribution: false,
-            derivativesApproval: false,
-            derivativesReciprocal: false,
-            derivativeRevCeiling: BigInt(0),
-            currency: "0x1514000000000000000000000000000000000000",
-            uri: "",
-          }
-        },
-        { 
-          id: 'commercial_remix', 
-          icon: '🎨', 
-          title: 'Commercial Remix', 
-          desc: 'Pay to use with attribution and revenue sharing.',
-          terms: {
-            transferable: true,
-            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-            defaultMintingFee: BigInt(100),
-            expiration: BigInt(0),
-            commercialUse: true,
-            commercialAttribution: true,
-            commercializerChecker: "0x0000000000000000000000000000000000000000",
-            commercializerCheckerData: "0x",
-            commercialRevShare: 10000000, // 10% revenue share (10 * 10^6)
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: "0x1514000000000000000000000000000000000000",
-            uri: "",
-          }
-        },
-        { 
-          id: 'cc_attribution', 
-          icon: '⚡', 
-          title: 'Creative Commons Attribution', 
-          desc: 'Free remixing and commercial use with attribution.',
-          terms: {
-            transferable: true,
-            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-            defaultMintingFee: BigInt(0),
-            expiration: BigInt(0),
-            commercialUse: true,
-            commercialAttribution: true,
-            commercializerChecker: "0x0000000000000000000000000000000000000000",
-            commercializerCheckerData: "0x",
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: false,
-            derivativeRevCeiling: BigInt(0),
-            currency: "0x1514000000000000000000000000000000000000",
-            uri: "",
-          }
-        }
-      ].map((license) => (
-        <div
-          key={license.id}
-          onClick={() => setSelectedLicense(license.id)}
-          style={{
-            ...styles.licenseCard,
-            ...(selectedLicense === license.id ? styles.licenseCardSelected : {})
-          }}
-        >
-          <div style={{ fontSize: '36px', marginBottom: '0.5rem' }}>{license.icon}</div>
-          <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>{license.title}</div>
-          <div style={{ fontSize: '14px', color: '#6B7280' }}>{license.desc}</div>
-        </div>
-      ))}
-    </div>
-    
-    {/* AI Learning Toggle - hanya untuk non-AI content */}
-    {!aiDetection?.isAI && (
-      <div style={styles.toggleContainer}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ fontSize: '24px' }}>🤖</span>
-          <span style={{ fontWeight: 600 }}>Allow AI Training</span>
-        </div>
-        <div 
-          onClick={() => setAiLearning(!aiLearning)}
-          style={{
-            ...styles.toggleSwitch,
-            ...(aiLearning ? styles.toggleSwitchActive : {})
-          }}
-        >
-          <div style={{
-            ...styles.toggleKnob,
-            left: aiLearning ? '33px' : '3px'
-          }}></div>
-        </div>
-      </div>
-    )}
-    
-    <button 
-      onClick={registerIP}
-      disabled={isRegistering}
-      style={{
-        ...styles.button,
-        ...styles.buttonPrimary,
-        ...(isRegistering ? styles.buttonDisabled : {}),
-        width: '100%',
-        fontSize: '20px',
-        padding: '1.5rem'
-      }}
-    >
-      {isRegistering ? (
-        <>
-          <Loader2 size={24} className="animate-spin" />
-          <span>Registering...</span>
-        </>
-      ) : (
-        <>
-          <span style={{ fontSize: '24px' }}>🚀</span>
-          <span>Register My Asset!</span>
-        </>
-      )}
-    </button>
-  </div>
-)}
+        {/* Step 4: License & Register */}
+        {currentStep === 4 && (
+          <div>
+            <h3 style={{ fontSize: '24px', marginBottom: '1.5rem', color: '#1F2937' }}>Choose Your License</h3>
+            
+            <div style={styles.licenseGrid}>
+              {[
+                { 
+                  id: 'non_commercial', 
+                  icon: '🎁', 
+                  title: 'Non-Commercial Social Remixing', 
+                  desc: 'Free remixing with attribution. No commercialization.',
+                },
+                { 
+                  id: 'commercial_use', 
+                  icon: '💼', 
+                  title: 'Commercial Use', 
+                  desc: 'Pay to use with attribution, no revenue sharing.',
+                },
+                { 
+                  id: 'commercial_remix', 
+                  icon: '🎨', 
+                  title: 'Commercial Remix', 
+                  desc: 'Pay to use with attribution and revenue sharing.',
+                },
+                { 
+                  id: 'cc_attribution', 
+                  icon: '⚡', 
+                  title: 'Creative Commons Attribution', 
+                  desc: 'Free remixing and commercial use with attribution.',
+                }
+              ].map((license) => (
+                <div
+                  key={license.id}
+                  onClick={() => setSelectedLicense(license.id)}
+                  style={{
+                    ...styles.licenseCard,
+                    ...(selectedLicense === license.id ? styles.licenseCardSelected : {})
+                  }}
+                >
+                  <div style={{ fontSize: '36px', marginBottom: '0.5rem' }}>{license.icon}</div>
+                  <div style={styles.licenseCardTitle}>{license.title}</div>
+                  <div style={styles.licenseCardDesc}>{license.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Custom Settings for Commercial Licenses */}
+            {(selectedLicense === 'commercial_use' || selectedLicense === 'commercial_remix') && (
+              <div style={styles.customSettings}>
+                <h4 style={{ marginBottom: '1rem', color: '#1F2937' }}>License Settings</h4>
+                
+                <div style={styles.settingRow}>
+                  <span style={{ fontWeight: 600, color: '#374151' }}>Minting Fee ($IP)</span>
+                  <input
+                    type="number"
+                    value={mintingFee}
+                    onChange={(e) => setMintingFee(e.target.value)}
+                    style={styles.settingInput}
+                    placeholder="0"
+                    min="0"
+                    step="0.1"
+                  />
+                </div>
+
+                {selectedLicense === 'commercial_remix' && (
+                  <div style={styles.settingRow}>
+                    <span style={{ fontWeight: 600, color: '#374151' }}>Revenue Share (%)</span>
+                    <input
+                      type="number"
+                      value={revenueShare}
+                      onChange={(e) => setRevenueShare(e.target.value)}
+                      style={styles.settingInput}
+                      placeholder="10"
+                      min="0"
+                      max="100"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* AI Learning Toggle - hanya untuk non-AI content */}
+            {!aiDetection?.isAI && (
+              <div style={styles.toggleContainer}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <span style={{ fontSize: '24px' }}>🤖</span>
+                  <span style={{ fontWeight: 600, color: '#1F2937' }}>Allow AI Training</span>
+                </div>
+                <div 
+                  onClick={() => setAiLearning(!aiLearning)}
+                  style={{
+                    ...styles.toggleSwitch,
+                    ...(aiLearning ? styles.toggleSwitchActive : {})
+                  }}
+                >
+                  <div style={{
+                    ...styles.toggleKnob,
+                    left: aiLearning ? '33px' : '3px'
+                  }}></div>
+                </div>
+              </div>
+            )}
+            
+            <button 
+              onClick={registerIP}
+              disabled={isRegistering}
+              style={{
+                ...styles.button,
+                ...styles.buttonPrimary,
+                ...(isRegistering ? styles.buttonDisabled : {}),
+                width: '100%',
+                fontSize: '20px',
+                padding: '1.5rem'
+              }}
+            >
+              {isRegistering ? (
+                <>
+                  <Loader2 size={24} className="animate-spin" />
+                  <span>Registering...</span>
+                </>
+              ) : (
+                <>
+                  <span style={{ fontSize: '24px' }}>🚀</span>
+                  <span>Register My Asset!</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Success State */}
-{currentStep === 5 && result && (
-  <div style={styles.successContainer}>
-    <span style={styles.successIcon} className="animate-bounce">✅</span>
-    <h2 style={{ fontSize: '32px', color: '#1E293B', marginBottom: '1rem' }}>Woohoo! 🎉</h2>
-    <p style={{ fontSize: '18px', color: '#6B7280', marginBottom: '2rem' }}>
-      Your asset is now protected on Story!
-    </p>
-    
-    <div style={styles.resultInfo}>
-      <div style={styles.resultItem}>
-        <span style={{ fontWeight: 600 }}>Transaction ID</span>
-        <a 
-          href={`https://aeneid.storyscan.io/tx/${result.txHash}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ 
-            color: '#7C3AED', 
-            fontFamily: 'monospace', 
-            fontSize: '14px',
-            textDecoration: 'underline',
-            cursor: 'pointer'
-          }}
-        >
-          {result.txHash?.slice(0, 10)}...{result.txHash?.slice(-8)}
-        </a>
-      </div>
-      <div style={{ ...styles.resultItem, borderBottom: 'none' }}>
-        <span style={{ fontWeight: 600 }}>IP Asset ID</span>
-        <a 
-          href={`https://aeneid.explorer.story.foundation/ipa/${result.ipId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ 
-            color: '#7C3AED', 
-            fontFamily: 'monospace', 
-            fontSize: '14px',
-            textDecoration: 'underline',
-            cursor: 'pointer'
-          }}
-        >
-          {result.ipId?.slice(0, 10)}...{result.ipId?.slice(-8)}
-        </a>
-      </div>
-    </div>
-    
-    <button 
-      onClick={resetForm}
-      style={{
-        ...styles.button,
-        ...styles.buttonPrimary,
-        marginTop: '2rem'
-      }}
-    >
-      <span style={{ fontSize: '20px' }}>🎨</span>
-      <span>Register Another Asset</span>
-    </button>
-  </div>
-)}
+        {currentStep === 5 && result && (
+          <div style={styles.successContainer}>
+            <span style={styles.successIcon} className="animate-bounce">✅</span>
+            <h2 style={{ fontSize: '32px', color: '#1E293B', marginBottom: '1rem' }}>Woohoo! 🎉</h2>
+            <p style={{ fontSize: '18px', color: '#6B7280', marginBottom: '2rem' }}>
+              Your asset is now protected on Story!
+            </p>
+            
+            <div style={styles.resultInfo}>
+              <div style={styles.resultItem}>
+                <span style={{ fontWeight: 600 }}>Transaction ID</span>
+                <a 
+                  href={`https://aeneid.storyscan.io/tx/${result.txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ 
+                    color: '#7C3AED', 
+                    fontFamily: 'monospace', 
+                    fontSize: '14px',
+                    textDecoration: 'underline',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {result.txHash?.slice(0, 10)}...{result.txHash?.slice(-8)}
+                </a>
+              </div>
+              <div style={{ ...styles.resultItem, borderBottom: 'none' }}>
+                <span style={{ fontWeight: 600 }}>IP Asset ID</span>
+                <a 
+                  href={`https://aeneid.explorer.story.foundation/ipa/${result.ipId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ 
+                    color: '#7C3AED', 
+                    fontFamily: 'monospace', 
+                    fontSize: '14px',
+                    textDecoration: 'underline',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {result.ipId?.slice(0, 10)}...{result.ipId?.slice(-8)}
+                </a>
+              </div>
+            </div>
+            
+            <button 
+              onClick={resetForm}
+              style={{
+                ...styles.button,
+                ...styles.buttonPrimary,
+                marginTop: '2rem'
+              }}
+            >
+              <span style={{ fontSize: '20px' }}>🎨</span>
+              <span>Register Another Asset</span>
+            </button>
+          </div>
+        )}
 
         {/* Navigation Buttons */}
         {currentStep < 5 && currentStep > 1 && (
