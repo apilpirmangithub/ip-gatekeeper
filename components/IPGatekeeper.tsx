@@ -311,7 +311,7 @@ export default function IPGatekeeper() {
   if (!isConnected) {
     return (
       <div className="text-center p-12 bg-gradient-to-br from-purple-200 via-pink-200 to-blue-200 rounded-3xl border-4 border-purple-400 shadow-xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="20" cy="20" r="3"/%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.1\"%3E%3Ccircle cx=\"20\" cy=\"20\" r=\"3\"/%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
         <div className="relative z-10">
           <div className="text-8xl mb-6">🔗</div>
           <p className="text-2xl text-purple-800 font-bold tracking-wide">Please connect your wallet to continue.</p>
@@ -423,7 +423,7 @@ export default function IPGatekeeper() {
             <div className="text-3xl mb-4 text-center">📝</div>
             <input
               type="text"
-              placeholder="✨ Enter your amazing title..."
+              placeholder="✨ Asset Name"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full p-4 border-3 border-blue-300 rounded-2xl text-lg font-semibold text-blue-800 bg-white shadow-lg focus:ring-4 focus:ring-blue-200 focus:border-blue-400 transition-all duration-300 placeholder-blue-400"
