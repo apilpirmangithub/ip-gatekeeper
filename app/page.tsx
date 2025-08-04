@@ -4,18 +4,27 @@ import IPGatekeeper from '@/components/IPGatekeeper';
 
 export default function Home() {
   return (
-    <main className="min-h-screen p-4 bg-gray-50">
-      <div className="w-full max-w-4xl mx-auto">
-        {/* Header dengan wallet terpisah */}
-        <div className="flex justify-between items-center mb-8 bg-white rounded-2xl shadow-lg p-6">
-          <h1 className="text-4xl font-bold text-gray-800">IP Gatekeeper</h1>
-          <ConnectButton />
-        </div>
+    <main className="min-h-screen bg-gray-50 text-gray-900">
+      <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
         
-        {/* Main content */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        {/* Header */}
+        <header className="flex justify-between items-center">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
+            IP Gatekeeper
+          </h1>
+          <ConnectButton />
+        </header>
+
+        {/* Content Card */}
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8 space-y-4">
           <IPGatekeeper />
-        </div>
+        </section>
+
+        {/* Optional Footer or Info */}
+        <footer className="text-sm text-gray-500 text-center">
+          Built with ❤️ using Story Protocol
+        </footer>
+
       </div>
     </main>
   );
