@@ -122,9 +122,11 @@ export default function Home() {
                 </div>
                 
                 {/* Application Content */}
-<div className="p-8">
-  <IPGatekeeperCartoon />
-</div>
+                <div className="p-8">
+                  <IPGatekeeperCartoon />
+                </div>
+              </div>
+            </div>
 
             {/* Features Grid */}
             <div className="grid md:grid-cols-3 gap-6 mt-16">
