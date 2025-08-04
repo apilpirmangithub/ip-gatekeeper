@@ -13,6 +13,7 @@ export default function IPGatekeeper() {
   
   // Multi-step state
   const [currentStep, setCurrentStep] = useState(1);
+  const [hasAutoSlided, setHasAutoSlided] = useState(false); // Track if auto-slide already happened
   const totalSteps = 4;
   
   // Form data states
@@ -50,15 +51,16 @@ export default function IPGatekeeper() {
     }
   }, [wallet, isConnected]);
 
-  // Auto-slide setelah file dipilih
+  // Auto-slide setelah file dipilih (hanya sekali)
   useEffect(() => {
-    if (currentStep === 1 && selectedFile) {
+    if (currentStep === 1 && selectedFile && !hasAutoSlided) {
       const timer = setTimeout(() => {
         setCurrentStep(2);
-      }, 1000); // Auto slide setelah 1 detik
+        setHasAutoSlided(true); // Mark that auto-slide has happened
+      }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentStep, selectedFile]);
+  }, [currentStep, selectedFile, hasAutoSlided]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -66,6 +68,7 @@ export default function IPGatekeeper() {
 
     setSelectedFile(file);
     setAiDetection(null);
+    setHasAutoSlided(false); // Reset auto-slide flag when new file is selected
     
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -328,6 +331,7 @@ export default function IPGatekeeper() {
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+      // Don't reset hasAutoSlided when going back, so auto-slide won't happen again
     }
   };
 
@@ -386,12 +390,14 @@ export default function IPGatekeeper() {
                   <p className="text-sm text-orange-700 font-semibold">
                     🎯 Selected: {selectedFile.name}
                   </p>
-                  <div className="mt-2 text-center">
-                    <p className="text-sm text-blue-600">Auto-advancing to detection...</p>
-                    <div className="w-full bg-gray-300 rounded-full h-2 mt-2">
-                      <div className="bg-blue-500 h-2 rounded-full animate-progress" style={{width: '100%'}}></div>
+                  {!hasAutoSlided && (
+                    <div className="mt-2 text-center">
+                      <p className="text-sm text-blue-600">Auto-advancing to detection...</p>
+                      <div className="w-full bg-gray-300 rounded-full h-2 mt-2">
+                        <div className="bg-blue-500 h-2 rounded-full animate-progress" style={{width: '100%'}}></div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
             </div>
@@ -406,6 +412,22 @@ export default function IPGatekeeper() {
                     className="w-[230px] h-[230px] object-cover rounded-xl border-4 border-gray-200 shadow-lg"
                     style={{ width: '230px', height: '230px' }}
                   />
+                </div>
+              </div>
+            )}
+
+            {/* Show detection result if available (when user comes back) */}
+            {aiDetection && hasAutoSlided && (
+              <div className={`p-4 rounded-2xl border-2 ${
+                aiDetection.isAI 
+                  ? 'bg-red-50 border-red-200' 
+                  : 'bg-green-50 border-green-200'
+              }`}>
+                <div className="text-center">
+                  <p className="text-sm font-semibold">
+                    Detection Result: {aiDetection.isAI ? '🤖 AI-Generated' : '🎨 Original'} 
+                    ({(aiDetection.confidence * 100).toFixed(1)}% confidence)
+                  </p>
                 </div>
               </div>
             )}
@@ -779,6 +801,7 @@ export default function IPGatekeeper() {
                       setTitle('');
                       setDescription('');
                       setResult(null);
+                      setHasAutoSlided(false); // Reset auto-slide flag
                     }}
                     className="px-8 py-4 rounded-2xl font-bold text-lg bg-green-500 text-white hover:bg-green-600 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
