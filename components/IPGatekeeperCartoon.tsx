@@ -423,77 +423,77 @@ export default function IPGatekeeperCartoon() {
     }
   };
 
-  // Get license terms based on selection
-  const getLicenseTerms = () => {
-    const baseTerms = {
-      transferable: true,
-      royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-      expiration: BigInt(0),
-      commercializerChecker: "0x0000000000000000000000000000000000000000",
-      commercializerCheckerData: "0x",
-      commercialRevCeiling: BigInt(0),
-      derivativeRevCeiling: BigInt(0),
-      currency: "0x1514000000000000000000000000000000000000", // $WIP token
-      uri: "",
-    };
-
-    switch (selectedLicense) {
-      case 'non_commercial':
-        return {
-          ...baseTerms,
-          defaultMintingFee: BigInt(0),
-          commercialUse: false,
-          commercialAttribution: false,
-          commercialRevShare: 0,
-          derivativesAllowed: true,
-          derivativesAttribution: true,
-          derivativesApproval: false,
-          derivativesReciprocal: true,
-        };
-      
-      case 'commercial_use':
-        return {
-          ...baseTerms,
-          defaultMintingFee: parseEther(mintingFee || '0'),
-          commercialUse: true,
-          commercialAttribution: true,
-          commercialRevShare: 0,
-          derivativesAllowed: false,
-          derivativesAttribution: false,
-          derivativesApproval: false,
-          derivativesReciprocal: false,
-        };
-      
-      case 'commercial_remix':
-        return {
-          ...baseTerms,
-          defaultMintingFee: parseEther(mintingFee || '0'),
-          commercialUse: true,
-          commercialAttribution: true,
-          commercialRevShare: parseInt(revenueShare) * 1000000, // Convert to proper format
-          derivativesAllowed: true,
-          derivativesAttribution: true,
-          derivativesApproval: false,
-          derivativesReciprocal: true,
-        };
-      
-      case 'cc_attribution':
-        return {
-          ...baseTerms,
-          defaultMintingFee: BigInt(0),
-          commercialUse: true,
-          commercialAttribution: true,
-          commercialRevShare: 0,
-          derivativesAllowed: true,
-          derivativesAttribution: true,
-          derivativesApproval: false,
-          derivativesReciprocal: false,
-        };
-      
-      default:
-        return baseTerms;
-    }
+  // Ganti fungsi getLicenseTerms dengan yang benar
+const getLicenseTerms = () => {
+  const baseTerms = {
+    transferable: true,
+    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    expiration: 0n,
+    commercializerChecker: "0x0000000000000000000000000000000000000000",
+    commercializerCheckerData: "0x",
+    commercialRevCeiling: 0n,
+    derivativeRevCeiling: 0n,
+    currency: "0x1514000000000000000000000000000000000000", // $WIP token
+    uri: "",
   };
+
+  switch (selectedLicense) {
+    case 'non_commercial':
+      return {
+        ...baseTerms,
+        defaultMintingFee: 0n,
+        commercialUse: false,
+        commercialAttribution: false,
+        commercialRevShare: 0,
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+      };
+    
+    case 'commercial_use':
+      return {
+        ...baseTerms,
+        defaultMintingFee: parseEther(mintingFee || '0'),
+        commercialUse: true,
+        commercialAttribution: true,
+        commercialRevShare: 0,
+        derivativesAllowed: false,
+        derivativesAttribution: false,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+      };
+    
+    case 'commercial_remix':
+      return {
+        ...baseTerms,
+        defaultMintingFee: parseEther(mintingFee || '0'),
+        commercialUse: true,
+        commercialAttribution: true,
+        commercialRevShare: parseInt(revenueShare) * 1000000, // Convert to proper format
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+      };
+    
+    case 'cc_attribution':
+      return {
+        ...baseTerms,
+        defaultMintingFee: 0n,
+        commercialUse: true,
+        commercialAttribution: true,
+        commercialRevShare: 0,
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+      };
+    
+    default:
+      return baseTerms;
+  }
+};
 
   // Register IP Asset
   const registerIP = async () => {
