@@ -13,7 +13,7 @@ export default function IPGatekeeper() {
   
   // Multi-step state
   const [currentStep, setCurrentStep] = useState(1);
-  const [hasAutoSlided, setHasAutoSlided] = useState(false); // Track if auto-slide already happened
+  const [hasAutoSlided, setHasAutoSlided] = useState(false);
   const totalSteps = 4;
   
   // Form data states
@@ -56,7 +56,7 @@ export default function IPGatekeeper() {
     if (currentStep === 1 && selectedFile && !hasAutoSlided) {
       const timer = setTimeout(() => {
         setCurrentStep(2);
-        setHasAutoSlided(true); // Mark that auto-slide has happened
+        setHasAutoSlided(true);
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -68,7 +68,7 @@ export default function IPGatekeeper() {
 
     setSelectedFile(file);
     setAiDetection(null);
-    setHasAutoSlided(false); // Reset auto-slide flag when new file is selected
+    setHasAutoSlided(false);
     
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -99,9 +99,6 @@ export default function IPGatekeeper() {
     setIsPreparingTx(true);
 
     try {
-      console.log('Starting IP registration...');
-      console.log('PIL Type:', licenseSettings.pilType);
-
       const arrayBuffer = await selectedFile.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       const imageCid = await uploadToIPFS(buffer, selectedFile.name);
@@ -139,7 +136,6 @@ export default function IPGatekeeper() {
       const nftMetadataCid = await uploadToIPFS(JSON.stringify(nftMetadata), 'nft-metadata.json');
 
       setIsPreparingTx(false);
-      console.log('Ready to sign transaction...');
 
       let response;
 
@@ -331,7 +327,6 @@ export default function IPGatekeeper() {
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
-      // Don't reset hasAutoSlided when going back, so auto-slide won't happen again
     }
   };
 
@@ -342,9 +337,7 @@ export default function IPGatekeeper() {
   if (!isConnected) {
     return (
       <div className="text-center p-12 bg-gradient-to-br from-purple-200 via-pink-200 to-blue-200 rounded-3xl border-4 border-purple-400 shadow-xl">
-        <div className="text-8xl mb-6">🔗</div>
         <p className="text-2xl text-purple-800 font-bold">Please connect your wallet to continue.</p>
-        <div className="mt-4 w-32 h-2 bg-purple-400 rounded-full mx-auto animate-pulse"></div>
       </div>
     );
   }
@@ -359,12 +352,6 @@ export default function IPGatekeeper() {
           {currentStep === 3 && "Asset Information"}
           {currentStep === 4 && "License & Register"}
         </h2>
-        <p className="text-gray-600">
-          {currentStep === 1 && "Select an image file to upload"}
-          {currentStep === 2 && "AI detection in progress and results"}
-          {currentStep === 3 && "Enter asset name and description"}
-          {currentStep === 4 && "Configure license and register your IP Asset"}
-        </p>
       </div>
 
       {/* Step Content */}
@@ -373,9 +360,7 @@ export default function IPGatekeeper() {
         {currentStep === 1 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <div className="text-6xl mb-4">📁</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">Upload Your Asset</h3>
-              <p className="text-gray-600">Choose an image file to register as an IP Asset</p>
             </div>
 
             <div className="border-4 border-dashed border-orange-400 rounded-3xl p-8 bg-gradient-to-br from-orange-100 via-yellow-100 to-pink-100 shadow-lg">
@@ -388,7 +373,7 @@ export default function IPGatekeeper() {
               {selectedFile && (
                 <div className="mt-4 p-4 bg-white rounded-2xl border-2 border-orange-300">
                   <p className="text-sm text-orange-700 font-semibold">
-                    🎯 Selected: {selectedFile.name}
+                    Selected: {selectedFile.name}
                   </p>
                   {!hasAutoSlided && (
                     <div className="mt-2 text-center">
@@ -416,7 +401,7 @@ export default function IPGatekeeper() {
               </div>
             )}
 
-            {/* Show detection result if available (when user comes back) */}
+            {/* Show detection result if available */}
             {aiDetection && hasAutoSlided && (
               <div className={`p-4 rounded-2xl border-2 ${
                 aiDetection.isAI 
@@ -425,7 +410,7 @@ export default function IPGatekeeper() {
               }`}>
                 <div className="text-center">
                   <p className="text-sm font-semibold">
-                    Detection Result: {aiDetection.isAI ? '🤖 AI-Generated' : '🎨 Original'} 
+                    Detection Result: {aiDetection.isAI ? 'AI-Generated' : 'Original'} 
                     ({(aiDetection.confidence * 100).toFixed(1)}% confidence)
                   </p>
                 </div>
@@ -434,13 +419,11 @@ export default function IPGatekeeper() {
           </div>
         )}
 
-        {/* Step 2: AI Detection (Detecting + Results dalam satu tampilan) */}
+        {/* Step 2: AI Detection */}
         {currentStep === 2 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <div className="text-6xl mb-4">🤖</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">AI Detection</h3>
-              <p className="text-gray-600">Analysis of your uploaded image</p>
             </div>
 
             {/* Image Preview */}
@@ -461,35 +444,31 @@ export default function IPGatekeeper() {
             {isDetecting && (
               <div className="text-center p-8 bg-blue-50 rounded-3xl border-2 border-blue-200">
                 <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-lg text-blue-600 font-bold">🔍 Analyzing your image...</p>
-                <p className="text-sm text-blue-500 mt-2">This may take a few seconds</p>
+                <p className="text-lg text-blue-600 font-bold">Analyzing your image...</p>
               </div>
             )}
 
             {/* AI Detection Result */}
             {aiDetection && (
-              <div className={`p-6 rounded-3xl border-4 shadow-xl animate-slideUp ${
+              <div className={`p-6 rounded-3xl border-4 shadow-xl ${
                 aiDetection.isAI 
                   ? 'bg-gradient-to-br from-red-200 via-pink-200 to-orange-200 border-red-400' 
                   : 'bg-gradient-to-br from-green-200 via-emerald-200 to-blue-200 border-green-400'
               }`}>
-                <div className="text-4xl mb-4 text-center">
-                  {aiDetection.isAI ? '🤖' : '🎨'}
-                </div>
                 <h3 className="font-bold text-2xl mb-3 text-center">
-                  {aiDetection.isAI ? '🔴' : '🟢'} Detection Complete!
+                  Detection Complete
                 </h3>
                 <div className="text-center space-y-2">
                   <p className="text-lg font-semibold">
-                    🏷️ Status: <span className="font-bold">{aiDetection.isAI ? 'AI-Generated' : 'Original'}</span>
+                    Status: <span className="font-bold">{aiDetection.isAI ? 'AI-Generated' : 'Original'}</span>
                   </p>
                   <p className="text-lg font-semibold">
-                    📊 Confidence: <span className="font-bold">{(aiDetection.confidence * 100).toFixed(1)}%</span>
+                    Confidence: <span className="font-bold">{(aiDetection.confidence * 100).toFixed(1)}%</span>
                   </p>
                   {aiDetection.isAI && (
                     <div className="mt-4 p-3 bg-white bg-opacity-50 rounded-lg">
                       <p className="text-sm font-semibold text-red-700">
-                        ⚠️ AI-generated content detected. AI training will be automatically disabled.
+                        AI-generated content detected. AI training will be automatically disabled.
                       </p>
                     </div>
                   )}
@@ -497,10 +476,8 @@ export default function IPGatekeeper() {
               </div>
             )}
 
-            {/* Loading state when no detection yet */}
             {!isDetecting && !aiDetection && (
               <div className="text-center p-8">
-                <div className="text-4xl mb-4">⏳</div>
                 <p className="text-lg text-gray-600">Preparing AI detection...</p>
               </div>
             )}
@@ -511,18 +488,15 @@ export default function IPGatekeeper() {
         {currentStep === 3 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <div className="text-6xl mb-4">📝</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">Asset Information</h3>
-              <p className="text-gray-600">Provide details about your IP Asset</p>
             </div>
 
             <div className="space-y-6">
               <div className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-6 rounded-3xl border-4 border-blue-300 shadow-xl">
-                <div className="text-3xl mb-4 text-center">📝</div>
                 <label className="block text-lg font-bold text-blue-800 mb-2">Asset Name</label>
                 <input
                   type="text"
-                  placeholder="✨ Enter asset name..."
+                  placeholder="Enter asset name..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full p-4 border-2 border-blue-300 rounded-2xl text-lg font-semibold text-blue-800 bg-white shadow-lg"
@@ -530,10 +504,9 @@ export default function IPGatekeeper() {
               </div>
               
               <div className="bg-gradient-to-br from-green-100 via-teal-100 to-blue-100 p-6 rounded-3xl border-4 border-green-300 shadow-xl">
-                <div className="text-3xl mb-4 text-center">📖</div>
                 <label className="block text-lg font-bold text-green-800 mb-2">Description</label>
                 <textarea
-                  placeholder="🎯 Describe your masterpiece..."
+                  placeholder="Describe your asset..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full p-4 border-2 border-green-300 rounded-2xl h-32 text-lg font-semibold text-green-800 bg-white shadow-lg resize-none"
@@ -547,15 +520,13 @@ export default function IPGatekeeper() {
         {currentStep === 4 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <div className="text-6xl mb-4">⚖️</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">License Settings</h3>
-              <p className="text-gray-600">Configure how others can use your IP Asset</p>
             </div>
 
             <div className="bg-gradient-to-br from-yellow-100 via-orange-100 to-red-100 p-6 rounded-3xl border-4 border-yellow-400 shadow-xl">
               <div className="space-y-4">
                 <label className="block text-lg font-bold text-yellow-800">
-                  🏷️ License Type
+                  License Type
                 </label>
                 <select
                   value={licenseSettings.pilType}
@@ -590,58 +561,58 @@ export default function IPGatekeeper() {
                   }))}
                   className="w-full p-4 border-2 border-yellow-400 rounded-2xl text-lg font-bold text-yellow-800 bg-white shadow-lg"
                 >
-                  <option value="open_use">🔓 1. Open Use</option>
-                  <option value="non_commercial_remix">🎨 2. Non-Commercial Remix</option>
-                  <option value="commercial_use">💼 3. Commercial Use</option>
-                  <option value="commercial_remix">🔄 4. Commercial Remix</option>
+                  <option value="open_use">Open Use</option>
+                  <option value="non_commercial_remix">Non-Commercial Remix</option>
+                  <option value="commercial_use">Commercial Use</option>
+                  <option value="commercial_remix">Commercial Remix</option>
                 </select>
                 
                 <div className="text-sm p-4 bg-white rounded-2xl border-2 border-yellow-300">
                   {licenseSettings.pilType === 'open_use' && (
                     <div className="text-yellow-700">
-                      <div className="text-lg font-bold mb-2">🔓 Open Freedom!</div>
+                      <div className="text-lg font-bold mb-2">Open Use</div>
                       <ul className="space-y-1 text-sm font-semibold">
-                        <li>🚫 Attribution not required</li>
-                        <li>🎨 Non-commercial use only</li> 
-                        <li>🔄 Remixing allowed</li>
-                        <li>💰 No royalty sharing</li>
-                        <li>🤖 AI training allowed</li>
+                        <li>• Attribution not required</li>
+                        <li>• Non-commercial use only</li> 
+                        <li>• Remixing allowed</li>
+                        <li>• No royalty sharing</li>
+                        <li>• AI training allowed</li>
                      </ul>
                    </div>
                  )}
                   {licenseSettings.pilType === 'non_commercial_remix' && (
                     <div className="text-yellow-700">
-                      <div className="text-lg font-bold mb-2">🎨 Creative Commons Style!</div>
+                      <div className="text-lg font-bold mb-2">Non-Commercial Remix</div>
                       <ul className="space-y-1 text-sm font-semibold">
-                        <li>🚫 Attribution not required</li>
-                        <li>🎨 Non-commercial use only</li>
-                        <li>🔄 Remixing allowed</li>
-                        <li>💰 No royalty sharing</li>
-                        <li>🤖 AI training allowed</li>
+                        <li>• Attribution not required</li>
+                        <li>• Non-commercial use only</li>
+                        <li>• Remixing allowed</li>
+                        <li>• No royalty sharing</li>
+                        <li>• AI training allowed</li>
                       </ul>
                     </div>
                   )}
                   {licenseSettings.pilType === 'commercial_use' && (
                     <div className="text-yellow-700">
-                      <div className="text-lg font-bold mb-2">💼 Business Ready!</div>
+                      <div className="text-lg font-bold mb-2">Commercial Use</div>
                       <ul className="space-y-1 text-sm font-semibold">
-                        <li>🚫 Attribution not required</li>
-                        <li>💼 Commercial use allowed</li>
-                        <li>🚫 Remixing not allowed</li>
-                        <li>💰 No royalty sharing</li>
-                        <li>🤖 AI training allowed</li>
+                        <li>• Attribution not required</li>
+                        <li>• Commercial use allowed</li>
+                        <li>• Remixing not allowed</li>
+                        <li>• No royalty sharing</li>
+                        <li>• AI training allowed</li>
                       </ul>
                     </div>
                   )}
                   {licenseSettings.pilType === 'commercial_remix' && (
                     <div className="text-yellow-700">
-                      <div className="text-lg font-bold mb-2">🔄 Ultimate Flexibility!</div>
+                      <div className="text-lg font-bold mb-2">Commercial Remix</div>
                       <ul className="space-y-1 text-sm font-semibold">
-                        <li>🚫 Attribution not required</li>
-                        <li>💼 Commercial use allowed</li>
-                        <li>🔄 Remixing allowed</li>
-                        <li>💰 Royalty sharing</li>
-                        <li>🤖 AI training allowed</li>
+                        <li>• Attribution not required</li>
+                        <li>• Commercial use allowed</li>
+                        <li>• Remixing allowed</li>
+                        <li>• Royalty sharing</li>
+                        <li>• AI training allowed</li>
                       </ul>
                     </div>
                   )}
@@ -651,7 +622,7 @@ export default function IPGatekeeper() {
               {(licenseSettings.pilType === 'commercial_use' || licenseSettings.pilType === 'commercial_remix') && (
                 <div className="space-y-4 mt-6">
                   <label className="block text-lg font-bold text-orange-800">
-                    💎 License Price (in $IP)
+                    License Price (in $IP)
                   </label>
                   <input
                     type="number"
@@ -663,7 +634,7 @@ export default function IPGatekeeper() {
                       licensePrice: parseFloat(e.target.value) || 0
                     }))}
                     className="w-full p-4 border-2 border-orange-400 rounded-2xl text-lg font-bold text-orange-800 bg-white shadow-lg"
-                    placeholder="💰 Enter license price in $IP"
+                    placeholder="Enter license price in $IP"
                   />
                 </div>
               )}
@@ -671,7 +642,7 @@ export default function IPGatekeeper() {
               {licenseSettings.pilType === 'commercial_remix' && (
                 <div className="space-y-4 mt-6">
                   <label className="block text-lg font-bold text-red-800">
-                    📊 Revenue Share (%)
+                    Revenue Share (%)
                   </label>
                   <input
                     type="number"
@@ -683,7 +654,7 @@ export default function IPGatekeeper() {
                       revShare: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
                     }))}
                     className="w-full p-4 border-2 border-red-400 rounded-2xl text-lg font-bold text-red-800 bg-white shadow-lg"
-                    placeholder="📈 Enter revenue share percentage"
+                    placeholder="Enter revenue share percentage"
                   />
                 </div>
               )}
@@ -698,24 +669,24 @@ export default function IPGatekeeper() {
                     className="w-5 h-5 text-purple-600"
                   />
                   <span className={`text-lg font-bold ${aiDetection?.isAI ? 'text-gray-500' : 'text-purple-800'}`}>
-                    🤖 Allow AI Training {aiDetection?.isAI && '(Disabled - AI Detected)'}
+                    Allow AI Training {aiDetection?.isAI && '(Disabled - AI Detected)'}
                   </span>
                 </label>
               </div>
 
               <div className="space-y-4 mt-6">
                 <label className="block text-lg font-bold text-indigo-800">
-                  🌍 Territory
+                  Territory
                 </label>
                 <select
                   value={licenseSettings.territory}
                   onChange={(e) => setLicenseSettings(prev => ({ ...prev, territory: e.target.value }))}
                   className="w-full p-4 border-2 border-indigo-400 rounded-2xl text-lg font-bold text-indigo-800 bg-white shadow-lg"
                 >
-                  <option value="Global">🌎 Global</option>
-                  <option value="US">🇺🇸 United States</option>
-                  <option value="EU">🇪🇺 European Union</option>
-                  <option value="Asia">🌏 Asia Pacific</option>
+                  <option value="Global">Global</option>
+                  <option value="US">United States</option>
+                  <option value="EU">European Union</option>
+                  <option value="Asia">Asia Pacific</option>
                 </select>
               </div>
             </div>
@@ -734,18 +705,15 @@ export default function IPGatekeeper() {
                 {isPreparingTx ? (
                   <>
                     <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>⚙️ Preparing transaction...</span>
+                    <span>Preparing transaction...</span>
                   </>
                 ) : isRegistering ? (
                   <>
                     <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>✋ Waiting for signature...</span>
+                    <span>Waiting for signature...</span>
                   </>
                 ) : (
-                  <>
-                    <span className="text-3xl">🚀</span>
-                    <span>Register IP Asset</span>
-                  </>
+                  <span>Register IP Asset</span>
                 )}
               </div>
             </button>
@@ -754,7 +722,6 @@ export default function IPGatekeeper() {
             {result && (
               <div className="p-8 bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 rounded-3xl border-4 border-green-400 shadow-2xl">
                 <div className="text-center mb-6">
-                  <div className="text-8xl mb-4">🎉</div>
                   <h3 className="font-bold text-3xl text-green-800 mb-2">Success!</h3>
                   <p className="text-xl font-semibold text-green-700">IP Asset registered successfully!</p>
                 </div>
@@ -762,7 +729,6 @@ export default function IPGatekeeper() {
                 <div className="space-y-4">
                   <div className="p-4 bg-white rounded-2xl border-2 border-green-300">
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className="text-2xl">📋</span>
                       <span className="text-sm font-bold text-gray-600">Transaction:</span>
                     </div>
                     <a 
@@ -777,7 +743,6 @@ export default function IPGatekeeper() {
                   
                   <div className="p-4 bg-white rounded-2xl border-2 border-green-300">
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className="text-2xl">🏷️</span>
                       <span className="text-sm font-bold text-gray-600">IP ID:</span>
                     </div>
                     <a 
@@ -801,7 +766,7 @@ export default function IPGatekeeper() {
                       setTitle('');
                       setDescription('');
                       setResult(null);
-                      setHasAutoSlided(false); // Reset auto-slide flag
+                      setHasAutoSlided(false);
                     }}
                     className="px-8 py-4 rounded-2xl font-bold text-lg bg-green-500 text-white hover:bg-green-600 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
@@ -825,7 +790,7 @@ export default function IPGatekeeper() {
               : 'bg-gray-500 text-white hover:bg-gray-600 shadow-lg hover:shadow-xl'
           }`}
         >
-          ← Back
+          Back
         </button>
 
         {currentStep < 4 && (
@@ -842,7 +807,7 @@ export default function IPGatekeeper() {
                 : 'bg-blue-500 text-white hover:bg-blue-600 shadow-lg hover:shadow-xl'
             }`}
           >
-            Next →
+            Next
           </button>
         )}
       </div>
