@@ -686,79 +686,177 @@ export default function IPGatekeeperCartoon() {
           </div>
         )}
 
-        {/* Step 4: License & Register */}
-        {currentStep === 4 && (
-          <div>
-            <h3 style={{ fontSize: '24px', marginBottom: '1.5rem' }}>Choose Your License</h3>
-            
-            <div style={styles.licenseGrid}>
-              {[
-                { id: 'open_use', icon: '🎁', title: 'Open Use', desc: 'Free for everyone!' },
-                { id: 'non_commercial', icon: '🏠', title: 'Non-Commercial', desc: 'Personal use only' },
-                { id: 'commercial', icon: '💼', title: 'Commercial', desc: 'Business ready!' },
-                { id: 'custom', icon: '⚡', title: 'Custom Mix', desc: 'Your rules!' }
-              ].map((license) => (
-                <div
-                  key={license.id}
-                  onClick={() => setSelectedLicense(license.id)}
-                  style={{
-                    ...styles.licenseCard,
-                    ...(selectedLicense === license.id ? styles.licenseCardSelected : {})
-                  }}
-                >
-                  <div style={{ fontSize: '36px', marginBottom: '0.5rem' }}>{license.icon}</div>
-                  <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>{license.title}</div>
-                  <div style={{ fontSize: '14px', color: '#6B7280' }}>{license.desc}</div>
-                </div>
-              ))}
-            </div>
-            
-            <div style={styles.toggleContainer}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span style={{ fontSize: '24px' }}>🤖</span>
-                <span style={{ fontWeight: 600 }}>Allow AI Training</span>
-              </div>
-              <div 
-                onClick={() => !aiDetection?.isAI && setAiLearning(!aiLearning)}
-                style={{
-                  ...styles.toggleSwitch,
-                  ...(aiLearning ? styles.toggleSwitchActive : {}),
-                  ...(aiDetection?.isAI ? { opacity: 0.5, cursor: 'not-allowed' } : {})
-                }}
-              >
-                <div style={{
-                  ...styles.toggleKnob,
-                  left: aiLearning ? '33px' : '3px'
-                }}></div>
-              </div>
-            </div>
-            
-            <button 
-              onClick={registerIP}
-              disabled={isRegistering}
-              style={{
-                ...styles.button,
-                ...styles.buttonPrimary,
-                ...(isRegistering ? styles.buttonDisabled : {}),
-                width: '100%',
-                fontSize: '20px',
-                padding: '1.5rem'
-              }}
-            >
-              {isRegistering ? (
-                <>
-                  <Loader2 size={24} className="animate-spin" />
-                  <span>Registering...</span>
-                </>
-              ) : (
-                <>
-                  <span style={{ fontSize: '24px' }}>🚀</span>
-                  <span>Register My Asset!</span>
-                </>
-              )}
-            </button>
-          </div>
-        )}
+       // Ganti bagian Step 4: License & Register dengan konfigurasi yang benar
+{currentStep === 4 && (
+  <div>
+    <h3 style={{ fontSize: '24px', marginBottom: '1.5rem' }}>Choose Your License</h3>
+    
+    <div style={styles.licenseGrid}>
+      {[
+        { 
+          id: 'non_commercial', 
+          icon: '🎁', 
+          title: 'Non-Commercial Social Remixing', 
+          desc: 'Free remixing with attribution. No commercialization.',
+          terms: {
+            transferable: true,
+            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+            defaultMintingFee: BigInt(0),
+            expiration: BigInt(0),
+            commercialUse: false,
+            commercialAttribution: false,
+            commercializerChecker: "0x0000000000000000000000000000000000000000",
+            commercializerCheckerData: "0x",
+            commercialRevShare: 0,
+            commercialRevCeiling: BigInt(0),
+            derivativesAllowed: true,
+            derivativesAttribution: true,
+            derivativesApproval: false,
+            derivativesReciprocal: true,
+            derivativeRevCeiling: BigInt(0),
+            currency: "0x1514000000000000000000000000000000000000",
+            uri: "",
+          }
+        },
+        { 
+          id: 'commercial_use', 
+          icon: '💼', 
+          title: 'Commercial Use', 
+          desc: 'Pay to use with attribution, no revenue sharing.',
+          terms: {
+            transferable: true,
+            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+            defaultMintingFee: BigInt(100), // Set minting fee
+            expiration: BigInt(0),
+            commercialUse: true,
+            commercialAttribution: true,
+            commercializerChecker: "0x0000000000000000000000000000000000000000",
+            commercializerCheckerData: "0x",
+            commercialRevShare: 0, // No revenue sharing
+            commercialRevCeiling: BigInt(0),
+            derivativesAllowed: false, // No derivatives allowed
+            derivativesAttribution: false,
+            derivativesApproval: false,
+            derivativesReciprocal: false,
+            derivativeRevCeiling: BigInt(0),
+            currency: "0x1514000000000000000000000000000000000000",
+            uri: "",
+          }
+        },
+        { 
+          id: 'commercial_remix', 
+          icon: '🎨', 
+          title: 'Commercial Remix', 
+          desc: 'Pay to use with attribution and revenue sharing.',
+          terms: {
+            transferable: true,
+            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+            defaultMintingFee: BigInt(100),
+            expiration: BigInt(0),
+            commercialUse: true,
+            commercialAttribution: true,
+            commercializerChecker: "0x0000000000000000000000000000000000000000",
+            commercializerCheckerData: "0x",
+            commercialRevShare: 10000000, // 10% revenue share (10 * 10^6)
+            commercialRevCeiling: BigInt(0),
+            derivativesAllowed: true,
+            derivativesAttribution: true,
+            derivativesApproval: false,
+            derivativesReciprocal: true,
+            derivativeRevCeiling: BigInt(0),
+            currency: "0x1514000000000000000000000000000000000000",
+            uri: "",
+          }
+        },
+        { 
+          id: 'cc_attribution', 
+          icon: '⚡', 
+          title: 'Creative Commons Attribution', 
+          desc: 'Free remixing and commercial use with attribution.',
+          terms: {
+            transferable: true,
+            royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+            defaultMintingFee: BigInt(0),
+            expiration: BigInt(0),
+            commercialUse: true,
+            commercialAttribution: true,
+            commercializerChecker: "0x0000000000000000000000000000000000000000",
+            commercializerCheckerData: "0x",
+            commercialRevShare: 0,
+            commercialRevCeiling: BigInt(0),
+            derivativesAllowed: true,
+            derivativesAttribution: true,
+            derivativesApproval: false,
+            derivativesReciprocal: false,
+            derivativeRevCeiling: BigInt(0),
+            currency: "0x1514000000000000000000000000000000000000",
+            uri: "",
+          }
+        }
+      ].map((license) => (
+        <div
+          key={license.id}
+          onClick={() => setSelectedLicense(license.id)}
+          style={{
+            ...styles.licenseCard,
+            ...(selectedLicense === license.id ? styles.licenseCardSelected : {})
+          }}
+        >
+          <div style={{ fontSize: '36px', marginBottom: '0.5rem' }}>{license.icon}</div>
+          <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>{license.title}</div>
+          <div style={{ fontSize: '14px', color: '#6B7280' }}>{license.desc}</div>
+        </div>
+      ))}
+    </div>
+    
+    {/* AI Learning Toggle - hanya untuk non-AI content */}
+    {!aiDetection?.isAI && (
+      <div style={styles.toggleContainer}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span style={{ fontSize: '24px' }}>🤖</span>
+          <span style={{ fontWeight: 600 }}>Allow AI Training</span>
+        </div>
+        <div 
+          onClick={() => setAiLearning(!aiLearning)}
+          style={{
+            ...styles.toggleSwitch,
+            ...(aiLearning ? styles.toggleSwitchActive : {})
+          }}
+        >
+          <div style={{
+            ...styles.toggleKnob,
+            left: aiLearning ? '33px' : '3px'
+          }}></div>
+        </div>
+      </div>
+    )}
+    
+    <button 
+      onClick={registerIP}
+      disabled={isRegistering}
+      style={{
+        ...styles.button,
+        ...styles.buttonPrimary,
+        ...(isRegistering ? styles.buttonDisabled : {}),
+        width: '100%',
+        fontSize: '20px',
+        padding: '1.5rem'
+      }}
+    >
+      {isRegistering ? (
+        <>
+          <Loader2 size={24} className="animate-spin" />
+          <span>Registering...</span>
+        </>
+      ) : (
+        <>
+          <span style={{ fontSize: '24px' }}>🚀</span>
+          <span>Register My Asset!</span>
+        </>
+      )}
+    </button>
+  </div>
+)}
 
         {/* Success State */}
 {currentStep === 5 && result && (
