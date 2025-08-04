@@ -10,22 +10,21 @@ import { Loader2 } from 'lucide-react';
 const styles = {
   container: {
     width: '100%',
-    maxWidth: '900px',
+    maxWidth: '1400px', // Lebih lebar dari 900px
     margin: '0 auto',
-    padding: 'clamp(2rem, 6vw, 4rem)', // Tambah padding vertikal
-    minHeight: '120vh', // Tingkatkan dari 100vh ke 120vh
+    padding: 'clamp(1rem, 3vw, 2rem)', // Kurangi padding vertikal
+    minHeight: '100vh', // Kembali ke 100vh
     boxSizing: 'border-box' as const,
   },
   card: {
     background: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 'clamp(15px, 3vw, 30px)',
-    padding: 'clamp(3rem, 6vw, 5rem)', // Tingkatkan padding vertikal
+    padding: 'clamp(1.5rem, 3vw, 2.5rem)', // Kurangi padding vertikal
     boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
     position: 'relative' as const,
     overflow: 'hidden',
     width: '100%',
     boxSizing: 'border-box' as const,
-    minHeight: '80vh', // Tambah minimum height untuk card
   },
   walletCard: {
     background: 'white',
@@ -42,11 +41,10 @@ const styles = {
   progressContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: 'clamp(3rem, 6vw, 5rem)', // Tingkatkan margin bottom
+    marginBottom: 'clamp(1.5rem, 3vw, 2rem)', // Kurangi margin
     position: 'relative' as const,
     flexWrap: 'wrap' as const,
     gap: '0.5rem',
-    paddingBottom: '2rem', // Tambah padding bottom
   },
   progressLine: {
     position: 'absolute' as const,
@@ -106,18 +104,35 @@ const styles = {
     fontWeight: '500',
   },
   stepLabelActive: {
-  color: '#7C3AED',
-  fontWeight: '600',
-}, 
+    color: '#7C3AED',
+    fontWeight: '600',
+  }, 
+  // Layout horizontal untuk step content
+  stepContent: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr', // 2 kolom
+    gap: 'clamp(2rem, 4vw, 3rem)',
+    alignItems: 'start',
+  },
+  leftColumn: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '1.5rem',
+  },
+  rightColumn: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '1.5rem',
+  },
   uploadArea: {
-  border: '3px dashed #7C3AED',
-  borderRadius: 'clamp(15px, 3vw, 25px)',
-    padding: 'clamp(4rem, 8vw, 6rem) clamp(1rem, 3vw, 2rem)', // Tingkatkan padding vertikal
+    border: '3px dashed #7C3AED',
+    borderRadius: 'clamp(15px, 3vw, 25px)',
+    padding: 'clamp(2rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem)', // Kurangi padding vertikal
     textAlign: 'center' as const,
     background: 'linear-gradient(135deg, rgba(124,58,237,0.05), rgba(236,72,153,0.05))',
     transition: 'all 0.3s ease',
     cursor: 'pointer',
-    minHeight: '300px', // Tambah minimum height
+    minHeight: '200px', // Kurangi dari 300px
   },
   uploadAreaHover: {
     borderColor: '#EC4899',
@@ -145,7 +160,7 @@ const styles = {
     display: 'block',
   },
   formGroup: {
-    marginBottom: '2.5rem', // Tingkatkan dari 1.5rem ke 2.5rem
+    marginBottom: '1.5rem', // Kembali ke nilai original
   },
   formLabel: {
     display: 'block',
@@ -168,19 +183,19 @@ const styles = {
   },
   licenseGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))',
-    gap: 'clamp(1rem, 3vw, 2rem)', // Tingkatkan gap
-    marginBottom: '3rem', // Tingkatkan margin
+    gridTemplateColumns: 'repeat(2, 1fr)', // 2x2 grid instead of 4x1
+    gap: 'clamp(1rem, 2vw, 1.5rem)',
+    marginBottom: '2rem',
   },
   licenseCard: {
     background: '#F9FAFB',
     border: '3px solid transparent',
     borderRadius: '20px',
-    padding: 'clamp(2rem, 4vw, 3rem)', // Tingkatkan padding
+    padding: 'clamp(1rem, 2vw, 1.5rem)', // Kurangi padding
     cursor: 'pointer',
     transition: 'all 0.3s ease',
     textAlign: 'center' as const,
-    minHeight: '180px', // Tambah minimum height
+    minHeight: '120px', // Kurangi dari 180px
   },
   licenseCardSelected: {
     borderColor: '#7C3AED',
@@ -199,9 +214,8 @@ const styles = {
   customSettings: {
     background: '#F3F4F6',
     borderRadius: '15px',
-    padding: 'clamp(2rem, 4vw, 3rem)', // Tingkatkan padding
-    marginTop: '2rem',
-    marginBottom: '2rem', // Tambah margin bottom
+    padding: 'clamp(1rem, 2vw, 1.5rem)', // Kurangi padding
+    marginTop: '1rem',
   },
   settingRow: {
     display: 'flex',
@@ -223,9 +237,9 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     background: '#F3F4F6',
-    padding: 'clamp(2rem, 4vw, 3rem)', // Tingkatkan padding
+    padding: 'clamp(1rem, 2vw, 1.5rem)', // Kurangi padding
     borderRadius: '15px',
-    marginBottom: '3rem', // Tingkatkan margin
+    marginBottom: '1.5rem', // Kurangi margin
     flexWrap: 'wrap' as const,
     gap: '1rem',
   },
@@ -283,8 +297,7 @@ const styles = {
   },
   successContainer: {
     textAlign: 'center' as const,
-    padding: 'clamp(4rem, 8vw, 6rem)', // Tingkatkan padding
-    minHeight: '60vh', // Tambah minimum height
+    padding: 'clamp(2rem, 4vw, 3rem)', // Kurangi padding
   },
   successIcon: {
     fontSize: 'clamp(50px, 10vw, 80px)',
@@ -319,10 +332,9 @@ const styles = {
   aiDetectionCard: {
     background: 'linear-gradient(135deg, #F3F4F6, #E5E7EB)',
     borderRadius: '20px',
-    padding: 'clamp(3rem, 6vw, 4rem)', // Tingkatkan padding
-    marginTop: '3rem',
+    padding: 'clamp(1.5rem, 3vw, 2rem)', // Kurangi padding
+    marginTop: '1.5rem',
     textAlign: 'center' as const,
-    minHeight: '300px', // Tambah minimum height
   },
   aiBadge: {
     display: 'inline-block',
@@ -337,14 +349,17 @@ const styles = {
   navigationButtons: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 'clamp(4rem, 6vw, 6rem)', // Tingkatkan margin top
-    paddingTop: '3rem', // Tingkatkan padding top
+    marginTop: 'clamp(2rem, 3vw, 3rem)', // Kurangi margin
+    paddingTop: '1.5rem', // Kurangi padding
     borderTop: '2px solid #E5E7EB',
     gap: '1rem',
     flexWrap: 'wrap' as const,
   },
   // Media queries untuk CSS-in-JS
   '@media (max-width: 768px)': {
+    stepContent: {
+      gridTemplateColumns: '1fr', // 1 kolom di mobile
+    },
     progressLine: {
       display: 'none',
     },
