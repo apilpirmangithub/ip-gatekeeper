@@ -342,7 +342,9 @@ export default function IPGatekeeperCartoon() {
       .animate-bounce { animation: bounce 2s infinite; }
     `;
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   // Handle file upload
