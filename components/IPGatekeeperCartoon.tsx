@@ -10,16 +10,16 @@ import { Loader2 } from 'lucide-react';
 const styles = {
   container: {
     width: '100%',
-    maxWidth: '1400px', // Lebih lebar dari 900px
+    maxWidth: '1600px', // Lebih lebar lagi dari 1400px
     margin: '0 auto',
-    padding: 'clamp(1rem, 3vw, 2rem)', // Kurangi padding vertikal
-    minHeight: '100vh', // Kembali ke 100vh
+    padding: 'clamp(0.5rem, 2vw, 1.5rem)', // Kurangi padding vertikal lebih banyak
+    minHeight: '95vh', // Kurangi dari 100vh
     boxSizing: 'border-box' as const,
   },
   card: {
     background: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 'clamp(15px, 3vw, 30px)',
-    padding: 'clamp(1.5rem, 3vw, 2.5rem)', // Kurangi padding vertikal
+    padding: 'clamp(1rem, 2vw, 2rem)', // Kurangi padding vertikal lebih banyak
     boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
     position: 'relative' as const,
     overflow: 'hidden',
@@ -41,7 +41,7 @@ const styles = {
   progressContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: 'clamp(1.5rem, 3vw, 2rem)', // Kurangi margin
+    marginBottom: 'clamp(1rem, 2vw, 1.5rem)', // Kurangi margin lebih banyak
     position: 'relative' as const,
     flexWrap: 'wrap' as const,
     gap: '0.5rem',
@@ -117,22 +117,29 @@ const styles = {
   leftColumn: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '1.5rem',
+    gap: '1rem', // Kurangi gap
   },
   rightColumn: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '1.5rem',
+    gap: '1rem', // Kurangi gap
+  },
+  // Layout untuk upload step dengan preview sejajar
+  uploadContainer: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr', // 2 kolom sejajar
+    gap: 'clamp(2rem, 4vw, 3rem)',
+    alignItems: 'start',
   },
   uploadArea: {
     border: '3px dashed #7C3AED',
     borderRadius: 'clamp(15px, 3vw, 25px)',
-    padding: 'clamp(2rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem)', // Kurangi padding vertikal
+    padding: 'clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem)', // Kurangi padding vertikal
     textAlign: 'center' as const,
     background: 'linear-gradient(135deg, rgba(124,58,237,0.05), rgba(236,72,153,0.05))',
     transition: 'all 0.3s ease',
     cursor: 'pointer',
-    minHeight: '200px', // Kurangi dari 300px
+    minHeight: '180px', // Kurangi dari 200px
   },
   uploadAreaHover: {
     borderColor: '#EC4899',
@@ -140,27 +147,46 @@ const styles = {
     transform: 'scale(1.02)',
   },
   uploadIcon: {
-    width: 'clamp(50px, 10vw, 80px)',
-    height: 'clamp(50px, 10vw, 80px)',
+    width: 'clamp(40px, 8vw, 60px)', // Kurangi ukuran icon
+    height: 'clamp(40px, 8vw, 60px)',
     background: 'linear-gradient(135deg, #7C3AED, #EC4899)',
     borderRadius: '50%',
-    margin: '0 auto 1.5rem',
+    margin: '0 auto 1rem', // Kurangi margin
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 'clamp(24px, 5vw, 36px)',
+    fontSize: 'clamp(20px, 4vw, 30px)', // Kurangi ukuran font
+  },
+  previewContainer: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#F9FAFB',
+    borderRadius: 'clamp(15px, 3vw, 25px)',
+    padding: 'clamp(1rem, 2vw, 2rem)',
+    minHeight: '180px', // Sama dengan upload area
+    border: '2px solid #E5E7EB',
   },
   previewImage: {
     maxWidth: '100%',
-    width: 'clamp(200px, 50vw, 300px)',
+    width: '100%',
+    maxHeight: '200px', // Batasi tinggi
     height: 'auto',
-    borderRadius: '20px',
+    borderRadius: '15px',
     boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-    margin: '2rem auto',
-    display: 'block',
+    objectFit: 'cover' as const,
+  },
+  previewFileName: {
+    marginTop: '1rem',
+    color: '#6B7280',
+    fontWeight: 500,
+    fontSize: 'clamp(12px, 2vw, 14px)',
+    textAlign: 'center' as const,
+    wordBreak: 'break-all' as const,
   },
   formGroup: {
-    marginBottom: '1.5rem', // Kembali ke nilai original
+    marginBottom: '1rem', // Kurangi dari 1.5rem
   },
   formLabel: {
     display: 'block',
@@ -183,19 +209,19 @@ const styles = {
   },
   licenseGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)', // 2x2 grid instead of 4x1
-    gap: 'clamp(1rem, 2vw, 1.5rem)',
-    marginBottom: '2rem',
+    gridTemplateColumns: 'repeat(2, 1fr)', // 2x2 grid
+    gap: 'clamp(0.75rem, 1.5vw, 1.25rem)', // Kurangi gap
+    marginBottom: '1.5rem', // Kurangi margin
   },
   licenseCard: {
     background: '#F9FAFB',
     border: '3px solid transparent',
     borderRadius: '20px',
-    padding: 'clamp(1rem, 2vw, 1.5rem)', // Kurangi padding
+    padding: 'clamp(0.75rem, 1.5vw, 1.25rem)', // Kurangi padding lebih banyak
     cursor: 'pointer',
     transition: 'all 0.3s ease',
     textAlign: 'center' as const,
-    minHeight: '120px', // Kurangi dari 180px
+    minHeight: '100px', // Kurangi dari 120px
   },
   licenseCardSelected: {
     borderColor: '#7C3AED',
@@ -203,25 +229,25 @@ const styles = {
   },
   licenseCardTitle: {
     fontWeight: 600,
-    marginBottom: '0.5rem',
+    marginBottom: '0.25rem', // Kurangi margin
     color: '#1F2937',
-    fontSize: 'clamp(14px, 2.5vw, 16px)',
+    fontSize: 'clamp(13px, 2vw, 15px)', // Kurangi font size
   },
   licenseCardDesc: {
-    fontSize: 'clamp(12px, 2vw, 14px)',
+    fontSize: 'clamp(11px, 1.8vw, 13px)', // Kurangi font size
     color: '#4B5563',
   },
   customSettings: {
     background: '#F3F4F6',
     borderRadius: '15px',
-    padding: 'clamp(1rem, 2vw, 1.5rem)', // Kurangi padding
+    padding: 'clamp(0.75rem, 1.5vw, 1.25rem)', // Kurangi padding
     marginTop: '1rem',
   },
   settingRow: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '1rem',
+    marginBottom: '0.75rem', // Kurangi margin
     flexWrap: 'wrap' as const,
     gap: '0.5rem',
   },
@@ -237,9 +263,9 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     background: '#F3F4F6',
-    padding: 'clamp(1rem, 2vw, 1.5rem)', // Kurangi padding
+    padding: 'clamp(0.75rem, 1.5vw, 1.25rem)', // Kurangi padding
     borderRadius: '15px',
-    marginBottom: '1.5rem', // Kurangi margin
+    marginBottom: '1rem', // Kurangi margin
     flexWrap: 'wrap' as const,
     gap: '1rem',
   },
@@ -297,7 +323,7 @@ const styles = {
   },
   successContainer: {
     textAlign: 'center' as const,
-    padding: 'clamp(2rem, 4vw, 3rem)', // Kurangi padding
+    padding: 'clamp(1.5rem, 3vw, 2.5rem)', // Kurangi padding
   },
   successIcon: {
     fontSize: 'clamp(50px, 10vw, 80px)',
@@ -332,8 +358,8 @@ const styles = {
   aiDetectionCard: {
     background: 'linear-gradient(135deg, #F3F4F6, #E5E7EB)',
     borderRadius: '20px',
-    padding: 'clamp(1.5rem, 3vw, 2rem)', // Kurangi padding
-    marginTop: '1.5rem',
+    padding: 'clamp(1rem, 2vw, 1.5rem)', // Kurangi padding
+    marginTop: '1rem',
     textAlign: 'center' as const,
   },
   aiBadge: {
@@ -349,14 +375,17 @@ const styles = {
   navigationButtons: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 'clamp(2rem, 3vw, 3rem)', // Kurangi margin
-    paddingTop: '1.5rem', // Kurangi padding
+    marginTop: 'clamp(1.5rem, 2vw, 2.5rem)', // Kurangi margin
+    paddingTop: '1rem', // Kurangi padding
     borderTop: '2px solid #E5E7EB',
     gap: '1rem',
     flexWrap: 'wrap' as const,
   },
   // Media queries untuk CSS-in-JS
   '@media (max-width: 768px)': {
+    uploadContainer: {
+      gridTemplateColumns: '1fr', // 1 kolom di mobile
+    },
     stepContent: {
       gridTemplateColumns: '1fr', // 1 kolom di mobile
     },
