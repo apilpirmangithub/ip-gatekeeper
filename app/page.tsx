@@ -1,6 +1,6 @@
 "use client";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import IPGatekeeper from '@/components/IPGatekeeper';
+import IPGatekeeperCartoon from '@/components/IPGatekeeperCartoon';
 import { Shield, Sparkles, Zap, Lock, Eye } from 'lucide-react';
 
 export default function Home() {
@@ -122,11 +122,9 @@ export default function Home() {
                 </div>
                 
                 {/* Application Content */}
-                <div className="p-8">
-                  <IPGatekeeper />
-                </div>
-              </div>
-            </div>
+<div className="p-8">
+  <IPGatekeeperCartoon />
+</div>
 
             {/* Features Grid */}
             <div className="grid md:grid-cols-3 gap-6 mt-16">
