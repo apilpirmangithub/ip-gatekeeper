@@ -427,13 +427,13 @@ export default function IPGatekeeperCartoon() {
 const getLicenseTerms = () => {
   const baseTerms = {
     transferable: true,
-    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
-    expiration: BigInt(0), // Ganti 0n dengan BigInt(0)
-    commercializerChecker: "0x0000000000000000000000000000000000000000",
-    commercializerCheckerData: "0x",
-    commercialRevCeiling: BigInt(0), // Ganti 0n dengan BigInt(0)
-    derivativeRevCeiling: BigInt(0), // Ganti 0n dengan BigInt(0)
-    currency: "0x1514000000000000000000000000000000000000",
+    royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`, // Cast ke hex string
+    expiration: BigInt(0),
+    commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+    commercializerCheckerData: "0x" as `0x${string}`,
+    commercialRevCeiling: BigInt(0),
+    derivativeRevCeiling: BigInt(0),
+    currency: "0x1514000000000000000000000000000000000000" as `0x${string}`, // Cast ke hex string
     uri: "",
   };
 
@@ -441,7 +441,7 @@ const getLicenseTerms = () => {
     case 'non_commercial':
       return {
         ...baseTerms,
-        defaultMintingFee: BigInt(0), // Ganti 0n dengan BigInt(0)
+        defaultMintingFee: BigInt(0),
         commercialUse: false,
         commercialAttribution: false,
         commercialRevShare: 0,
@@ -480,7 +480,7 @@ const getLicenseTerms = () => {
     case 'cc_attribution':
       return {
         ...baseTerms,
-        defaultMintingFee: BigInt(0), // Ganti 0n dengan BigInt(0)
+        defaultMintingFee: BigInt(0),
         commercialUse: true,
         commercialAttribution: true,
         commercialRevShare: 0,
@@ -504,7 +504,6 @@ const getLicenseTerms = () => {
       };
   }
 };
-
   // Register IP Asset
   const registerIP = async () => {
     if (!storyClient || !selectedFile || !address) return;
