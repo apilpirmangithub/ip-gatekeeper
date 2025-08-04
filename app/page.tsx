@@ -85,10 +85,10 @@ export default function Home() {
       </div>
 
       {/* Main container */}
-      <div style={{
+      <div className="main-container" style={{
         position: 'relative',
         zIndex: 10,
-        padding: '2rem',
+        padding: '2rem 6rem',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column'
@@ -99,7 +99,7 @@ export default function Home() {
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '3rem',
-          maxWidth: '1200px',
+          maxWidth: '100%',
           width: '100%',
           margin: '0 auto 3rem auto'
         }}>
@@ -167,13 +167,40 @@ export default function Home() {
         </footer>
       </div>
 
-      {/* Add animations */}
+      {/* Add animations and responsive styles */}
       <style jsx global>{`
         @keyframes float {
           0% { transform: translateX(0) translateY(0); }
           33% { transform: translateX(30px) translateY(-10px); }
           66% { transform: translateX(-20px) translateY(5px); }
           100% { transform: translateX(0) translateY(0); }
+        }
+
+        /* Desktop styles */
+        @media (min-width: 1200px) {
+          .main-container {
+            padding: 2rem 8rem !important;
+          }
+        }
+
+        /* Tablet styles */
+        @media (max-width: 1199px) and (min-width: 769px) {
+          .main-container {
+            padding: 2rem 4rem !important;
+          }
+        }
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+          .main-container {
+            padding: 1rem 2rem !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .main-container {
+            padding: 1rem !important;
+          }
         }
       `}</style>
     </main>
