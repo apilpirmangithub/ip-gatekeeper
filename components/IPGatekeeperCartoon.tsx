@@ -425,111 +425,111 @@ export default function IPGatekeeperCartoon() {
 
   // Pastikan fungsi getLicenseTerms() ini ada dan lengkap
 const getLicenseTerms = () => {
-  // Base terms dengan SEMUA field yang diperlukan
-  const baseTerms = {
-    transferable: true,
-    defaultMintingFee: BigInt(0),
-    expiration: BigInt(0),
-    commercialRevCeiling: BigInt(0),
-    derivativeRevCeiling: BigInt(0),
-    uri: "",
-    // Field wajib yang hilang
-    commercialUse: false,
-    commercialAttribution: false,
-    commercialRevShare: 0,
-    derivativesAllowed: false,
-    derivativesAttribution: false,
-    derivativesApproval: false,
-    derivativesReciprocal: false,
-  };
+    // Base terms dengan SEMUA field yang diperlukan
+    const baseTerms = {
+      transferable: true,
+      defaultMintingFee: BigInt(0),
+      expiration: BigInt(0),
+      commercialRevCeiling: BigInt(0),
+      derivativeRevCeiling: BigInt(0),
+      uri: "",
+      // Field wajib yang hilang
+      commercialUse: false,
+      commercialAttribution: false,
+      commercialRevShare: 0,
+      derivativesAllowed: false,
+      derivativesAttribution: false,
+      derivativesApproval: false,
+      derivativesReciprocal: false,
+    };
 
-  switch (licenseSettings.pilType) {
-    case 'open_use':
-      return {
-        ...baseTerms,
-        royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        commercializerCheckerData: "0x" as `0x${string}`,
-        currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        defaultMintingFee: BigInt(0),
-        commercialUse: false,
-        commercialAttribution: false,
-        commercialRevShare: 0,
-        derivativesAllowed: true,
-        derivativesAttribution: false,
-        derivativesApproval: false,
-        derivativesReciprocal: false,
-      };
-    
-    case 'non_commercial_remix':
-      return {
-        ...baseTerms,
-        royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        commercializerCheckerData: "0x" as `0x${string}`,
-        currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        defaultMintingFee: BigInt(0),
-        commercialUse: false,
-        commercialAttribution: false,
-        commercialRevShare: 0,
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: true,
-      };
-    
-    case 'commercial_use':
-      return {
-        ...baseTerms,
-        royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
-        commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        commercializerCheckerData: "0x" as `0x${string}`,
-        currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
-        defaultMintingFee: BigInt(licenseSettings.licensePrice),
-        commercialUse: true,
-        commercialAttribution: true,
-        commercialRevShare: 0,
-        derivativesAllowed: false,
-        derivativesAttribution: false,
-        derivativesApproval: false,
-        derivativesReciprocal: false,
-      };
-    
-    case 'commercial_remix':
-      return {
-        ...baseTerms,
-        royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
-        commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        commercializerCheckerData: "0x" as `0x${string}`,
-        currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
-        defaultMintingFee: BigInt(licenseSettings.licensePrice),
-        commercialUse: true,
-        commercialAttribution: true,
-        commercialRevShare: licenseSettings.revShare,
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: true,
-      };
-    
-    default:
-      return {
-        ...baseTerms,
-        royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        commercializerCheckerData: "0x" as `0x${string}`,
-        currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-        defaultMintingFee: BigInt(0),
-        commercialUse: false,
-        commercialAttribution: false,
-        commercialRevShare: 0,
-        derivativesAllowed: false,
-        derivativesAttribution: false,
-        derivativesApproval: false,
-        derivativesReciprocal: false,
-      };
-  }
-};
+    switch (licenseSettings.pilType) {
+      case 'open_use':
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          defaultMintingFee: BigInt(0),
+          commercialUse: false,
+          commercialAttribution: false,
+          commercialRevShare: 0,
+          derivativesAllowed: true,
+          derivativesAttribution: false,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+        };
+      
+      case 'non_commercial_remix':
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          defaultMintingFee: BigInt(0),
+          commercialUse: false,
+          commercialAttribution: false,
+          commercialRevShare: 0,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+        };
+      
+      case 'commercial_use':
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
+          defaultMintingFee: BigInt(licenseSettings.licensePrice),
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: 0,
+          derivativesAllowed: false,
+          derivativesAttribution: false,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+        };
+      
+      case 'commercial_remix':
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E" as `0x${string}`,
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x1514000000000000000000000000000000000000" as `0x${string}`,
+          defaultMintingFee: BigInt(licenseSettings.licensePrice),
+          commercialUse: true,
+          commercialAttribution: true,
+          commercialRevShare: licenseSettings.revShare,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+        };
+      
+      default:
+        return {
+          ...baseTerms,
+          royaltyPolicy: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerChecker: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          commercializerCheckerData: "0x" as `0x${string}`,
+          currency: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          defaultMintingFee: BigInt(0),
+          commercialUse: false,
+          commercialAttribution: false,
+          commercialRevShare: 0,
+          derivativesAllowed: false,
+          derivativesAttribution: false,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+        };
+    }
+  };
 
   // Simplifikasi fungsi registerIP
 const registerIP = async () => {
