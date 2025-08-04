@@ -152,31 +152,6 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Text */}
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '3rem',
-          maxWidth: '800px',
-          margin: '0 auto 3rem auto'
-        }}>
-          <h2 style={{
-            fontSize: '48px',
-            fontWeight: 'bold',
-            color: 'white',
-            marginBottom: '1rem',
-            textShadow: '0 2px 10px rgba(0,0,0,0.1)'
-          }}>
-            Protect Your Creative Assets
-          </h2>
-          <p style={{
-            fontSize: '20px',
-            color: 'rgba(255,255,255,0.9)',
-            lineHeight: '1.6'
-          }}>
-            Advanced AI detection meets blockchain security. Register and protect your IP in minutes!
-          </p>
-        </div>
-
         {/* Main Application */}
         <IPGatekeeperCartoon />
 
