@@ -365,21 +365,21 @@ export default function IPGatekeeper() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-3 border rounded-lg"
-          />
-          <textarea
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-3 border rounded-lg h-32"
-          />
-        </div>
+  <div className="space-y-4">
+    <input
+      type="text"
+      placeholder="Asset Name" // <- Ubah di sini
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
+      className="w-full p-3 border rounded-lg"
+    />
+    <textarea
+      placeholder="Description"
+      value={description}
+      onChange={(e) => setDescription(e.target.value)}
+      className="w-full p-3 border rounded-lg h-32"
+    />
+  </div>
 
         <div className="space-y-4">
           <h3 className="font-semibold">License Settings</h3>
