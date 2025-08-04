@@ -50,6 +50,36 @@ export default function IPGatekeeper() {
     }
   }, [wallet, isConnected]);
 
+  // Auto-slide effect untuk Step 1 setelah AI detection selesai
+  useEffect(() => {
+    if (currentStep === 1 && selectedFile && aiDetection && !isDetecting) {
+      const timer = setTimeout(() => {
+        setCurrentStep(2);
+      }, 2000); // Auto slide setelah 2 detik
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, selectedFile, aiDetection, isDetecting]);
+
+  // Auto-slide effect untuk Step 2 setelah title dan description diisi
+  useEffect(() => {
+    if (currentStep === 2 && title.trim() !== '' && description.trim() !== '') {
+      const timer = setTimeout(() => {
+        setCurrentStep(3);
+      }, 1500); // Auto slide setelah 1.5 detik
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, title, description]);
+
+  // Auto-slide effect untuk Step 3 setelah license dipilih
+  useEffect(() => {
+    if (currentStep === 3 && licenseSettings.pilType) {
+      const timer = setTimeout(() => {
+        setCurrentStep(4);
+      }, 1000); // Auto slide setelah 1 detik
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, licenseSettings.pilType]);
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -297,7 +327,6 @@ export default function IPGatekeeper() {
       }
 
       setResult(response);
-      setCurrentStep(4); // Move to success step
 
     } catch (error) {
       console.error('Registration failed:', error);
@@ -308,24 +337,6 @@ export default function IPGatekeeper() {
       setIsPreparingTx(false);
     }
   };
-
-  // Navigation functions
-  const nextStep = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  // Validation functions
-  const canProceedFromStep1 = () => selectedFile && !isDetecting;
-  const canProceedFromStep2 = () => title.trim() !== '' && description.trim() !== '';
-  const canProceedFromStep3 = () => true; // License settings are always valid
 
   if (!isConnected) {
     return (
@@ -344,15 +355,15 @@ export default function IPGatekeeper() {
         <div className="flex items-center justify-between mb-4">
           {[1, 2, 3, 4].map((step) => (
             <div key={step} className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border-2 ${
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border-2 transition-all duration-500 ${
                 step <= currentStep 
-                  ? 'bg-blue-500 text-white border-blue-500' 
+                  ? 'bg-blue-500 text-white border-blue-500 scale-110' 
                   : 'bg-gray-200 text-gray-500 border-gray-300'
               }`}>
                 {step < currentStep ? '✓' : step}
               </div>
               {step < 4 && (
-                <div className={`flex-1 h-2 mx-4 rounded ${
+                <div className={`flex-1 h-2 mx-4 rounded transition-all duration-500 ${
                   step < currentStep ? 'bg-blue-500' : 'bg-gray-200'
                 }`}></div>
               )}
@@ -372,11 +383,11 @@ export default function IPGatekeeper() {
         </div>
       </div>
 
-      {/* Step Content */}
-      <div className="bg-white rounded-3xl shadow-2xl p-8 min-h-[500px]">
+      {/* Step Content dengan slide animation */}
+      <div className="bg-white rounded-3xl shadow-2xl p-8 min-h-[500px] transition-all duration-500 transform">
         {/* Step 1: File Upload */}
         {currentStep === 1 && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeIn">
             <div className="text-center mb-8">
               <div className="text-6xl mb-4">📁</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">Upload Your Asset</h3>
@@ -407,7 +418,7 @@ export default function IPGatekeeper() {
 
             {/* Image Preview */}
             {imagePreview && (
-              <div className="flex justify-center">
+              <div className="flex justify-center animate-slideUp">
                 <div className="bg-white p-4 rounded-2xl shadow-2xl">
                   <img 
                     src={imagePreview} 
@@ -421,7 +432,7 @@ export default function IPGatekeeper() {
 
             {/* AI Detection Result */}
             {aiDetection && (
-              <div className={`p-6 rounded-3xl border-4 shadow-xl ${
+              <div className={`p-6 rounded-3xl border-4 shadow-xl animate-slideUp ${
                 aiDetection.isAI 
                   ? 'bg-gradient-to-br from-red-200 via-pink-200 to-orange-200 border-red-400' 
                   : 'bg-gradient-to-br from-green-200 via-emerald-200 to-blue-200 border-green-400'
@@ -438,6 +449,14 @@ export default function IPGatekeeper() {
                 <p className="text-lg font-semibold">
                   📊 Confidence: <span className="font-bold">{(aiDetection.confidence * 100).toFixed(1)}%</span>
                 </p>
+                
+                {/* Auto-slide countdown */}
+                <div className="mt-4 text-center">
+                  <p className="text-sm text-gray-600">Auto-advancing to next step...</p>
+                  <div className="w-full bg-gray-300 rounded-full h-2 mt-2">
+                    <div className="bg-blue-500 h-2 rounded-full animate-progress" style={{width: '100%'}}></div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -445,7 +464,7 @@ export default function IPGatekeeper() {
 
         {/* Step 2: Asset Information */}
         {currentStep === 2 && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeIn">
             <div className="text-center mb-8">
               <div className="text-6xl mb-4">📝</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">Asset Information</h3>
@@ -476,12 +495,22 @@ export default function IPGatekeeper() {
                 />
               </div>
             </div>
+
+            {/* Auto-slide indicator */}
+            {title.trim() !== '' && description.trim() !== '' && (
+              <div className="text-center animate-slideUp">
+                <p className="text-sm text-gray-600">Auto-advancing to next step...</p>
+                <div className="w-full bg-gray-300 rounded-full h-2 mt-2">
+                  <div className="bg-blue-500 h-2 rounded-full animate-progress" style={{width: '100%'}}></div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {/* Step 3: License Settings */}
         {currentStep === 3 && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeIn">
             <div className="text-center mb-8">
               <div className="text-6xl mb-4">⚖️</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">License Settings</h3>
@@ -655,18 +684,25 @@ export default function IPGatekeeper() {
                 </select>
               </div>
             </div>
+
+            {/* Auto-slide indicator */}
+            <div className="text-center animate-slideUp">
+              <p className="text-sm text-gray-600">Auto-advancing to registration...</p>
+              <div className="w-full bg-gray-300 rounded-full h-2 mt-2">
+                <div className="bg-blue-500 h-2 rounded-full animate-progress" style={{width: '100%'}}></div>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Step 4: Success/Registration */}
+        {/* Step 4: Registration */}
         {currentStep === 4 && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeIn">
             {!result ? (
-              // Registration in progress
               <div className="text-center">
                 <div className="text-6xl mb-4">🚀</div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">Registering Your IP Asset</h3>
-                <p className="text-gray-600 mb-8">Please confirm the transaction in your wallet</p>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">Ready to Register</h3>
+                <p className="text-gray-600 mb-8">Click the button below to register your IP Asset</p>
 
                 <button
                   onClick={registerIP}
@@ -674,7 +710,7 @@ export default function IPGatekeeper() {
                   className={`w-full p-6 rounded-3xl text-2xl font-bold shadow-2xl border-4 transition-all duration-300 ${
                     isRegistering || isDetecting
                       ? 'bg-gray-300 border-gray-400 text-gray-600 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 border-purple-400 text-white hover:from-purple-600 hover:via-pink-600 hover:to-blue-600'
+                      : 'bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 border-purple-400 text-white hover:from-purple-600 hover:via-pink-600 hover:to-blue-600 animate-pulse'
                   }`}
                 >
                   <div className="flex items-center justify-center space-x-3">
@@ -698,10 +734,9 @@ export default function IPGatekeeper() {
                 </button>
               </div>
             ) : (
-              // Success result
-              <div className="p-8 bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 rounded-3xl border-4 border-green-400 shadow-2xl">
+              <div className="p-8 bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 rounded-3xl border-4 border-green-400 shadow-2xl animate-slideUp">
                 <div className="text-center mb-6">
-                  <div className="text-8xl mb-4">🎉</div>
+                  <div className="text-8xl mb-4 animate-bounce">🎉</div>
                   <h3 className="font-bold text-3xl text-green-800 mb-2">Success!</h3>
                   <p className="text-xl font-semibold text-green-700">IP Asset registered successfully!</p>
                 </div>
@@ -737,61 +772,26 @@ export default function IPGatekeeper() {
                     </a>
                   </div>
                 </div>
+
+                <div className="text-center mt-6">
+                  <button
+                    onClick={() => {
+                      setCurrentStep(1);
+                      setSelectedFile(null);
+                      setImagePreview(null);
+                      setAiDetection(null);
+                      setTitle('');
+                      setDescription('');
+                      setResult(null);
+                    }}
+                    className="px-8 py-4 rounded-2xl font-bold text-lg bg-green-500 text-white hover:bg-green-600 shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Register Another Asset
+                  </button>
+                </div>
               </div>
             )}
           </div>
-        )}
-      </div>
-
-      {/* Navigation Buttons */}
-      <div className="flex justify-between mt-8">
-        <button
-          onClick={prevStep}
-          disabled={currentStep === 1}
-          className={`px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 ${
-            currentStep === 1
-              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-gray-500 text-white hover:bg-gray-600 shadow-lg hover:shadow-xl'
-          }`}
-        >
-          ← Previous
-        </button>
-
-        {currentStep < 4 && (
-          <button
-            onClick={nextStep}
-            disabled={
-              (currentStep === 1 && !canProceedFromStep1()) ||
-              (currentStep === 2 && !canProceedFromStep2()) ||
-              (currentStep === 3 && !canProceedFromStep3())
-            }
-            className={`px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 ${
-              (currentStep === 1 && !canProceedFromStep1()) ||
-              (currentStep === 2 && !canProceedFromStep2()) ||
-              (currentStep === 3 && !canProceedFromStep3())
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-blue-500 text-white hover:bg-blue-600 shadow-lg hover:shadow-xl'
-            }`}
-          >
-            Next →
-          </button>
-        )}
-
-        {currentStep === 4 && result && (
-          <button
-            onClick={() => {
-              setCurrentStep(1);
-              setSelectedFile(null);
-              setImagePreview(null);
-              setAiDetection(null);
-              setTitle('');
-              setDescription('');
-              setResult(null);
-            }}
-            className="px-8 py-4 rounded-2xl font-bold text-lg bg-green-500 text-white hover:bg-green-600 shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            Register Another Asset
-          </button>
         )}
       </div>
     </div>
