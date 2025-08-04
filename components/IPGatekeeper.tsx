@@ -50,6 +50,16 @@ export default function IPGatekeeper() {
     }
   }, [wallet, isConnected]);
 
+  // Auto-slide setelah file dipilih
+  useEffect(() => {
+    if (currentStep === 1 && selectedFile) {
+      const timer = setTimeout(() => {
+        setCurrentStep(2);
+      }, 1000); // Auto slide setelah 1 detik
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, selectedFile]);
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -322,7 +332,6 @@ export default function IPGatekeeper() {
   };
 
   // Validation functions
-  const canProceedFromStep1 = () => selectedFile && !isDetecting;
   const canProceedFromStep2 = () => aiDetection !== null;
   const canProceedFromStep3 = () => title.trim() !== '' && description.trim() !== '';
 
@@ -348,7 +357,7 @@ export default function IPGatekeeper() {
         </h2>
         <p className="text-gray-600">
           {currentStep === 1 && "Select an image file to upload"}
-          {currentStep === 2 && "AI detection results"}
+          {currentStep === 2 && "AI detection in progress and results"}
           {currentStep === 3 && "Enter asset name and description"}
           {currentStep === 4 && "Configure license and register your IP Asset"}
         </p>
@@ -377,12 +386,12 @@ export default function IPGatekeeper() {
                   <p className="text-sm text-orange-700 font-semibold">
                     🎯 Selected: {selectedFile.name}
                   </p>
-                  {isDetecting && (
-                    <div className="flex items-center space-x-3 mt-2">
-                      <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                      <p className="text-sm text-blue-600 font-bold">🔍 Detecting...</p>
+                  <div className="mt-2 text-center">
+                    <p className="text-sm text-blue-600">Auto-advancing to detection...</p>
+                    <div className="w-full bg-gray-300 rounded-full h-2 mt-2">
+                      <div className="bg-blue-500 h-2 rounded-full animate-progress" style={{width: '100%'}}></div>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
             </div>
@@ -403,12 +412,12 @@ export default function IPGatekeeper() {
           </div>
         )}
 
-        {/* Step 2: AI Detection */}
+        {/* Step 2: AI Detection (Detecting + Results dalam satu tampilan) */}
         {currentStep === 2 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
               <div className="text-6xl mb-4">🤖</div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">AI Detection Results</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">AI Detection</h3>
               <p className="text-gray-600">Analysis of your uploaded image</p>
             </div>
 
@@ -426,9 +435,18 @@ export default function IPGatekeeper() {
               </div>
             )}
 
+            {/* Detection Process */}
+            {isDetecting && (
+              <div className="text-center p-8 bg-blue-50 rounded-3xl border-2 border-blue-200">
+                <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-lg text-blue-600 font-bold">🔍 Analyzing your image...</p>
+                <p className="text-sm text-blue-500 mt-2">This may take a few seconds</p>
+              </div>
+            )}
+
             {/* AI Detection Result */}
-            {aiDetection ? (
-              <div className={`p-6 rounded-3xl border-4 shadow-xl ${
+            {aiDetection && (
+              <div className={`p-6 rounded-3xl border-4 shadow-xl animate-slideUp ${
                 aiDetection.isAI 
                   ? 'bg-gradient-to-br from-red-200 via-pink-200 to-orange-200 border-red-400' 
                   : 'bg-gradient-to-br from-green-200 via-emerald-200 to-blue-200 border-green-400'
@@ -437,7 +455,7 @@ export default function IPGatekeeper() {
                   {aiDetection.isAI ? '🤖' : '🎨'}
                 </div>
                 <h3 className="font-bold text-2xl mb-3 text-center">
-                  {aiDetection.isAI ? '🔴' : '🟢'} Detection Result
+                  {aiDetection.isAI ? '🔴' : '🟢'} Detection Complete!
                 </h3>
                 <div className="text-center space-y-2">
                   <p className="text-lg font-semibold">
@@ -446,12 +464,22 @@ export default function IPGatekeeper() {
                   <p className="text-lg font-semibold">
                     📊 Confidence: <span className="font-bold">{(aiDetection.confidence * 100).toFixed(1)}%</span>
                   </p>
+                  {aiDetection.isAI && (
+                    <div className="mt-4 p-3 bg-white bg-opacity-50 rounded-lg">
+                      <p className="text-sm font-semibold text-red-700">
+                        ⚠️ AI-generated content detected. AI training will be automatically disabled.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
-            ) : (
+            )}
+
+            {/* Loading state when no detection yet */}
+            {!isDetecting && !aiDetection && (
               <div className="text-center p-8">
-                <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-lg text-gray-600">Analyzing your image...</p>
+                <div className="text-4xl mb-4">⏳</div>
+                <p className="text-lg text-gray-600">Preparing AI detection...</p>
               </div>
             )}
           </div>
@@ -781,12 +809,10 @@ export default function IPGatekeeper() {
           <button
             onClick={nextStep}
             disabled={
-              (currentStep === 1 && !canProceedFromStep1()) ||
               (currentStep === 2 && !canProceedFromStep2()) ||
               (currentStep === 3 && !canProceedFromStep3())
             }
             className={`px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 ${
-              (currentStep === 1 && !canProceedFromStep1()) ||
               (currentStep === 2 && !canProceedFromStep2()) ||
               (currentStep === 3 && !canProceedFromStep3())
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
