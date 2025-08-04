@@ -12,42 +12,52 @@ const styles = {
     width: '100%',
     maxWidth: '900px',
     margin: '0 auto',
-    padding: '2rem',
+    padding: 'clamp(1rem, 4vw, 2rem)',
+    minHeight: '100vh',
+    boxSizing: 'border-box' as const,
   },
   card: {
     background: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: '30px',
-    padding: '3rem',
+    borderRadius: 'clamp(15px, 3vw, 30px)',
+    padding: 'clamp(1.5rem, 4vw, 3rem)',
     boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
     position: 'relative' as const,
     overflow: 'hidden',
+    width: '100%',
+    boxSizing: 'border-box' as const,
   },
   walletCard: {
     background: 'white',
-    borderRadius: '30px',
-    padding: '4rem 2rem',
+    borderRadius: 'clamp(15px, 3vw, 30px)',
+    padding: 'clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem)',
     boxShadow: '0 20px 50px rgba(0, 0, 0, 0.1)',
     textAlign: 'center' as const,
   },
   walletIcon: {
-    fontSize: '80px',
+    fontSize: 'clamp(50px, 8vw, 80px)',
     marginBottom: '1rem',
     display: 'block',
   },
   progressContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: '3rem',
+    marginBottom: 'clamp(2rem, 4vw, 3rem)',
     position: 'relative' as const,
+    flexWrap: 'wrap' as const,
+    gap: '0.5rem',
   },
   progressLine: {
     position: 'absolute' as const,
-    top: '30px',
-    left: '60px',
-    right: '60px',
+    top: 'clamp(20px, 4vw, 30px)',
+    left: 'clamp(30px, 6vw, 60px)',
+    right: 'clamp(30px, 6vw, 60px)',
     height: '4px',
     background: '#E5E7EB',
     borderRadius: '2px',
+    display: 'none', // Hide on mobile
+    '@media (min-width: 768px)': {
+      display: 'block',
+    },
   },
   progressLineActive: {
     position: 'absolute' as const,
@@ -62,18 +72,19 @@ const styles = {
     position: 'relative' as const,
     zIndex: 2,
     textAlign: 'center' as const,
-    flex: 1,
+    flex: '1',
+    minWidth: '60px',
   },
   stepCircle: {
-    width: '60px',
-    height: '60px',
+    width: 'clamp(40px, 8vw, 60px)',
+    height: 'clamp(40px, 8vw, 60px)',
     background: '#F3F4F6',
     borderRadius: '50%',
     margin: '0 auto 0.5rem',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '24px',
+    fontSize: 'clamp(16px, 3vw, 24px)',
     transition: 'all 0.3s ease',
     border: '4px solid white',
     boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)',
@@ -88,7 +99,7 @@ const styles = {
     color: 'white',
   },
   stepLabel: {
-    fontSize: '14px',
+    fontSize: 'clamp(12px, 2.5vw, 14px)',
     color: '#6B7280',
     fontWeight: '500',
   },
@@ -98,8 +109,8 @@ const styles = {
   },
   uploadArea: {
     border: '3px dashed #7C3AED',
-    borderRadius: '25px',
-    padding: '4rem 2rem',
+    borderRadius: 'clamp(15px, 3vw, 25px)',
+    padding: 'clamp(2rem, 6vw, 4rem) clamp(1rem, 3vw, 2rem)',
     textAlign: 'center' as const,
     background: 'linear-gradient(135deg, rgba(124,58,237,0.05), rgba(236,72,153,0.05))',
     transition: 'all 0.3s ease',
@@ -111,19 +122,20 @@ const styles = {
     transform: 'scale(1.02)',
   },
   uploadIcon: {
-    width: '80px',
-    height: '80px',
+    width: 'clamp(50px, 10vw, 80px)',
+    height: 'clamp(50px, 10vw, 80px)',
     background: 'linear-gradient(135deg, #7C3AED, #EC4899)',
     borderRadius: '50%',
     margin: '0 auto 1.5rem',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '36px',
+    fontSize: 'clamp(24px, 5vw, 36px)',
   },
   previewImage: {
-    maxWidth: '300px',
-    maxHeight: '300px',
+    maxWidth: '100%',
+    width: 'clamp(200px, 50vw, 300px)',
+    height: 'auto',
     borderRadius: '20px',
     boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
     margin: '2rem auto',
@@ -137,30 +149,31 @@ const styles = {
     marginBottom: '0.5rem',
     fontWeight: '600',
     color: '#1E293B',
-    fontSize: '16px',
+    fontSize: 'clamp(14px, 2.5vw, 16px)',
   },
   formInput: {
     width: '100%',
-    padding: '1rem 1.5rem',
+    padding: 'clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem)',
     border: '2px solid #E5E7EB',
     borderRadius: '15px',
-    fontSize: '16px',
+    fontSize: 'clamp(14px, 2.5vw, 16px)',
     transition: 'all 0.3s ease',
     background: '#F9FAFB',
     outline: 'none',
     fontFamily: 'inherit',
+    boxSizing: 'border-box' as const,
   },
   licenseGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '1rem',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))',
+    gap: 'clamp(0.5rem, 2vw, 1rem)',
     marginBottom: '2rem',
   },
   licenseCard: {
     background: '#F9FAFB',
     border: '3px solid transparent',
     borderRadius: '20px',
-    padding: '1.5rem',
+    padding: 'clamp(1rem, 3vw, 1.5rem)',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
     textAlign: 'center' as const,
@@ -173,16 +186,16 @@ const styles = {
     fontWeight: 600,
     marginBottom: '0.5rem',
     color: '#1F2937',
-    fontSize: '16px',
+    fontSize: 'clamp(14px, 2.5vw, 16px)',
   },
   licenseCardDesc: {
-    fontSize: '14px',
+    fontSize: 'clamp(12px, 2vw, 14px)',
     color: '#4B5563',
   },
   customSettings: {
     background: '#F3F4F6',
     borderRadius: '15px',
-    padding: '1.5rem',
+    padding: 'clamp(1rem, 3vw, 1.5rem)',
     marginTop: '1rem',
   },
   settingRow: {
@@ -190,22 +203,26 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '1rem',
+    flexWrap: 'wrap' as const,
+    gap: '0.5rem',
   },
   settingInput: {
-    width: '120px',
+    width: 'clamp(80px, 20vw, 120px)',
     padding: '0.5rem',
     border: '2px solid #E5E7EB',
     borderRadius: '8px',
-    fontSize: '14px',
+    fontSize: 'clamp(12px, 2vw, 14px)',
   },
   toggleContainer: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     background: '#F3F4F6',
-    padding: '1.5rem',
+    padding: 'clamp(1rem, 3vw, 1.5rem)',
     borderRadius: '15px',
     marginBottom: '1.5rem',
+    flexWrap: 'wrap' as const,
+    gap: '1rem',
   },
   toggleSwitch: {
     position: 'relative' as const,
@@ -215,6 +232,7 @@ const styles = {
     borderRadius: '50px',
     cursor: 'pointer',
     transition: 'background 0.3s ease',
+    flexShrink: 0,
   },
   toggleSwitchActive: {
     background: '#7C3AED',
@@ -230,10 +248,10 @@ const styles = {
     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
   },
   button: {
-    padding: '1rem 2rem',
+    padding: 'clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem)',
     border: 'none',
     borderRadius: '50px',
-    fontSize: '16px',
+    fontSize: 'clamp(14px, 2.5vw, 16px)',
     fontWeight: '600',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
@@ -241,6 +259,8 @@ const styles = {
     alignItems: 'center',
     gap: '0.5rem',
     fontFamily: 'inherit',
+    justifyContent: 'center',
+    minHeight: '48px', // Touch-friendly
   },
   buttonPrimary: {
     background: 'linear-gradient(135deg, #7C3AED, #EC4899)',
@@ -258,17 +278,17 @@ const styles = {
   },
   successContainer: {
     textAlign: 'center' as const,
-    padding: '3rem',
+    padding: 'clamp(2rem, 5vw, 3rem)',
   },
   successIcon: {
-    fontSize: '80px',
+    fontSize: 'clamp(50px, 10vw, 80px)',
     marginBottom: '1rem',
     display: 'block',
   },
   resultInfo: {
     background: '#F9FAFB',
     borderRadius: '20px',
-    padding: '2rem',
+    padding: 'clamp(1.5rem, 3vw, 2rem)',
     marginTop: '2rem',
     textAlign: 'left' as const,
   },
@@ -278,6 +298,8 @@ const styles = {
     alignItems: 'center',
     padding: '1rem 0',
     borderBottom: '1px solid #E5E7EB',
+    flexWrap: 'wrap' as const,
+    gap: '0.5rem',
   },
   spinner: {
     width: '50px',
@@ -291,7 +313,7 @@ const styles = {
   aiDetectionCard: {
     background: 'linear-gradient(135deg, #F3F4F6, #E5E7EB)',
     borderRadius: '20px',
-    padding: '2rem',
+    padding: 'clamp(1.5rem, 4vw, 2rem)',
     marginTop: '2rem',
     textAlign: 'center' as const,
   },
@@ -301,9 +323,42 @@ const styles = {
     color: 'white',
     padding: '0.5rem 1.5rem',
     borderRadius: '50px',
-    fontSize: '14px',
+    fontSize: 'clamp(12px, 2vw, 14px)',
     fontWeight: '600',
     marginBottom: '1rem',
+  },
+  navigationButtons: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: 'clamp(2rem, 4vw, 3rem)',
+    paddingTop: '2rem',
+    borderTop: '2px solid #E5E7EB',
+    gap: '1rem',
+    flexWrap: 'wrap' as const,
+  },
+  // Media queries untuk CSS-in-JS
+  '@media (max-width: 768px)': {
+    progressLine: {
+      display: 'none',
+    },
+    licenseGrid: {
+      gridTemplateColumns: '1fr',
+    },
+    settingRow: {
+      flexDirection: 'column' as const,
+      alignItems: 'flex-start',
+    },
+    toggleContainer: {
+      flexDirection: 'column' as const,
+      alignItems: 'flex-start',
+    },
+    navigationButtons: {
+      flexDirection: 'column' as const,
+    },
+    resultItem: {
+      flexDirection: 'column' as const,
+      alignItems: 'flex-start',
+    },
   },
 };
 
@@ -353,7 +408,7 @@ export default function IPGatekeeperCartoon() {
     }
   }, [wallet, isConnected]);
 
-  // Add CSS animation
+  // Add CSS animation and responsive styles
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
@@ -375,8 +430,47 @@ export default function IPGatekeeperCartoon() {
       .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
       .animate-pulse { animation: pulse 2s infinite; }
       .animate-bounce { animation: bounce 2s infinite; }
+      
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .progress-line { display: none !important; }
+        .license-grid { grid-template-columns: 1fr !important; }
+        .setting-row { flex-direction: column !important; align-items: flex-start !important; }
+        .toggle-container { flex-direction: column !important; align-items: flex-start !important; }
+        .navigation-buttons { flex-direction: column !important; }
+        .result-item { flex-direction: column !important; align-items: flex-start !important; }
+      }
+      
+      /* Ensure viewport meta tag behavior */
+      html, body {
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      
+      * {
+        box-sizing: border-box;
+      }
+      
+      /* Touch-friendly interactions */
+      @media (hover: none) and (pointer: coarse) {
+        button, .upload-area, .license-card, .toggle-switch {
+          min-height: 44px;
+          min-width: 44px;
+        }
+      }
     `;
     document.head.appendChild(style);
+    
+    // Add viewport meta tag if not present
+    if (!document.querySelector('meta[name="viewport"]')) {
+      const viewport = document.createElement('meta');
+      viewport.name = 'viewport';
+      viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+      document.head.appendChild(viewport);
+    }
+    
     return () => {
       document.head.removeChild(style);
     };
@@ -640,8 +734,8 @@ export default function IPGatekeeperCartoon() {
       <div style={styles.container}>
         <div style={styles.walletCard} className="animate-fadeIn">
           <span style={styles.walletIcon}>👛</span>
-          <h2 style={{ fontSize: '32px', color: '#1E293B', marginBottom: '1rem' }}>Connect Your Wallet</h2>
-          <p style={{ fontSize: '18px', color: '#6B7280' }}>To start protecting your creative assets</p>
+          <h2 style={{ fontSize: 'clamp(24px, 5vw, 32px)', color: '#1E293B', marginBottom: '1rem' }}>Connect Your Wallet</h2>
+          <p style={{ fontSize: 'clamp(16px, 3vw, 18px)', color: '#6B7280' }}>To start protecting your creative assets</p>
         </div>
       </div>
     );
@@ -655,7 +749,7 @@ export default function IPGatekeeperCartoon() {
         {/* Progress Steps */}
         {currentStep < 5 && (
           <div style={styles.progressContainer}>
-            <div style={styles.progressLine}>
+            <div style={styles.progressLine} className="progress-line">
               <div style={{ ...styles.progressLineActive, width: `${progressPercent}%` }}></div>
             </div>
             
@@ -702,18 +796,19 @@ export default function IPGatekeeperCartoon() {
                 ...styles.uploadArea,
                 ...(isHovering ? styles.uploadAreaHover : {})
               }}
+              className="upload-area"
             >
               <div style={styles.uploadIcon} className="animate-pulse">📁</div>
-              <h3 style={{ fontSize: '24px', marginBottom: '0.5rem', color: '#1E293B' }}>
+              <h3 style={{ fontSize: 'clamp(20px, 4vw, 24px)', marginBottom: '0.5rem', color: '#1E293B' }}>
                 Drop your file here
               </h3>
-              <p style={{ color: '#6B7280' }}>or click to browse • PNG, JPG, GIF up to 10MB</p>
+              <p style={{ color: '#6B7280', fontSize: 'clamp(14px, 2.5vw, 16px)' }}>or click to browse • PNG, JPG, GIF up to 10MB</p>
             </div>
 
             {imagePreview && (
               <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                 <img src={imagePreview} alt="Preview" style={styles.previewImage} />
-                <p style={{ marginTop: '1rem', color: '#6B7280', fontWeight: 500 }}>
+                <p style={{ marginTop: '1rem', color: '#6B7280', fontWeight: 500, fontSize: 'clamp(14px, 2.5vw, 16px)' }}>
                   {selectedFile?.name}
                 </p>
               </div>
@@ -723,7 +818,7 @@ export default function IPGatekeeperCartoon() {
               <div style={{ textAlign: 'center', marginTop: '2rem', padding: '1rem', background: '#E0F2FE', borderRadius: '15px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                   <Loader2 size={20} className="animate-spin" style={{ color: '#0284C7' }} />
-                  <span style={{ color: '#0284C7', fontWeight: 600 }}>Preparing AI analysis...</span>
+                  <span style={{ color: '#0284C7', fontWeight: 600, fontSize: 'clamp(14px, 2.5vw, 16px)' }}>Preparing AI analysis...</span>
                 </div>
               </div>
             )}
@@ -734,12 +829,12 @@ export default function IPGatekeeperCartoon() {
         {currentStep === 2 && (
           <div>
             {isDetecting ? (
-              <div style={{ textAlign: 'center', padding: '3rem' }}>
+              <div style={{ textAlign: 'center', padding: 'clamp(2rem, 5vw, 3rem)' }}>
                 <div style={styles.spinner}></div>
-                <h3 style={{ fontSize: '24px', marginTop: '1rem', color: '#1E293B' }}>
+                <h3 style={{ fontSize: 'clamp(20px, 4vw, 24px)', marginTop: '1rem', color: '#1E293B' }}>
                   Analysis in Progress
                 </h3>
-                <p style={{ color: '#6B7280', marginTop: '0.5rem' }}>
+                <p style={{ color: '#6B7280', marginTop: '0.5rem', fontSize: 'clamp(14px, 2.5vw, 16px)' }}>
                   Our smart robots are examining your image... 🔍
                 </p>
               </div>
@@ -749,24 +844,24 @@ export default function IPGatekeeperCartoon() {
                   {aiDetection.isAI && (
                     <div style={styles.aiBadge} className="animate-bounce">AI Detected!</div>
                   )}
-                  <h3 style={{ fontSize: '24px', marginBottom: '1rem', color: 'black' }}>Analysis Complete</h3>
-                  <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
+                  <h3 style={{ fontSize: 'clamp(20px, 4vw, 24px)', marginBottom: '1rem', color: 'black' }}>Analysis Complete</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                     <div>
                       <div style={{ 
-                        fontSize: '36px', 
+                        fontSize: 'clamp(24px, 6vw, 36px)', 
                         fontWeight: 700, 
                         color: aiDetection.isAI ? '#F59E0B' : '#10B981', 
                         marginBottom: '0.5rem' 
                       }}>
                         {aiDetection.isAI ? 'AI-Generated' : 'Original'}
                       </div>
-                      <div style={{ fontSize: '14px', color: '#6B7280' }}>Content Type</div>
+                      <div style={{ fontSize: 'clamp(12px, 2vw, 14px)', color: '#6B7280' }}>Content Type</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '36px', fontWeight: 700, color: '#3B82F6', marginBottom: '0.5rem' }}>
+                      <div style={{ fontSize: 'clamp(24px, 6vw, 36px)', fontWeight: 700, color: '#3B82F6', marginBottom: '0.5rem' }}>
                         {(aiDetection.confidence * 100).toFixed(0)}%
                       </div>
-                      <div style={{ fontSize: '14px', color: '#6B7280' }}>Confidence</div>
+                      <div style={{ fontSize: 'clamp(12px, 2vw, 14px)', color: '#6B7280' }}>Confidence</div>
                     </div>
                   </div>
                 </div>
@@ -815,9 +910,9 @@ export default function IPGatekeeperCartoon() {
         {/* Step 4: License & Register */}
         {currentStep === 4 && (
           <div>
-            <h3 style={{ fontSize: '24px', marginBottom: '1.5rem', color: '#1F2937' }}>Choose Your License</h3>
+            <h3 style={{ fontSize: 'clamp(20px, 4vw, 24px)', marginBottom: '1.5rem', color: '#1F2937' }}>Choose Your License</h3>
             
-            <div style={styles.licenseGrid}>
+            <div style={styles.licenseGrid} className="license-grid">
               {[
                 { 
                   id: 'open_use', 
@@ -879,8 +974,9 @@ export default function IPGatekeeperCartoon() {
                     ...styles.licenseCard,
                     ...(licenseSettings.pilType === license.id ? styles.licenseCardSelected : {})
                   }}
+                  className="license-card"
                 >
-                  <div style={{ fontSize: '36px', marginBottom: '0.5rem' }}>{license.icon}</div>
+                  <div style={{ fontSize: 'clamp(24px, 6vw, 36px)', marginBottom: '0.5rem' }}>{license.icon}</div>
                   <div style={styles.licenseCardTitle}>{license.title}</div>
                   <div style={styles.licenseCardDesc}>{license.desc}</div>
                 </div>
@@ -890,10 +986,10 @@ export default function IPGatekeeperCartoon() {
             {/* Custom Settings for Commercial Licenses */}
             {(licenseSettings.pilType === 'commercial_use' || licenseSettings.pilType === 'commercial_remix') && (
               <div style={styles.customSettings}>
-                <h4 style={{ marginBottom: '1rem', color: '#1F2937' }}>License Settings</h4>
+                <h4 style={{ marginBottom: '1rem', color: '#1F2937', fontSize: 'clamp(16px, 3vw, 18px)' }}>License Settings</h4>
                 
-                <div style={styles.settingRow}>
-                  <span style={{ fontWeight: 600, color: '#374151' }}>License Price ($IP)</span>
+                <div style={styles.settingRow} className="setting-row">
+                  <span style={{ fontWeight: 600, color: '#374151', fontSize: 'clamp(14px, 2.5vw, 16px)' }}>License Price ($IP)</span>
                   <input
                     type="number"
                     min="0"
@@ -909,8 +1005,8 @@ export default function IPGatekeeperCartoon() {
                 </div>
 
                 {licenseSettings.pilType === 'commercial_remix' && (
-                  <div style={styles.settingRow}>
-                    <span style={{ fontWeight: 600, color: '#374151' }}>Revenue Share (%)</span>
+                  <div style={styles.settingRow} className="setting-row">
+                    <span style={{ fontWeight: 600, color: '#374151', fontSize: 'clamp(14px, 2.5vw, 16px)' }}>Revenue Share (%)</span>
                     <input
                       type="number"
                       min="0"
@@ -930,10 +1026,10 @@ export default function IPGatekeeperCartoon() {
             
             {/* AI Learning Toggle - hanya untuk non-AI content */}
             {!aiDetection?.isAI && (
-              <div style={styles.toggleContainer}>
+              <div style={styles.toggleContainer} className="toggle-container">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <span style={{ fontSize: '24px' }}>🤖</span>
-                  <span style={{ fontWeight: 600, color: '#1F2937' }}>Allow AI Training</span>
+                  <span style={{ fontSize: 'clamp(20px, 4vw, 24px)' }}>🤖</span>
+                  <span style={{ fontWeight: 600, color: '#1F2937', fontSize: 'clamp(14px, 2.5vw, 16px)' }}>Allow AI Training</span>
                 </div>
                 <div 
                   onClick={() => setLicenseSettings(prev => ({ ...prev, aiLearning: !prev.aiLearning }))}
@@ -941,6 +1037,7 @@ export default function IPGatekeeperCartoon() {
                     ...styles.toggleSwitch,
                     ...(licenseSettings.aiLearning ? styles.toggleSwitchActive : {})
                   }}
+                  className="toggle-switch"
                 >
                   <div style={{
                     ...styles.toggleKnob,
@@ -958,8 +1055,8 @@ export default function IPGatekeeperCartoon() {
                 ...styles.buttonPrimary,
                 ...(isRegistering ? styles.buttonDisabled : {}),
                 width: '100%',
-                fontSize: '20px',
-                padding: '1.5rem'
+                fontSize: 'clamp(16px, 3vw, 20px)',
+                padding: 'clamp(1rem, 3vw, 1.5rem)'
               }}
             >
               {isPreparingTx ? (
@@ -974,7 +1071,7 @@ export default function IPGatekeeperCartoon() {
                 </>
               ) : (
                 <>
-                  <span style={{ fontSize: '24px' }}>🚀</span>
+                  <span style={{ fontSize: 'clamp(20px, 4vw, 24px)' }}>🚀</span>
                   <span>Register My Asset!</span>
                 </>
               )}
@@ -986,14 +1083,14 @@ export default function IPGatekeeperCartoon() {
         {currentStep === 5 && result && (
           <div style={styles.successContainer}>
             <span style={styles.successIcon} className="animate-bounce">✅</span>
-            <h2 style={{ fontSize: '32px', color: '#1E293B', marginBottom: '1rem' }}>Woohoo! 🎉</h2>
-            <p style={{ fontSize: '18px', color: '#6B7280', marginBottom: '2rem' }}>
+            <h2 style={{ fontSize: 'clamp(24px, 5vw, 32px)', color: '#1E293B', marginBottom: '1rem' }}>Woohoo! 🎉</h2>
+            <p style={{ fontSize: 'clamp(16px, 3vw, 18px)', color: '#6B7280', marginBottom: '2rem' }}>
               Your asset is now protected on Story!
             </p>
             
             <div style={styles.resultInfo}>
-              <div style={styles.resultItem}>
-                <span style={{ fontWeight: 600 }}>Transaction ID</span>
+              <div style={styles.resultItem} className="result-item">
+                <span style={{ fontWeight: 600, fontSize: 'clamp(14px, 2.5vw, 16px)' }}>Transaction ID</span>
                 <a 
                   href={`https://aeneid.storyscan.io/tx/${result.txHash}`}
                   target="_blank"
@@ -1001,16 +1098,17 @@ export default function IPGatekeeperCartoon() {
                   style={{ 
                     color: '#7C3AED', 
                     fontFamily: 'monospace', 
-                    fontSize: '14px',
+                    fontSize: 'clamp(12px, 2vw, 14px)',
                     textDecoration: 'underline',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    wordBreak: 'break-all'
                   }}
                 >
                   {result.txHash?.slice(0, 10)}...{result.txHash?.slice(-8)}
                 </a>
               </div>
-              <div style={{ ...styles.resultItem, borderBottom: 'none' }}>
-                <span style={{ fontWeight: 600 }}>IP Asset ID</span>
+              <div style={{ ...styles.resultItem, borderBottom: 'none' }} className="result-item">
+                <span style={{ fontWeight: 600, fontSize: 'clamp(14px, 2.5vw, 16px)' }}>IP Asset ID</span>
                 <a 
                   href={`https://aeneid.explorer.story.foundation/ipa/${result.ipId}`}
                   target="_blank"
@@ -1018,9 +1116,10 @@ export default function IPGatekeeperCartoon() {
                   style={{ 
                     color: '#7C3AED', 
                     fontFamily: 'monospace', 
-                    fontSize: '14px',
+                    fontSize: 'clamp(12px, 2vw, 14px)',
                     textDecoration: 'underline',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    wordBreak: 'break-all'
                   }}
                 >
                   {result.ipId?.slice(0, 10)}...{result.ipId?.slice(-8)}
@@ -1036,7 +1135,7 @@ export default function IPGatekeeperCartoon() {
                 marginTop: '2rem'
               }}
             >
-              <span style={{ fontSize: '20px' }}>🎨</span>
+              <span style={{ fontSize: 'clamp(16px, 3vw, 20px)' }}>🎨</span>
               <span>Register Another Asset</span>
             </button>
           </div>
@@ -1044,12 +1143,13 @@ export default function IPGatekeeperCartoon() {
 
         {/* Navigation Buttons */}
         {currentStep < 5 && currentStep > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem', paddingTop: '2rem', borderTop: '2px solid #E5E7EB' }}>
+          <div style={styles.navigationButtons} className="navigation-buttons">
             <button 
               onClick={prevStep}
               style={{
                 ...styles.button,
-                ...styles.buttonSecondary
+                ...styles.buttonSecondary,
+                flex: '1'
               }}
             >
               <span>←</span>
@@ -1067,7 +1167,8 @@ export default function IPGatekeeperCartoon() {
                   ...styles.button,
                   ...styles.buttonPrimary,
                   ...((currentStep === 2 && !canProceedFromStep2()) ||
-                     (currentStep === 3 && !canProceedFromStep3()) ? styles.buttonDisabled : {})
+                     (currentStep === 3 && !canProceedFromStep3()) ? styles.buttonDisabled : {}),
+                  flex: '1'
                 }}
               >
                 <span>Next</span>
