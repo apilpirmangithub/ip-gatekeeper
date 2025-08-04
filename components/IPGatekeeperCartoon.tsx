@@ -106,11 +106,12 @@ const styles = {
     fontWeight: '500',
   },
   stepLabelActive: {
-    color: '#7C3AED',
-    fontWeight: '600',
+  color: '#7C3AED',
+  fontWeight: '600',
+}, 
   uploadArea: {
-    border: '3px dashed #7C3AED',
-    borderRadius: 'clamp(15px, 3vw, 25px)',
+  border: '3px dashed #7C3AED',
+  borderRadius: 'clamp(15px, 3vw, 25px)',
     padding: 'clamp(4rem, 8vw, 6rem) clamp(1rem, 3vw, 2rem)', // Tingkatkan padding vertikal
     textAlign: 'center' as const,
     background: 'linear-gradient(135deg, rgba(124,58,237,0.05), rgba(236,72,153,0.05))',
