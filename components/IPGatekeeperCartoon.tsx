@@ -832,35 +832,85 @@ export default function IPGatekeeperCartoon() {
         {/* Step 1: Upload */}
         {currentStep === 1 && (
           <div>
-            <input 
-              type="file" 
-              accept="image/*" 
+            <input
+              type="file"
+              accept="image/*"
               onChange={handleFileUpload}
               style={{ display: 'none' }}
               id="fileInput"
             />
-            <div 
-              onClick={() => document.getElementById('fileInput')?.click()}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-              style={{
-                ...styles.uploadArea,
-                ...(isHovering ? styles.uploadAreaHover : {})
-              }}
-              className="upload-area"
-            >
-              <div style={styles.uploadIcon} className="animate-pulse">📁</div>
-              <h3 style={{ fontSize: 'clamp(20px, 4vw, 24px)', marginBottom: '0.5rem', color: '#1E293B' }}>
-                Drop your file here
-              </h3>
-              <p style={{ color: '#6B7280', fontSize: 'clamp(14px, 2.5vw, 16px)' }}>or click to browse • PNG, JPG, GIF up to 10MB</p>
-            </div>
 
-            {imagePreview && (
-              <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                <img src={imagePreview} alt="Preview" style={styles.previewImage} />
-                <p style={{ marginTop: '1rem', color: '#6B7280', fontWeight: 500, fontSize: 'clamp(14px, 2.5vw, 16px)' }}>
+            {!imagePreview ? (
+              <div
+                onClick={() => document.getElementById('fileInput')?.click()}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                style={{
+                  ...styles.uploadArea,
+                  ...(isHovering ? styles.uploadAreaHover : {})
+                }}
+                className="upload-area"
+              >
+                <div style={styles.uploadIcon} className="animate-pulse">📁</div>
+                <h3 style={{ fontSize: 'clamp(20px, 4vw, 24px)', marginBottom: '0.5rem', color: '#1E293B' }}>
+                  Drop your file here
+                </h3>
+                <p style={{ color: '#6B7280', fontSize: 'clamp(14px, 2.5vw, 16px)' }}>or click to browse • PNG, JPG, GIF up to 10MB</p>
+              </div>
+            ) : (
+              <div
+                onClick={() => document.getElementById('fileInput')?.click()}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                style={{
+                  border: '3px solid #7C3AED',
+                  borderRadius: 'clamp(15px, 3vw, 25px)',
+                  padding: 'clamp(1rem, 2vw, 1.5rem)',
+                  textAlign: 'center' as const,
+                  background: 'linear-gradient(135deg, rgba(124,58,237,0.05), rgba(236,72,153,0.05))',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer',
+                  position: 'relative' as const,
+                  overflow: 'hidden',
+                  ...(isHovering ? {
+                    borderColor: '#EC4899',
+                    background: 'linear-gradient(135deg, rgba(124,58,237,0.1), rgba(236,72,153,0.1))',
+                    transform: 'scale(1.02)',
+                  } : {})
+                }}
+                className="upload-area"
+              >
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '400px',
+                    width: 'auto',
+                    height: 'auto',
+                    borderRadius: '15px',
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+                    objectFit: 'contain' as const,
+                    display: 'block',
+                    margin: '0 auto'
+                  }}
+                />
+                <p style={{
+                  marginTop: '1rem',
+                  color: '#6B7280',
+                  fontWeight: 500,
+                  fontSize: 'clamp(14px, 2.5vw, 16px)',
+                  wordBreak: 'break-all' as const
+                }}>
                   {selectedFile?.name}
+                </p>
+                <p style={{
+                  marginTop: '0.5rem',
+                  color: '#7C3AED',
+                  fontSize: 'clamp(12px, 2vw, 14px)',
+                  fontWeight: 600
+                }}>
+                  Click to change file
                 </p>
               </div>
             )}
@@ -935,16 +985,6 @@ export default function IPGatekeeperCartoon() {
               />
             </div>
             
-            <div style={styles.formGroup}>
-              <label style={styles.formLabel}>Category</label>
-              <select style={styles.formInput}>
-                <option>🎨 Digital Art</option>
-                <option>📸 Photography</option>
-                <option>✏️ Illustration</option>
-                <option>🎯 Design</option>
-                <option>🌟 Other</option>
-              </select>
-            </div>
             
             <div style={styles.formGroup}>
               <label style={styles.formLabel}>Description *</label>
@@ -1232,3 +1272,4 @@ export default function IPGatekeeperCartoon() {
     </div>
   );
 }
+
