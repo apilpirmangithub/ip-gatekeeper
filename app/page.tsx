@@ -122,7 +122,15 @@ export default function Home() {
               justifyContent: 'center',
               fontSize: '20px'
             }}>
-              🛡️
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2Fe69fcb8053174b2b95cd31543dbce2f3?format=webp&width=800"
+                alt="Logo"
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  objectFit: 'contain'
+                }}
+              />
             </div>
             <div>
               <h1 style={{
